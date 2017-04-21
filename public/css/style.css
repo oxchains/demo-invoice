@@ -1,0 +1,8 @@
+body {
+    background-color: #d2d6de;
+}
+
+.input-group[class*=col-] {
+    padding-left: 15px;
+    padding-right: 15px;
+}
