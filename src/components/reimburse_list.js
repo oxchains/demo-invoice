@@ -32,7 +32,7 @@ class ReimburseList extends Component {
         <td>{row.name}</td>
         <td><Moment locale="zh-cn" format="lll">{row.date}</Moment></td>
         <td>{row.state}</td>
-        <td><Link className="btn btn-sm btn-default">处理</Link></td>
+        <td><Link className="btn btn-sm btn-default" to={`/reimburse/${idx+1}`}>处理</Link></td>
       </tr>);
     });
   }

@@ -12,7 +12,7 @@ import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
 import { fetchReimburse } from '../actions/reimburse';
-import { Link } from 'react-router';
+import { Link, browserHistory } from 'react-router';
 import Moment from 'react-moment';
 
 class Reimburse extends Component {
@@ -54,6 +54,7 @@ class Reimburse extends Component {
               </dl>
             </div>
             <div className="box-footer text-center clearfix">
+              <button className="btn btn-default margin-r-5" onClick={browserHistory.goBack}>取消</button>
               <button className="btn btn-success">确认报销</button>
             </div>
           </div>

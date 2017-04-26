@@ -19,3 +19,5 @@ export const INVOICE_AUTO = 'invoice_auto';                         //自动开�
 export const FETCH_REIMBURSE_LIST = 'fetch_reimburse_list';         //获取企业报销列表
 export const FETCH_REIMBURSE = 'fetch_reimburse';                   //获取报销详情
 export const FETCH_MY_REIMBURSE_LIST = 'fetch_my_reimburse_list';   //获取我的报销列表
+export const SELECT_INVOICE = 'select_invoice';                     //选择发票
+export const DESELECT_INVOICE = 'deselect_invoice';                 //取消选择发票

@@ -15,7 +15,9 @@ import {
   REQUEST_SUCCESS,
   REQUEST_ERROR,
   FETCH_INVOICE_LIST,
-  INVOICE_AUTO
+  INVOICE_AUTO,
+  SELECT_INVOICE,
+  DESELECT_INVOICE
 } from './types';
 
 //http请求错误
@@ -48,6 +50,31 @@ export function fetchInvoiceList(page) {
   return function(dispatch) {
     axios.get(`${ROOT_URL}/invoice-list/${page}`)
       .then(response => dispatch({ type: FETCH_INVOICE_LIST, payload:response }))
+      .catch( response => dispatch(requestError(response.data.error)) );
+  }
+}
+
+//选择发票
+export function selectInvoice(id) {
+  return {
+    type: SELECT_INVOICE,
+    payload: id
+  };
+}
+
+//取消选择发票
+export function deselectInvoice(id) {
+  return {
+    type: DESELECT_INVOICE,
+    payload: id
+  };
+}
+
+//报销
+export function reimburseAction(ids) {
+  return function(dispatch) {
+    axios.post(`${ROOT_URL}/reimburse`)
+      .then(response => dispatch({ type: REQUEST_SUCCESS }))
       .catch( response => dispatch(requestError(response.data.error)) );
   }
 }

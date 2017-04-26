@@ -10,15 +10,26 @@
 import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
-import { fetchInvoiceList } from '../actions/invoice';
+import { fetchInvoiceList, selectInvoice, deselectInvoice } from '../actions/invoice';
 import { Link } from 'react-router';
 import Moment from 'react-moment';
+import _ from 'lodash';
 import ReactPaginate from 'react-paginate';
+import SelectedInvoiceList from './selected_invoice_list';
 
 class InvoiceList extends Component {
+  constructor(props) {
+    super(props);
+  }
 
   componentWillMount() {
     this.props.fetchInvoiceList(this.props.params.page);
+  }
+
+  handleSelect({ id }, event) {
+    const { selectInvoice, deselectInvoice } = this.props;
+
+    event.target.checked ? selectInvoice(id) : deselectInvoice(id);
   }
 
   renderRows() {
@@ -31,7 +42,10 @@ class InvoiceList extends Component {
         <td>{row.origin}</td>
         <td><Moment locale="zh-cn" format="lll">{row.date}</Moment></td>
         <td>{row.state}</td>
-        <td><input type="checkbox"></input></td>
+        <td><input type="checkbox" label={row.id} key={row.id}
+                   onChange={this.handleSelect.bind(this, row)}
+                   checked={_.contains(this.props.selectedIds, row.id)}/>
+        </td>
       </tr>);
     });
   }
@@ -44,7 +58,7 @@ class InvoiceList extends Component {
   render() {
     return (
       <div className="row">
-        <div className="col-xs-12">
+        <div className="col-xs-7">
           <div className="box box-info">
             <div className="box-header"><h3 className="box-title">发票列表</h3></div>
             <div className="box-body table-responsive no-padding">
@@ -78,9 +92,12 @@ class InvoiceList extends Component {
                              containerClassName={"pagination pagination-sm no-margin "}
                              subContainerClassName={"pages pagination"}
                              activeClassName={"active"} />
-              <button className="btn btn-success pull-right">报销</button>
+              <button className="btn btn-success pull-right hide">报销</button>
             </div>
           </div>
+        </div>
+        <div className="col-xs-5">
+          <SelectedInvoiceList/>
         </div>
       </div>)
   }
@@ -89,8 +106,9 @@ class InvoiceList extends Component {
 function mapStateToProps(state) {
   return {
     all: state.invoice.all,
+    selectedIds: state.invoice.selectedIds,
     pageCount: state.invoice.pageCount
   };
 }
 
-export default connect(mapStateToProps, { fetchInvoiceList })(InvoiceList);
+export default connect(mapStateToProps, { fetchInvoiceList, selectInvoice, deselectInvoice })(InvoiceList);
