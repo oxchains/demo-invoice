@@ -40,7 +40,6 @@ class InvoiceList extends Component {
   }
 
   render() {
-    console.log(this.props.selectedIds);
     return (
         <div className="box box-info">
           <div className="box-header"><h3 className="box-title">已经选择发票</h3></div>
