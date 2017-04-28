@@ -1,0 +1,6 @@
+---
+identities:
+    admin: {"role": {"name": "member", "mspId": "Org1MSP"}}
+policy:
+    1-of:
+    - signed-by: "admin"
