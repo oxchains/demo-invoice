@@ -1,15 +1,18 @@
 # Oxchain Invoice App
 
+## [FrontEnd](./FrontEnd)
+
 ### Getting Started
 
-Checkout this repo, install dependencies, then start the gulp process with the following:
+Checkout this repo, install dependencies, then start the app with the following:
 
 ```
 > git clone https://git@github.com:zkjs/oxchain-invoice.git
-> cd invoice-app
+> cd invoice-app/FrontEnd
 > npm install
 > npm start
 ```
+
 #### Fake Api
 
 ```

@@ -1,6 +1,8 @@
-/node_modules
-bundle.js
-npm-debug.log
+# FrontEnd
+
+/FrontEnd/node_modules
+/FrontEnd/bundle.js
+/FrontEnd/npm-debug.log
 .DS_Store
 
 # IntelliJ
