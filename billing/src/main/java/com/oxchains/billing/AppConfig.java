@@ -26,7 +26,7 @@ public class AppConfig {
 
     @Bean
     RouterFunction routerFunction(@Autowired BillHandler bill, @Autowired AcceptanceHandler acceptance, @Autowired WarrantHandler warrant, @Autowired RevocationHandler revocation, @Autowired ReceptionHandler reception, @Autowired DiscountHandler discount,
-      @Autowired EndorsementHandler endorsement, @Autowired PaymentHandler payment, @Autowired PledgeHandler pledge) {
+      @Autowired EndorsementHandler endorsement, @Autowired PaymentHandler payment, @Autowired PledgeHandler pledge, @Autowired RecourseHandler recourse) {
 
         final String billPath = "/bill",
           acceptancePath = "/acceptance",
@@ -37,7 +37,8 @@ public class AppConfig {
           pledgeReleasePath = "/release",
           revocationPath = "/revocation",
           warrantPath = "/warrant",
-          receptionPath ="/reception";
+          receptionPath ="/reception",
+          recoursePath = "/recourse";
 
         return nest(GET(billPath), route(GET("/"), bill::bills).andRoute(GET("/{id}"), bill::bill))
           .andNest(
@@ -49,6 +50,7 @@ public class AppConfig {
             .andRoute(POST(receptionPath), reception::create)
             .andRoute(POST(revocationPath), revocation::create)
             .andRoute(POST(warrantPath), warrant::create)
+            .andRoute(POST(recoursePath), recourse::create)
             .andNest(POST(pledgePath), route(POST("/"), pledge::create).andRoute(POST(pledgeReleasePath), pledge::createRelease))
           )
           .andNest(
@@ -60,6 +62,7 @@ public class AppConfig {
             .andRoute(PUT(receptionPath), reception::update)
             .andRoute(PUT(revocationPath), revocation::update)
             .andRoute(PUT(warrantPath), warrant::update)
+            .andRoute(PUT(recoursePath), recourse::update)
             .andNest(PUT(pledgePath), route(PUT("/"), pledge::update).andRoute(PUT(pledgeReleasePath), pledge::updateRelease))
           );
 

@@ -16,7 +16,7 @@ public class RouterTest {
 
     private static WebTestClient client;
 
-    final String billPath = "/bill", acceptancePath = "/acceptance", discountPath = "/discount", endorsePath = "/endorsement", paymentPath = "/payment", pledgePath = "/pledge", pledgeReleasePath = "/release", revocationPath = "/revocation", warrantPath = "/warrant", receptionPath = "/reception";
+    private final String billPath = "/bill", acceptancePath = "/acceptance", discountPath = "/discount", endorsePath = "/endorsement", paymentPath = "/payment", pledgePath = "/pledge", pledgeReleasePath = "/release", revocationPath = "/revocation", warrantPath = "/warrant", receptionPath = "/reception", recoursePath = "/recourse";
 
     @Before
     public void setup() throws Exception {
@@ -31,7 +31,6 @@ public class RouterTest {
         getEnabled(billPath);
         getEnabled(billPath + "/123");
         postEnabled(billPath);
-        //client.put().uri(billPath).exchange().expectStatus().is5xxServerError();
     }
 
     @Test
@@ -74,6 +73,12 @@ public class RouterTest {
     public void testWarrant(){
         postEnabled(billPath + warrantPath);
         putEnabled(billPath + warrantPath);
+    }
+
+    @Test
+    public void testRecourse(){
+        postEnabled(billPath + recoursePath);
+        putEnabled(billPath + recoursePath);
     }
 
     @Test
