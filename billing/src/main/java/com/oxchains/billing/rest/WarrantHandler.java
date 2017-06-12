@@ -12,16 +12,16 @@ import reactor.core.publisher.Mono;
 @Component
 public class WarrantHandler {
 
-    /* POST /bill/warrant */
-    public Mono<ServerResponse> create(ServerRequest request) {
-        PromptAction action;
-        return Mono.empty();
-    }
+  /* POST /bill/warrant */
+  public Mono<ServerResponse> create(ServerRequest request) {
+    PromptAction action;
+    return Mono.empty();
+  }
 
-    /* PUT /bill/warrant */
-    public Mono<ServerResponse> update(ServerRequest request) {
-        PromptAction action;
-        return Mono.empty();
-    }
+  /* PUT /bill/warrant */
+  public Mono<ServerResponse> update(ServerRequest request) {
+    PromptAction action;
+    return Mono.empty();
+  }
 
 }

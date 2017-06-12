@@ -8,102 +8,113 @@ import java.util.Date;
 /**
  * @author aiet
  */
-public class Bill {
+public class Bill implements Argument {
 
-    private String id;
-    private String price;
+  private String id;
+  private String price;
 
-    /**
-     * 开票人
-     */
-    private String drawer;
+  /**
+   * 开票人
+   */
+  private String drawer;
 
-    /**
-     * 受票人/付款人
-     */
-    private String drawee;
+  /**
+   * 受票人/付款人
+   */
+  private String drawee;
 
-    /**
-     * 收款人
-     */
-    private String payee;
+  /**
+   * 收款人
+   */
+  private String payee;
 
-    @JsonAlias("draw_date")
-    @JsonFormat(pattern = "yyy-MM-dd hh:mm:ss")
-    private Date date;
-    private String due;
-    private String transferable;
-    private String status;
+  @JsonAlias("draw_date")
+  @JsonFormat(pattern = "yyy-MM-dd hh:mm:ss")
+  private Date date;
 
-    public String getId() {
-        return id;
-    }
+  @JsonFormat(pattern = "yyy-MM-dd hh:mm:ss")
+  private Date due;
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  private String transferable;
+  private String status;
 
-    public String getPrice() {
-        return price;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setPrice(String price) {
-        this.price = price;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public String getDrawer() {
-        return drawer;
-    }
+  public String getPrice() {
+    return price;
+  }
 
-    public void setDrawer(String drawer) {
-        this.drawer = drawer;
-    }
+  public void setPrice(String price) {
+    this.price = price;
+  }
 
-    public String getDrawee() {
-        return drawee;
-    }
+  public String getDrawer() {
+    return drawer;
+  }
 
-    public void setDrawee(String drawee) {
-        this.drawee = drawee;
-    }
+  public void setDrawer(String drawer) {
+    this.drawer = drawer;
+  }
 
-    public String getPayee() {
-        return payee;
-    }
+  public String getDrawee() {
+    return drawee;
+  }
 
-    public void setPayee(String payee) {
-        this.payee = payee;
-    }
+  public void setDrawee(String drawee) {
+    this.drawee = drawee;
+  }
 
-    public Date getDate() {
-        return date;
-    }
+  public String getPayee() {
+    return payee;
+  }
 
-    public void setDate(Date date) {
-        this.date = date;
-    }
+  public void setPayee(String payee) {
+    this.payee = payee;
+  }
 
-    public String getDue() {
-        return due;
-    }
+  public Date getDate() {
+    return date;
+  }
 
-    public void setDue(String due) {
-        this.due = due;
-    }
+  public void setDate(Date date) {
+    this.date = date;
+  }
 
-    public String getTransferable() {
-        return transferable;
-    }
+  public Date getDue() {
+    return due;
+  }
 
-    public void setTransferable(String transferable) {
-        this.transferable = transferable;
-    }
+  public void setDue(Date due) {
+    this.due = due;
+  }
 
-    public String getStatus() {
-        return status;
-    }
+  public String getTransferable() {
+    return transferable;
+  }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+  public void setTransferable(String transferable) {
+    this.transferable = transferable;
+  }
+
+  public String getStatus() {
+    return status;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
+  }
+
+  @Override
+  public String toArgs() {
+    return String.format("%s,%s,%s,%s,%s,%s",
+        getDrawer(), getDue(), getPrice(),
+        getDrawee(), getPayee(), getTransferable()
+    );
+  }
 }

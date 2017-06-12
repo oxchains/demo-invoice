@@ -12,15 +12,15 @@ import reactor.core.publisher.Mono;
 @Component
 public class DiscountHandler {
 
-    /* POST /bill/discount */
-    public Mono<ServerResponse> create(ServerRequest request) {
-        DiscountAction action;
-        return Mono.empty();
-    }
+  /* POST /bill/discount */
+  public Mono<ServerResponse> create(ServerRequest request) {
+    DiscountAction action;
+    return Mono.empty();
+  }
 
-    /* PUT /bill/discount */
-    public Mono<ServerResponse> update(ServerRequest request) {
-        DiscountAction action;
-        return Mono.empty();
-    }
+  /* PUT /bill/discount */
+  public Mono<ServerResponse> update(ServerRequest request) {
+    DiscountAction action;
+    return Mono.empty();
+  }
 }

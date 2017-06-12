@@ -13,28 +13,28 @@ import reactor.core.publisher.Mono;
 @Component
 public class PledgeHandler {
 
-    /* POST /bill/pledge */
-    public Mono<ServerResponse> create(ServerRequest request) {
-        PledgeAction action;
-        return Mono.empty();
-    }
+  /* POST /bill/pledge */
+  public Mono<ServerResponse> create(ServerRequest request) {
+    PledgeAction action;
+    return Mono.empty();
+  }
 
-    /* PUT /bill/pledge */
-    public Mono<ServerResponse> update(ServerRequest request) {
-        PledgeAction action;
-        return Mono.empty();
-    }
+  /* PUT /bill/pledge */
+  public Mono<ServerResponse> update(ServerRequest request) {
+    PledgeAction action;
+    return Mono.empty();
+  }
 
-    /* POST /bill/pledge/release */
-    public Mono<ServerResponse> createRelease(ServerRequest request) {
-        PromptAction action;
-        return Mono.empty();
-    }
+  /* POST /bill/pledge/release */
+  public Mono<ServerResponse> createRelease(ServerRequest request) {
+    PromptAction action;
+    return Mono.empty();
+  }
 
-    /* PUT /bill/pledge/release */
-    public Mono<ServerResponse> updateRelease(ServerRequest request) {
-        PromptAction action;
-        return Mono.empty();
-    }
+  /* PUT /bill/pledge/release */
+  public Mono<ServerResponse> updateRelease(ServerRequest request) {
+    PromptAction action;
+    return Mono.empty();
+  }
 
 }

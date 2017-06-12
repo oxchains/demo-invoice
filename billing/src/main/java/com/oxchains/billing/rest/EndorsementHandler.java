@@ -12,16 +12,16 @@ import reactor.core.publisher.Mono;
 @Component
 public class EndorsementHandler {
 
-    /* POST /bill/endorsement */
-    public Mono<ServerResponse> create(ServerRequest request) {
-        EndorseAction action;
-        return Mono.empty();
-    }
+  /* POST /bill/endorsement */
+  public Mono<ServerResponse> create(ServerRequest request) {
+    EndorseAction action;
+    return Mono.empty();
+  }
 
-    /* PUT /bill/endorsement */
-    public Mono<ServerResponse> update(ServerRequest request) {
-        EndorseAction action;
-        return Mono.empty();
-    }
+  /* PUT /bill/endorsement */
+  public Mono<ServerResponse> update(ServerRequest request) {
+    EndorseAction action;
+    return Mono.empty();
+  }
 
 }

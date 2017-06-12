@@ -11,17 +11,17 @@ import reactor.core.publisher.Mono;
  */
 @Component
 public class RevocationHandler {
-    
-    /* POST /bill/revocation */
-    public Mono<ServerResponse> create(ServerRequest request) {
-        PromptAction action;
-        return Mono.empty();
-    }
 
-    /* PUT /bill/revocation */
-    public Mono<ServerResponse> update(ServerRequest request) {
-        PromptAction action;
-        return Mono.empty();
-    }
+  /* POST /bill/revocation */
+  public Mono<ServerResponse> create(ServerRequest request) {
+    PromptAction action;
+    return Mono.empty();
+  }
+
+  /* PUT /bill/revocation */
+  public Mono<ServerResponse> update(ServerRequest request) {
+    PromptAction action;
+    return Mono.empty();
+  }
 
 }

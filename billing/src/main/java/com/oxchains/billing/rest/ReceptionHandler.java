@@ -12,16 +12,16 @@ import reactor.core.publisher.Mono;
 @Component
 public class ReceptionHandler {
 
-    /* POST /bill/reception */
-    public Mono<ServerResponse> create(ServerRequest request) {
-        PromptAction action;
-        return Mono.empty();
-    }
+  /* POST /bill/reception */
+  public Mono<ServerResponse> create(ServerRequest request) {
+    PromptAction action;
+    return Mono.empty();
+  }
 
-    /* PUT /bill/reception */
-    public Mono<ServerResponse> update(ServerRequest request) {
-        PromptAction action;
-        return Mono.empty();
-    }
+  /* PUT /bill/reception */
+  public Mono<ServerResponse> update(ServerRequest request) {
+    PromptAction action;
+    return Mono.empty();
+  }
 
 }

@@ -20,7 +20,7 @@ public class RouterServlet extends ServletHttpHandlerAdapter {
 
   private RouterServlet(RouterFunction<ServerResponse> routerFunction) {
     super(WebHttpHandlerBuilder
-      .webHandler(toHttpHandler(routerFunction)).build());
+        .webHandler(toHttpHandler(routerFunction)).build());
   }
 
   @Bean

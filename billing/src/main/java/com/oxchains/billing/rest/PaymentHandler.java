@@ -12,16 +12,16 @@ import reactor.core.publisher.Mono;
 @Component
 public class PaymentHandler {
 
-    /* POST /bill/payment */
-    public Mono<ServerResponse> create(ServerRequest request) {
-        PayAction action;
-        return Mono.empty();
-    }
+  /* POST /bill/payment */
+  public Mono<ServerResponse> create(ServerRequest request) {
+    PayAction action;
+    return Mono.empty();
+  }
 
-    /* PUT /bill/payment */
-    public Mono<ServerResponse> update(ServerRequest request) {
-        PayAction action;
-        return Mono.empty();
-    }
+  /* PUT /bill/payment */
+  public Mono<ServerResponse> update(ServerRequest request) {
+    PayAction action;
+    return Mono.empty();
+  }
 
 }
