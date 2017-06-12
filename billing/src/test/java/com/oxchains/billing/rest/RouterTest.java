@@ -2,6 +2,7 @@ package com.oxchains.billing.rest;
 
 import com.oxchains.billing.App;
 import com.oxchains.billing.domain.Bill;
+import com.oxchains.billing.rest.common.PromptAction;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,14 +38,14 @@ public class RouterTest {
     getEnabled(billPath);
     getEnabled(billPath + "/123");
     Bill bill = new Bill();
-    bill.setDrawee("test");
     postEnabled(billPath, bill);
   }
 
   @Test
   public void testAcceptance() {
-    postEnabled(billPath + acceptancePath);
-    putEnabled(billPath + acceptancePath);
+    PromptAction promptAction = new PromptAction();
+    postEnabled(billPath + acceptancePath, promptAction);
+    putEnabled(billPath + acceptancePath, promptAction);
   }
 
   @Test
@@ -112,6 +113,10 @@ public class RouterTest {
 
   private void putEnabled(String path) {
     client.put().uri(path).exchange().expectStatus().is2xxSuccessful();
+  }
+
+  private void putEnabled(String path, Object object) {
+    client.put().uri(path).contentType(APPLICATION_JSON_UTF8).body(fromObject(object)).exchange().expectStatus().is2xxSuccessful();
   }
 
 }

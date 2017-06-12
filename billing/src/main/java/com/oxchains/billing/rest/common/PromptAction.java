@@ -1,9 +1,11 @@
 package com.oxchains.billing.rest.common;
 
+import com.oxchains.billing.domain.Argument;
+
 /**
  * @author aiet
  */
-public class PromptAction {
+public class PromptAction implements Argument{
 
   protected String id;
   protected String manipulator;
@@ -36,4 +38,10 @@ public class PromptAction {
   public void setAction(String action) {
     this.action = action;
   }
+
+  @Override
+  public String toArgs() {
+    return String.format("%s,%s,%s", getManipulator(), getId(), getAction());
+  }
+
 }
