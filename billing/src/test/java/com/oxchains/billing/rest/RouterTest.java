@@ -85,8 +85,9 @@ public class RouterTest {
 
   @Test
   public void testWarrant() {
-    postEnabled(billPath + warrantPath);
-    putEnabled(billPath + warrantPath);
+    PromptAction promptAction = new PromptAction();
+    postEnabled(billPath + warrantPath, promptAction);
+    putEnabled(billPath + warrantPath, promptAction);
   }
 
   @Test
