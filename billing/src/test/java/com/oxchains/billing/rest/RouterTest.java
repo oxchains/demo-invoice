@@ -64,8 +64,9 @@ public class RouterTest {
 
   @Test
   public void testRevocation() {
-    postEnabled(billPath + revocationPath);
-    putEnabled(billPath + revocationPath);
+    PromptAction promptAction = new PromptAction();
+    postEnabled(billPath + revocationPath, promptAction);
+    putEnabled(billPath + revocationPath, promptAction);
   }
 
   @Test
