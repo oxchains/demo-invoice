@@ -30,8 +30,6 @@ import (
         "strconv"
 	"time"
 	"strings"
-
-
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	pb "github.com/hyperledger/fabric/protos/peer"
 )
@@ -147,11 +145,11 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 		if function != "checkdue" {
 			return shim.Error(string(dueNum) + " bill(s) were due. Try again later.")
 		} else {
-			return shim.Success(string(dueNum))
+			return shim.Success([]byte(strconv.Itoa(dueNum)))
 		}
 	}
 	if function == "checkdue" {
-		return shim.Success("0")
+		return shim.Success([]byte("0"))
 	}
         if function == "delete" {
                 // Deletes an entity from its state
@@ -442,7 +440,7 @@ func (t *SimpleChaincode) billregister(stub shim.ChaincodeStubInterface, args []
         if err != nil {
                 return shim.Error(err.Error())
         }
-        return shim.Success(nil)
+        return shim.Success([]byte(BillCountString))
 }
 
 func (t *SimpleChaincode) getDiscountPrice(stub shim.ChaincodeStubInterface, arg string) (int, error) {
@@ -642,7 +640,7 @@ func getQueryResultForQueryString(stub shim.ChaincodeStubInterface, queryString 
 
 	bArrayMemberAlreadyWritten := false
 	for resultsIterator.HasNext() {
-		Key, Value, err := resultsIterator.Next()
+		Key, err := resultsIterator.Next()
 		if err != nil {
 			return nil, err
 		}
@@ -652,12 +650,12 @@ func getQueryResultForQueryString(stub shim.ChaincodeStubInterface, queryString 
 		}
 		buffer.WriteString("{\"Key\":")
 		buffer.WriteString("\"")
-		buffer.WriteString(Key)
+		buffer.WriteString(Key.Key)
 		buffer.WriteString("\"")
 
 		buffer.WriteString(", \"Record\":")
 		// Record is a JSON object, so we write as-is
-		buffer.WriteString(string(Value))
+		buffer.WriteString(string(Key.Value))
 		buffer.WriteString("}")
 		bArrayMemberAlreadyWritten = true
 	}
@@ -682,12 +680,12 @@ func getKeysForQueryString(stub shim.ChaincodeStubInterface, queryString string)
 	var buffer []string
 
 	for resultsIterator.HasNext() {
-		Key, _, err := resultsIterator.Next()
+		Key, err := resultsIterator.Next()
 		if err != nil {
 			return nil, err
 		}
 		// Add a comma before array members, suppress it for the first array member
-		buffer = append(buffer, Key)
+		buffer = append(buffer, Key.Key)
 	}
 
 	fmt.Printf("- getKeysForQueryString queryResult:\n%s\n", buffer)

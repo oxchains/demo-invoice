@@ -19,7 +19,7 @@ import static org.springframework.web.reactive.function.server.ServerResponse.st
 public class AppConfig {
 
   @Bean
-  RouterFunction routerFunction(@Autowired BillHandler bill, @Autowired AcceptanceHandler acceptance, @Autowired WarrantHandler warrant, @Autowired RevocationHandler revocation, @Autowired ReceptionHandler reception, @Autowired DiscountHandler discount,
+  RouterFunction routerFunction(@Autowired BillHandler bill, @Autowired AcceptanceHandler acceptance, @Autowired GuarantyHandler warrant, @Autowired RevocationHandler revocation, @Autowired ReceptionHandler reception, @Autowired DiscountHandler discount,
                                 @Autowired EndorsementHandler endorsement, @Autowired PaymentHandler payment, @Autowired PledgeHandler pledge, @Autowired RecourseHandler recourse) {
 
     final String billPath = "/bill",
@@ -30,7 +30,7 @@ public class AppConfig {
         pledgePath = "/pledge",
         pledgeReleasePath = "/release",
         revocationPath = "/revocation",
-        warrantPath = "/warrant",
+        guarantyPath = "/guaranty",
         receptionPath = "/reception",
         recoursePath = "/recourse";
 
@@ -43,7 +43,7 @@ public class AppConfig {
             .andRoute(GET(paymentPath), payment::get)
             .andRoute(GET(receptionPath), reception::get)
             .andRoute(GET(revocationPath), revocation::get)
-            .andRoute(GET(warrantPath), warrant::get)
+            .andRoute(GET(guarantyPath), warrant::get)
             .andRoute(GET(recoursePath), recourse::get)
             .andNest(GET(pledgePath), route(GET("/"), pledge::get)
                 .andRoute(GET(pledgeReleasePath), pledge::getRelease))
@@ -56,7 +56,7 @@ public class AppConfig {
             .andRoute(POST(paymentPath), payment::create)
             .andRoute(POST(receptionPath), reception::create)
             .andRoute(POST(revocationPath), revocation::create)
-            .andRoute(POST(warrantPath), warrant::create)
+            .andRoute(POST(guarantyPath), warrant::create)
             .andRoute(POST(recoursePath), recourse::create)
             .andNest(POST(pledgePath), route(POST("/"), pledge::create)
                 .andRoute(POST(pledgeReleasePath), pledge::createRelease))
@@ -68,7 +68,7 @@ public class AppConfig {
             .andRoute(PUT(paymentPath), payment::update)
             .andRoute(PUT(receptionPath), reception::update)
             .andRoute(PUT(revocationPath), revocation::update)
-            .andRoute(PUT(warrantPath), warrant::update)
+            .andRoute(PUT(guarantyPath), warrant::update)
             .andRoute(PUT(recoursePath), recourse::update)
             .andNest(PUT(pledgePath), route(PUT("/"), pledge::update).andRoute(PUT(pledgeReleasePath), pledge::updateRelease))
     );

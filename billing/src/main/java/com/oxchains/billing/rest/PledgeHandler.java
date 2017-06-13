@@ -2,7 +2,7 @@ package com.oxchains.billing.rest;
 
 import com.oxchains.billing.rest.common.ChaincodeUriBuilder;
 import com.oxchains.billing.rest.common.PledgeAction;
-import com.oxchains.billing.rest.common.PromptAction;
+import com.oxchains.billing.rest.common.PresentAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -57,7 +57,7 @@ public class PledgeHandler extends ChaincodeUriBuilder{
 
   /* POST /bill/pledge/release */
   public Mono<ServerResponse> createRelease(ServerRequest request) {
-    return request.bodyToMono(PromptAction.class)
+    return request.bodyToMono(PresentAction.class)
         .flatMap(pledgeReleaseAction -> client.post().uri(buildUri(args(BILL_RELEASE_PLEDGE, pledgeReleaseAction)))
             .accept(APPLICATION_JSON_UTF8).exchange()
             .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
@@ -68,7 +68,7 @@ public class PledgeHandler extends ChaincodeUriBuilder{
 
   /* PUT /bill/pledge/release */
   public Mono<ServerResponse> updateRelease(ServerRequest request) {
-    return request.bodyToMono(PromptAction.class)
+    return request.bodyToMono(PresentAction.class)
         .flatMap(pledgeReleaseAction -> client.post().uri(buildUri(args(BILL_RELEASE_PLEDGE, pledgeReleaseAction)))
             .accept(APPLICATION_JSON_UTF8).exchange()
             .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())

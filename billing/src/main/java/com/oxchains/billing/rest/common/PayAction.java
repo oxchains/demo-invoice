@@ -3,7 +3,7 @@ package com.oxchains.billing.rest.common;
 /**
  * @author aiet
  */
-public class PayAction extends PromptAction {
+public class PayAction extends PresentAction {
 
   private String debtor;
 

@@ -1,7 +1,7 @@
 package com.oxchains.billing.rest;
 
 import com.oxchains.billing.rest.common.ChaincodeUriBuilder;
-import com.oxchains.billing.rest.common.PromptAction;
+import com.oxchains.billing.rest.common.PresentAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -33,9 +33,9 @@ public class AcceptanceHandler extends ChaincodeUriBuilder {
 
   /* POST /bill/acceptance */
   public Mono<ServerResponse> create(ServerRequest request) {
-    return request.bodyToMono(PromptAction.class)
-        .flatMap(promptAction -> client.post()
-            .uri(buildUri(args(BILL_NEW, promptAction)))
+    return request.bodyToMono(PresentAction.class)
+        .flatMap(presentAction -> client.post()
+            .uri(buildUri(args(BILL_ISSUE, presentAction)))
             .accept(APPLICATION_JSON_UTF8).exchange()
             .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
             .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
@@ -45,9 +45,9 @@ public class AcceptanceHandler extends ChaincodeUriBuilder {
 
   /* PUT /bill/acceptance */
   public Mono<ServerResponse> update(ServerRequest request) {
-    return request.bodyToMono(PromptAction.class)
-        .flatMap(promptAction -> client.post()
-            .uri(buildUri(args(BILL_ACCEPT, promptAction)))
+    return request.bodyToMono(PresentAction.class)
+        .flatMap(presentAction -> client.post()
+            .uri(buildUri(args(BILL_ACCEPT, presentAction)))
             .accept(APPLICATION_JSON_UTF8).exchange()
             .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
             .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))

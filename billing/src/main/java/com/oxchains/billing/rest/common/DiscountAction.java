@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 /**
  * @author aiet
  */
-public class DiscountAction extends PromptAction {
+public class DiscountAction extends PresentAction {
 
   private String receiver;
   @JsonAlias("discount_type")

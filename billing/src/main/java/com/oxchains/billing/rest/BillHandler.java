@@ -11,7 +11,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 
-import static com.oxchains.billing.domain.BillActions.BILL_NEW;
+import static com.oxchains.billing.domain.BillActions.BILL_ISSUE;
 import static com.oxchains.billing.domain.BillActions.GET_BILL;
 import static com.oxchains.billing.util.ArgsUtil.args;
 import static com.oxchains.billing.rest.common.ClientResponse2ServerResponse.toServerResponse;
@@ -46,7 +46,7 @@ public class BillHandler extends ChaincodeUriBuilder {
   public Mono<ServerResponse> create(ServerRequest request) {
     return request.bodyToMono(Bill.class)
         .flatMap(bill -> client.post()
-            .uri(buildUri(args(BILL_NEW, bill)))
+            .uri(buildUri(args(BILL_ISSUE, bill)))
             .accept(APPLICATION_JSON_UTF8).exchange()
             .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
             .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
@@ -57,7 +57,7 @@ public class BillHandler extends ChaincodeUriBuilder {
   /* GET /bill/{id} */
   public Mono<ServerResponse> bill(ServerRequest request) {
     final String billId = request.pathVariable("id");
-    return client.post().uri(buildUri(args(GET_BILL, billId)))
+    return client.post().uri(buildUri(args(GET_BILL, "BillStruct"+billId)))
         .accept(APPLICATION_JSON_UTF8).exchange()
         .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
         .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))

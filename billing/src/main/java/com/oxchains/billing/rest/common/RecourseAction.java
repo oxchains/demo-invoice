@@ -3,7 +3,7 @@ package com.oxchains.billing.rest.common;
 /**
  * @author aiet
  */
-public class RecourseAction extends PromptAction {
+public class RecourseAction extends PresentAction {
 
   private String borrower;
 

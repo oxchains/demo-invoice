@@ -5,13 +5,13 @@ import com.oxchains.billing.domain.Argument;
 /**
  * @author aiet
  */
-public class PromptAction implements Argument{
+public class PresentAction implements Argument{
 
   protected String id;
   protected String manipulator;
 
   /**
-   * 1-承兑, 0-撤销
+   * 1-确认, 0-撤销
    */
   protected String action;
 

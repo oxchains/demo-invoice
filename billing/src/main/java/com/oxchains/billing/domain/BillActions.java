@@ -5,13 +5,13 @@ package com.oxchains.billing.domain;
  */
 public class BillActions {
 
-  public static final String BILL_NEW = "billregister";
+  public static final String BILL_ISSUE = "billregister";
   public static final String GET_BILL = "query";
 
   public static final String BILL_ACCEPT = "promptacceptance";
   public static final String GET_ACCEPTANCE = "queryacceptance";
-  public static final String BILL_WARRANT = "promptwarrant";
-  public static final String GET_WARRANT = "querywarrant";
+  public static final String BILL_GUARANTY = "promptwarrant";
+  public static final String GET_GUARANTY = "querywarrant";
   public static final String BILL_REVOKE = "promptrevoke";
   public static final String GET_REVOCATION = "queryrevoke";
   public static final String BILL_RECEIVE = "promptreceive";

@@ -14,12 +14,12 @@ public class Bill implements Argument {
   private String price;
 
   /**
-   * 开票人
+   * 开票人/出票人
    */
   private String drawer;
 
   /**
-   * 受票人/付款人
+   * 受票人/付款人/承兑人
    */
   private String drawee;
 

@@ -16,7 +16,7 @@ public class RouterTest {
 
   private static WebTestClient client;
 
-  private final String billPath = "/bill", acceptancePath = "/acceptance", discountPath = "/discount", endorsePath = "/endorsement", paymentPath = "/payment", pledgePath = "/pledge", pledgeReleasePath = "/release", revocationPath = "/revocation", warrantPath = "/warrant", receptionPath = "/reception", recoursePath = "/recourse";
+  private final String billPath = "/bill", acceptancePath = "/acceptance", discountPath = "/discount", endorsePath = "/endorsement", paymentPath = "/payment", pledgePath = "/pledge", pledgeReleasePath = "/release", revocationPath = "/revocation", guarantyPath = "/guaranty", receptionPath = "/reception", recoursePath = "/recourse";
 
   @Before
   public void setup() throws Exception {
@@ -36,10 +36,10 @@ public class RouterTest {
 
   @Test
   public void testAcceptance() {
-    PromptAction promptAction = new PromptAction();
+    PresentAction presentAction = new PresentAction();
     getEnabled(billPath + "/123" + acceptancePath);
-    postEnabled(billPath + acceptancePath, promptAction);
-    putEnabled(billPath + acceptancePath, promptAction);
+    postEnabled(billPath + acceptancePath, presentAction);
+    putEnabled(billPath + acceptancePath, presentAction);
   }
 
   @Test
@@ -52,18 +52,18 @@ public class RouterTest {
 
   @Test
   public void testReception() {
-    PromptAction promptAction = new PromptAction();
+    PresentAction presentAction = new PresentAction();
     getEnabled(billPath + "/123" + receptionPath);
-    postEnabled(billPath + receptionPath, promptAction);
-    putEnabled(billPath + receptionPath, promptAction);
+    postEnabled(billPath + receptionPath, presentAction);
+    putEnabled(billPath + receptionPath, presentAction);
   }
 
   @Test
   public void testRevocation() {
-    PromptAction promptAction = new PromptAction();
+    PresentAction presentAction = new PresentAction();
     getEnabled(billPath + "/123" + revocationPath);
-    postEnabled(billPath + revocationPath, promptAction);
-    putEnabled(billPath + revocationPath, promptAction);
+    postEnabled(billPath + revocationPath, presentAction);
+    putEnabled(billPath + revocationPath, presentAction);
   }
 
   @Test
@@ -83,11 +83,11 @@ public class RouterTest {
   }
 
   @Test
-  public void testWarrant() {
-    PromptAction promptAction = new PromptAction();
-    getEnabled(billPath + "/123" + warrantPath);
-    postEnabled(billPath + warrantPath, promptAction);
-    putEnabled(billPath + warrantPath, promptAction);
+  public void testGuaranty() {
+    PresentAction presentAction = new PresentAction();
+    getEnabled(billPath + "/123" + guarantyPath);
+    postEnabled(billPath + guarantyPath, presentAction);
+    putEnabled(billPath + guarantyPath, presentAction);
   }
 
   @Test
@@ -105,10 +105,10 @@ public class RouterTest {
     postEnabled(billPath + pledgePath, pledgeAction);
     putEnabled(billPath + pledgePath, pledgeAction);
 
-    PromptAction promptAction = new PromptAction();
+    PresentAction presentAction = new PresentAction();
     getEnabled(billPath + "/123" + pledgePath + pledgeReleasePath);
-    postEnabled(billPath + pledgePath + pledgeReleasePath, promptAction);
-    putEnabled(billPath + pledgePath + pledgeReleasePath, promptAction);
+    postEnabled(billPath + pledgePath + pledgeReleasePath, presentAction);
+    putEnabled(billPath + pledgePath + pledgeReleasePath, presentAction);
   }
 
   private void getEnabled(String path) {

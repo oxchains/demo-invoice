@@ -3,7 +3,7 @@ package com.oxchains.billing.rest.common;
 /**
  * @author aiet
  */
-public class EndorseAction extends PromptAction {
+public class EndorseAction extends PresentAction {
 
   private String endorser;
   private String endorsee;
