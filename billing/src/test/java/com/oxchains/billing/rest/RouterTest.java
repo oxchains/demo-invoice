@@ -57,8 +57,9 @@ public class RouterTest {
 
   @Test
   public void testReception() {
-    postEnabled(billPath + receptionPath);
-    putEnabled(billPath + receptionPath);
+    PromptAction promptAction = new PromptAction();
+    postEnabled(billPath + receptionPath, promptAction);
+    putEnabled(billPath + receptionPath, promptAction);
   }
 
   @Test
