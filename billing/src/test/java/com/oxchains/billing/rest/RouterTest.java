@@ -37,6 +37,7 @@ public class RouterTest {
   @Test
   public void testAcceptance() {
     PromptAction promptAction = new PromptAction();
+    getEnabled(billPath + "/123" + acceptancePath);
     postEnabled(billPath + acceptancePath, promptAction);
     putEnabled(billPath + acceptancePath, promptAction);
   }
@@ -44,6 +45,7 @@ public class RouterTest {
   @Test
   public void testDiscount() {
     DiscountAction discountAction = new DiscountAction();
+    getEnabled(billPath + "/123" + discountPath);
     postEnabled(billPath + discountPath, discountAction);
     putEnabled(billPath + discountPath, discountAction);
   }
@@ -51,6 +53,7 @@ public class RouterTest {
   @Test
   public void testReception() {
     PromptAction promptAction = new PromptAction();
+    getEnabled(billPath + "/123" + receptionPath);
     postEnabled(billPath + receptionPath, promptAction);
     putEnabled(billPath + receptionPath, promptAction);
   }
@@ -58,6 +61,7 @@ public class RouterTest {
   @Test
   public void testRevocation() {
     PromptAction promptAction = new PromptAction();
+    getEnabled(billPath + "/123" + revocationPath);
     postEnabled(billPath + revocationPath, promptAction);
     putEnabled(billPath + revocationPath, promptAction);
   }
@@ -65,6 +69,7 @@ public class RouterTest {
   @Test
   public void testEndorsement() {
     EndorseAction endorseAction = new EndorseAction();
+    getEnabled(billPath + "/123" + endorsePath);
     postEnabled(billPath + endorsePath, endorseAction);
     putEnabled(billPath + endorsePath, endorseAction);
   }
@@ -72,6 +77,7 @@ public class RouterTest {
   @Test
   public void testPayment() {
     PayAction payAction = new PayAction();
+    getEnabled(billPath + "/123" + paymentPath);
     postEnabled(billPath + paymentPath, payAction);
     putEnabled(billPath + paymentPath, payAction);
   }
@@ -79,6 +85,7 @@ public class RouterTest {
   @Test
   public void testWarrant() {
     PromptAction promptAction = new PromptAction();
+    getEnabled(billPath + "/123" + warrantPath);
     postEnabled(billPath + warrantPath, promptAction);
     putEnabled(billPath + warrantPath, promptAction);
   }
@@ -86,6 +93,7 @@ public class RouterTest {
   @Test
   public void testRecourse() {
     RecourseAction recourseAction = new RecourseAction();
+    getEnabled(billPath + "/123" + recoursePath);
     postEnabled(billPath + recoursePath, recourseAction);
     putEnabled(billPath + recoursePath, recourseAction);
   }
@@ -93,10 +101,12 @@ public class RouterTest {
   @Test
   public void testPledge() {
     PledgeAction pledgeAction = new PledgeAction();
+    getEnabled(billPath + "/123" + pledgePath);
     postEnabled(billPath + pledgePath, pledgeAction);
     putEnabled(billPath + pledgePath, pledgeAction);
 
     PromptAction promptAction = new PromptAction();
+    getEnabled(billPath + "/123" + pledgePath + pledgeReleasePath);
     postEnabled(billPath + pledgePath + pledgeReleasePath, promptAction);
     putEnabled(billPath + pledgePath + pledgeReleasePath, promptAction);
   }

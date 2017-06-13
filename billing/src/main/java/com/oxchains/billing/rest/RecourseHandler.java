@@ -12,6 +12,7 @@ import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 
 import static com.oxchains.billing.domain.BillActions.BILL_RECOURSE;
+import static com.oxchains.billing.domain.BillActions.GET_RECOURSE;
 import static com.oxchains.billing.util.ArgsUtil.args;
 import static com.oxchains.billing.rest.common.ClientResponse2ServerResponse.toServerResponse;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
@@ -52,5 +53,14 @@ public class RecourseHandler extends ChaincodeUriBuilder {
             .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
             .switchIfEmpty(noContent().build())
         ).switchIfEmpty(badRequest().build());
+  }
+
+  public Mono<ServerResponse> get(ServerRequest request) {
+    final String billId = request.pathVariable("id");
+    return client.post().uri(buildUri(args(GET_RECOURSE, billId)))
+        .accept(APPLICATION_JSON_UTF8).exchange()
+        .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
+        .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
+        .switchIfEmpty(noContent().build());
   }
 }
