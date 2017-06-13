@@ -2,6 +2,7 @@ package com.oxchains.billing.rest;
 
 import com.oxchains.billing.App;
 import com.oxchains.billing.domain.Bill;
+import com.oxchains.billing.rest.common.DiscountAction;
 import com.oxchains.billing.rest.common.PromptAction;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,8 +51,9 @@ public class RouterTest {
 
   @Test
   public void testDiscount() {
-    postEnabled(billPath + discountPath);
-    putEnabled(billPath + discountPath);
+    DiscountAction discountAction = new DiscountAction();
+    postEnabled(billPath + discountPath, discountAction);
+    putEnabled(billPath + discountPath, discountAction);
   }
 
   @Test
