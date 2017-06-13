@@ -12,7 +12,7 @@ import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 
 import static com.oxchains.billing.domain.BillActions.BILL_RECOURSE;
-import static com.oxchains.billing.rest.common.ArgsUtil.args;
+import static com.oxchains.billing.util.ArgsUtil.args;
 import static com.oxchains.billing.rest.common.ClientResponse2ServerResponse.toServerResponse;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 import static org.springframework.web.reactive.function.server.ServerResponse.badRequest;

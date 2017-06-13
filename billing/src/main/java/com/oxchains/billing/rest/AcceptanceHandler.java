@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono;
 
 import static com.oxchains.billing.domain.BillActions.BILL_ACCEPT;
 import static com.oxchains.billing.domain.BillActions.BILL_NEW;
-import static com.oxchains.billing.rest.common.ArgsUtil.args;
+import static com.oxchains.billing.util.ArgsUtil.args;
 import static com.oxchains.billing.rest.common.ClientResponse2ServerResponse.toServerResponse;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 import static org.springframework.web.reactive.function.server.ServerResponse.badRequest;

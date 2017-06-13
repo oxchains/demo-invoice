@@ -1,15 +1,10 @@
 package com.oxchains.billing.rest;
 
-import com.oxchains.billing.App;
 import com.oxchains.billing.domain.Bill;
 import com.oxchains.billing.rest.common.*;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.reactive.function.BodyInserters;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 import static org.springframework.web.reactive.function.BodyInserters.fromObject;
@@ -17,8 +12,6 @@ import static org.springframework.web.reactive.function.BodyInserters.fromObject
 /**
  * @author aiet
  */
-@SpringBootTest
-@ContextConfiguration(classes = App.class)
 public class RouterTest {
 
   private static WebTestClient client;
@@ -112,7 +105,7 @@ public class RouterTest {
     client.get().uri(path).exchange().expectStatus().is2xxSuccessful();
   }
 
-  private void postEnabled(String path){
+  private void postEnabled(String path) {
     client.post().uri(path).contentType(APPLICATION_JSON_UTF8).exchange().expectStatus().is2xxSuccessful();
   }
 
