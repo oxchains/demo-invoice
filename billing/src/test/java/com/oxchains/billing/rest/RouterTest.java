@@ -2,10 +2,7 @@ package com.oxchains.billing.rest;
 
 import com.oxchains.billing.App;
 import com.oxchains.billing.domain.Bill;
-import com.oxchains.billing.rest.common.DiscountAction;
-import com.oxchains.billing.rest.common.EndorseAction;
-import com.oxchains.billing.rest.common.PayAction;
-import com.oxchains.billing.rest.common.PromptAction;
+import com.oxchains.billing.rest.common.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -98,11 +95,13 @@ public class RouterTest {
 
   @Test
   public void testPledge() {
-    postEnabled(billPath + pledgePath);
-    putEnabled(billPath + pledgePath);
+    PledgeAction pledgeAction = new PledgeAction();
+    postEnabled(billPath + pledgePath, pledgeAction);
+    putEnabled(billPath + pledgePath, pledgeAction);
 
-    postEnabled(billPath + pledgePath + pledgeReleasePath);
-    putEnabled(billPath + pledgePath + pledgeReleasePath);
+    PromptAction promptAction = new PromptAction();
+    postEnabled(billPath + pledgePath + pledgeReleasePath, promptAction);
+    putEnabled(billPath + pledgePath + pledgeReleasePath, promptAction);
   }
 
   private void getEnabled(String path) {

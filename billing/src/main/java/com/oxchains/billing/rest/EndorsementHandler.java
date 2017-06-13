@@ -33,7 +33,7 @@ public class EndorsementHandler extends ChaincodeUriBuilder{
   /* POST /bill/endorsement */
   public Mono<ServerResponse> create(ServerRequest request) {
     return request.bodyToMono(EndorseAction.class)
-        .flatMap(discountAction -> client.post().uri(buildUri(args(BILL_ENDORSE, discountAction)))
+        .flatMap(endorseAction -> client.post().uri(buildUri(args(BILL_ENDORSE, endorseAction)))
             .accept(APPLICATION_JSON_UTF8).exchange()
             .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
             .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
@@ -44,7 +44,7 @@ public class EndorsementHandler extends ChaincodeUriBuilder{
   /* PUT /bill/endorsement */
   public Mono<ServerResponse> update(ServerRequest request) {
     return request.bodyToMono(EndorseAction.class)
-        .flatMap(discountAction -> client.post().uri(buildUri(args(BILL_ENDORSE, discountAction)))
+        .flatMap(endorseAction -> client.post().uri(buildUri(args(BILL_ENDORSE, endorseAction)))
             .accept(APPLICATION_JSON_UTF8).exchange()
             .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
             .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))

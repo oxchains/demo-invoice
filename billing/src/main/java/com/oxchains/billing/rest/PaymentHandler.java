@@ -23,6 +23,7 @@ import static org.springframework.web.reactive.function.server.ServerResponse.no
  */
 @Component
 public class PaymentHandler extends ChaincodeUriBuilder {
+
   private final WebClient client;
 
   public PaymentHandler(@Autowired WebClient client, @Autowired @Qualifier("fabric.uri") UriBuilder uriBuilder) {
@@ -34,7 +35,7 @@ public class PaymentHandler extends ChaincodeUriBuilder {
   /* POST /bill/payment */
   public Mono<ServerResponse> create(ServerRequest request) {
     return request.bodyToMono(PayAction.class)
-        .flatMap(discountAction -> client.post().uri(buildUri(args(BILL_PAY, discountAction)))
+        .flatMap(payAction -> client.post().uri(buildUri(args(BILL_PAY, payAction)))
             .accept(APPLICATION_JSON_UTF8).exchange()
             .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
             .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
@@ -45,7 +46,7 @@ public class PaymentHandler extends ChaincodeUriBuilder {
   /* PUT /bill/payment */
   public Mono<ServerResponse> update(ServerRequest request) {
     return request.bodyToMono(PayAction.class)
-        .flatMap(discountAction -> client.post().uri(buildUri(args(BILL_PAY, discountAction)))
+        .flatMap(payAction -> client.post().uri(buildUri(args(BILL_PAY, payAction)))
             .accept(APPLICATION_JSON_UTF8).exchange()
             .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
             .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
