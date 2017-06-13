@@ -90,8 +90,9 @@ public class RouterTest {
 
   @Test
   public void testRecourse() {
-    postEnabled(billPath + recoursePath);
-    putEnabled(billPath + recoursePath);
+    RecourseAction recourseAction = new RecourseAction();
+    postEnabled(billPath + recoursePath, recourseAction);
+    putEnabled(billPath + recoursePath, recourseAction);
   }
 
   @Test
