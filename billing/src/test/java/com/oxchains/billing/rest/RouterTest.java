@@ -3,6 +3,7 @@ package com.oxchains.billing.rest;
 import com.oxchains.billing.App;
 import com.oxchains.billing.domain.Bill;
 import com.oxchains.billing.rest.common.DiscountAction;
+import com.oxchains.billing.rest.common.EndorseAction;
 import com.oxchains.billing.rest.common.PromptAction;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,8 +71,9 @@ public class RouterTest {
 
   @Test
   public void testEndorsement() {
-    postEnabled(billPath + endorsePath);
-    putEnabled(billPath + endorsePath);
+    EndorseAction endorseAction = new EndorseAction();
+    postEnabled(billPath + endorsePath, endorseAction);
+    putEnabled(billPath + endorsePath, endorseAction);
   }
 
   @Test
