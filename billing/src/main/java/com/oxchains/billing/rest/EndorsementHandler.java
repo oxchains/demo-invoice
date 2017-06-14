@@ -57,8 +57,8 @@ public class EndorsementHandler extends ChaincodeUriBuilder {
   }
 
   public Mono<ServerResponse> get(ServerRequest request) {
-    final String billId = request.pathVariable("id");
-    return client.get().uri(buildUri(args(GET_ENDORSEMENT, billId)))
+    final String uid = request.pathVariable("uid");
+    return client.get().uri(buildUri(args(GET_ENDORSEMENT, uid)))
         .header(AUTHORIZATION, token)
         .accept(APPLICATION_JSON_UTF8).exchange()
         .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())

@@ -36,8 +36,8 @@ public class AppConfig {
 
 
     return route(POST(userPath), user::register).andRoute(GET(userPath + "/{uid}"), user::get)
-        .andRoute(DELETE(userPath + "/{uid}"), user::del).andNest(
-            GET(billPath), route(GET("/"), bill::bills).andNest(GET("/{id}"),
+        .andNest(
+            GET(billPath), route(GET("/"), bill::bills).andNest(GET("/{uid}"),
                 route(GET("/"), bill::bill)
                     .andRoute(GET(acceptancePath), acceptance::get)
                     .andRoute(GET(discountPath), discount::get)
@@ -74,7 +74,7 @@ public class AppConfig {
                 .andRoute(PUT(recoursePath), recourse::update)
                 .andNest(PUT(pledgePath), route(PUT("/"), pledge::update)
                     .andRoute(PUT(pledgeReleasePath), pledge::updateRelease))
-        );
+        ).andRoute(DELETE(billPath + "/{id}"), bill::del);
   }
 
 }

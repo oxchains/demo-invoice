@@ -1,6 +1,7 @@
 package com.oxchains.billing.rest;
 
 import com.oxchains.billing.rest.common.ChaincodeUriBuilder;
+import com.oxchains.billing.rest.common.GuaranteeAction;
 import com.oxchains.billing.rest.common.PresentAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -34,8 +35,8 @@ public class GuarantyHandler extends ChaincodeUriBuilder {
 
   /* POST /bill/guaranty */
   public Mono<ServerResponse> create(ServerRequest request) {
-    return request.bodyToMono(PresentAction.class)
-        .flatMap(warrantAction -> client.post().uri(buildUri(args(BILL_GUARANTY, warrantAction)))
+    return request.bodyToMono(GuaranteeAction.class)
+        .flatMap(guaranteeAction -> client.post().uri(buildUri(args(BILL_GUARANTY, guaranteeAction)))
             .header(AUTHORIZATION, token)
             .accept(APPLICATION_JSON_UTF8).exchange()
             .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
@@ -46,8 +47,8 @@ public class GuarantyHandler extends ChaincodeUriBuilder {
 
   /* PUT /bill/guaranty */
   public Mono<ServerResponse> update(ServerRequest request) {
-    return request.bodyToMono(PresentAction.class)
-        .flatMap(warrantAction -> client.post().uri(buildUri(args(BILL_GUARANTY, warrantAction)))
+    return request.bodyToMono(GuaranteeAction.class)
+        .flatMap(guaranteeAction -> client.post().uri(buildUri(args(BILL_GUARANTY, guaranteeAction)))
             .header(AUTHORIZATION, token)
             .accept(APPLICATION_JSON_UTF8).exchange()
             .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
@@ -57,8 +58,8 @@ public class GuarantyHandler extends ChaincodeUriBuilder {
   }
 
   public Mono<ServerResponse> get(ServerRequest request) {
-    final String billId = request.pathVariable("id");
-    return client.get().uri(buildUri(args(GET_GUARANTY, billId)))
+    final String uid = request.pathVariable("uid");
+    return client.get().uri(buildUri(args(GET_GUARANTY, uid)))
         .header(AUTHORIZATION, token)
         .accept(APPLICATION_JSON_UTF8).exchange()
         .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())

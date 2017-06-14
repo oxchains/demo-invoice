@@ -55,14 +55,4 @@ public class UserHandler extends ChaincodeUriBuilder{
         .switchIfEmpty(noContent().build());
   }
 
-  /* DELETE /user/{uid} */
-  public Mono<ServerResponse> del(ServerRequest request) {
-    final String uid = request.pathVariable("uid");
-    return client.post().uri(buildUri(args(DELETE, uid)))
-        .header(AUTHORIZATION, token).accept(APPLICATION_JSON_UTF8).exchange()
-        .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
-        .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
-        .switchIfEmpty(noContent().build());
-  }
-
 }

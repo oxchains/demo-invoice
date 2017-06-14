@@ -7,8 +7,17 @@ import com.oxchains.billing.domain.Argument;
  */
 public class PresentAction implements Argument{
 
+  protected Class clazz = PresentAction.class;
   protected String id;
   protected String manipulator;
+
+  public Class getClazz() {
+    return clazz;
+  }
+
+  public void setClazz(Class clazz) {
+    this.clazz = clazz;
+  }
 
   /**
    * 1-确认, 0-撤销
@@ -41,7 +50,8 @@ public class PresentAction implements Argument{
 
   @Override
   public String toArgs() {
-    return String.format("%s,%s,%s", getManipulator(), getId(), getAction());
+    if(action!=null) return String.format("%s,%s,%s", getManipulator(), getId(), getAction());
+    else return String.format("%s,%s", getManipulator(), getId());
   }
 
 }

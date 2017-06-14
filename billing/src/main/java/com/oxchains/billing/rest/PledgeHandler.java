@@ -92,8 +92,8 @@ public class PledgeHandler extends ChaincodeUriBuilder{
   }
 
   public Mono<ServerResponse> getRelease(ServerRequest request) {
-    final String billId = request.pathVariable("id");
-    return client.get().uri(buildUri(args(GET_PLEDGE_RELEASE, billId)))
+    final String uid = request.pathVariable("uid");
+    return client.get().uri(buildUri(args(GET_PLEDGE_RELEASE, uid)))
         .header(AUTHORIZATION, token)
         .accept(APPLICATION_JSON_UTF8).exchange()
         .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())

@@ -12,6 +12,7 @@ import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 
 import static com.oxchains.billing.domain.BillActions.BILL_ISSUE;
+import static com.oxchains.billing.domain.BillActions.DELETE;
 import static com.oxchains.billing.domain.BillActions.GET;
 import static com.oxchains.billing.rest.common.ClientResponse2ServerResponse.toServerResponse;
 import static com.oxchains.billing.util.ArgsUtil.args;
@@ -58,7 +59,7 @@ public class BillHandler extends ChaincodeUriBuilder {
 
   /* GET /bill/{id} */
   public Mono<ServerResponse> bill(ServerRequest request) {
-    final String billId = request.pathVariable("id");
+    final String billId = request.pathVariable("uid");
     return client.get().uri(buildUri(args(GET, "BillStruct" + billId)))
         .header(AUTHORIZATION, token)
         .accept(APPLICATION_JSON_UTF8).exchange()
@@ -69,6 +70,17 @@ public class BillHandler extends ChaincodeUriBuilder {
 
   public Mono<ServerResponse> update(ServerRequest request) {
     return Mono.error(new UnsupportedOperationException());
+  }
+
+
+  /* DELETE /bill/{id} */
+  public Mono<ServerResponse> del(ServerRequest request) {
+    final String id = request.pathVariable("id");
+    return client.post().uri(buildUri(args(DELETE, id)))
+        .header(AUTHORIZATION, token).accept(APPLICATION_JSON_UTF8).exchange()
+        .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
+        .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
+        .switchIfEmpty(noContent().build());
   }
 
 }
