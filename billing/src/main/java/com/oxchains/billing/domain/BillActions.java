@@ -5,8 +5,11 @@ package com.oxchains.billing.domain;
  */
 public class BillActions {
 
+  public static final String GET = "query";
+  public static final String DELETE = "delete";
+
   public static final String BILL_ISSUE = "billregister";
-  public static final String GET_BILL = "query";
+  public static final String REGISTER_USER = "register";
 
   public static final String BILL_ACCEPT = "promptacceptance";
   public static final String GET_ACCEPTANCE = "queryacceptance";

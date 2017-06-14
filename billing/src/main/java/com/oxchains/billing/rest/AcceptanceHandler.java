@@ -12,8 +12,9 @@ import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 
 import static com.oxchains.billing.domain.BillActions.*;
-import static com.oxchains.billing.util.ArgsUtil.args;
 import static com.oxchains.billing.rest.common.ClientResponse2ServerResponse.toServerResponse;
+import static com.oxchains.billing.util.ArgsUtil.args;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 import static org.springframework.web.reactive.function.server.ServerResponse.badRequest;
 import static org.springframework.web.reactive.function.server.ServerResponse.noContent;
@@ -24,11 +25,10 @@ import static org.springframework.web.reactive.function.server.ServerResponse.no
 @Component
 public class AcceptanceHandler extends ChaincodeUriBuilder {
 
-  private final WebClient client;
-
-  protected AcceptanceHandler(@Autowired WebClient client, @Autowired @Qualifier("fabric.uri") UriBuilder uriBuilder) {
-    super(uriBuilder.build().toString());
-    this.client = client;
+  protected AcceptanceHandler(@Autowired WebClient client,
+                              @Autowired @Qualifier("fabric.uri") UriBuilder uriBuilder,
+                              @Autowired @Qualifier("token") String token) {
+    super(client, token, uriBuilder.build().toString());
   }
 
   /* POST /bill/acceptance */
@@ -36,6 +36,7 @@ public class AcceptanceHandler extends ChaincodeUriBuilder {
     return request.bodyToMono(PresentAction.class)
         .flatMap(presentAction -> client.post()
             .uri(buildUri(args(BILL_ISSUE, presentAction)))
+            .header(AUTHORIZATION, token)
             .accept(APPLICATION_JSON_UTF8).exchange()
             .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
             .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
@@ -48,6 +49,7 @@ public class AcceptanceHandler extends ChaincodeUriBuilder {
     return request.bodyToMono(PresentAction.class)
         .flatMap(presentAction -> client.post()
             .uri(buildUri(args(BILL_ACCEPT, presentAction)))
+            .header(AUTHORIZATION, token)
             .accept(APPLICATION_JSON_UTF8).exchange()
             .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
             .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
@@ -57,7 +59,8 @@ public class AcceptanceHandler extends ChaincodeUriBuilder {
 
   public Mono<ServerResponse> get(ServerRequest request) {
     final String billId = request.pathVariable("id");
-    return client.post().uri(buildUri(args(GET_ACCEPTANCE, billId)))
+    return client.get().uri(buildUri(args(GET_ACCEPTANCE, billId)))
+        .header(AUTHORIZATION, token)
         .accept(APPLICATION_JSON_UTF8).exchange()
         .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
         .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))

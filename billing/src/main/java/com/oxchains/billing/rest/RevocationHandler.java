@@ -15,6 +15,7 @@ import static com.oxchains.billing.domain.BillActions.BILL_REVOKE;
 import static com.oxchains.billing.domain.BillActions.GET_REVOCATION;
 import static com.oxchains.billing.rest.common.ClientResponse2ServerResponse.toServerResponse;
 import static com.oxchains.billing.util.ArgsUtil.args;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 import static org.springframework.web.reactive.function.server.ServerResponse.badRequest;
 import static org.springframework.web.reactive.function.server.ServerResponse.noContent;
@@ -25,17 +26,17 @@ import static org.springframework.web.reactive.function.server.ServerResponse.no
 @Component
 public class RevocationHandler extends ChaincodeUriBuilder {
 
-  private final WebClient client;
-
-  public RevocationHandler(@Autowired WebClient client, @Autowired @Qualifier("fabric.uri") UriBuilder uriBuilder) {
-    super(uriBuilder.build().toString());
-    this.client = client;
+  public RevocationHandler(@Autowired WebClient client,
+                           @Autowired @Qualifier("fabric.uri") UriBuilder uriBuilder,
+                           @Autowired @Qualifier("token") String token) {
+    super(client, token, uriBuilder.build().toString());
   }
 
   /* POST /bill/revocation */
   public Mono<ServerResponse> create(ServerRequest request) {
     return request.bodyToMono(PresentAction.class)
         .flatMap(revokeAction -> client.post().uri(buildUri(args(BILL_REVOKE, revokeAction)))
+            .header(AUTHORIZATION, token)
             .accept(APPLICATION_JSON_UTF8).exchange()
             .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
             .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
@@ -47,6 +48,7 @@ public class RevocationHandler extends ChaincodeUriBuilder {
   public Mono<ServerResponse> update(ServerRequest request) {
     return request.bodyToMono(PresentAction.class)
         .flatMap(revokeAction -> client.post().uri(buildUri(args(BILL_REVOKE, revokeAction)))
+            .header(AUTHORIZATION, token)
             .accept(APPLICATION_JSON_UTF8).exchange()
             .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
             .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
@@ -56,7 +58,8 @@ public class RevocationHandler extends ChaincodeUriBuilder {
 
   public Mono<ServerResponse> get(ServerRequest request) {
     final String billId = request.pathVariable("id");
-    return client.post().uri(buildUri(args(GET_REVOCATION, billId)))
+    return client.get().uri(buildUri(args(GET_REVOCATION, billId)))
+        .header(AUTHORIZATION, token)
         .accept(APPLICATION_JSON_UTF8).exchange()
         .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
         .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))

@@ -15,6 +15,7 @@ import reactor.core.publisher.Mono;
 import static com.oxchains.billing.domain.BillActions.*;
 import static com.oxchains.billing.util.ArgsUtil.args;
 import static com.oxchains.billing.rest.common.ClientResponse2ServerResponse.toServerResponse;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 import static org.springframework.web.reactive.function.server.ServerResponse.badRequest;
 import static org.springframework.web.reactive.function.server.ServerResponse.noContent;
@@ -25,11 +26,10 @@ import static org.springframework.web.reactive.function.server.ServerResponse.no
 @Component
 public class PledgeHandler extends ChaincodeUriBuilder{
 
-  private final WebClient client;
-
-  public PledgeHandler(@Autowired WebClient client, @Autowired @Qualifier("fabric.uri") UriBuilder uriBuilder) {
-    super(uriBuilder.build().toString());
-    this.client = client;
+  public PledgeHandler(@Autowired WebClient client,
+                       @Autowired @Qualifier("fabric.uri") UriBuilder uriBuilder,
+                       @Autowired @Qualifier("token") String token) {
+    super(client, token, uriBuilder.build().toString());
   }
 
 
@@ -37,6 +37,7 @@ public class PledgeHandler extends ChaincodeUriBuilder{
   public Mono<ServerResponse> create(ServerRequest request) {
     return request.bodyToMono(PledgeAction.class)
         .flatMap(pledgeAction -> client.post().uri(buildUri(args(BILL_PLEDGE, pledgeAction)))
+            .header(AUTHORIZATION, token)
             .accept(APPLICATION_JSON_UTF8).exchange()
             .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
             .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
@@ -48,6 +49,7 @@ public class PledgeHandler extends ChaincodeUriBuilder{
   public Mono<ServerResponse> update(ServerRequest request) {
     return request.bodyToMono(PledgeAction.class)
         .flatMap(pledgeAction -> client.post().uri(buildUri(args(BILL_PLEDGE, pledgeAction)))
+            .header(AUTHORIZATION, token)
             .accept(APPLICATION_JSON_UTF8).exchange()
             .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
             .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
@@ -59,6 +61,7 @@ public class PledgeHandler extends ChaincodeUriBuilder{
   public Mono<ServerResponse> createRelease(ServerRequest request) {
     return request.bodyToMono(PresentAction.class)
         .flatMap(pledgeReleaseAction -> client.post().uri(buildUri(args(BILL_RELEASE_PLEDGE, pledgeReleaseAction)))
+            .header(AUTHORIZATION, token)
             .accept(APPLICATION_JSON_UTF8).exchange()
             .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
             .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
@@ -70,6 +73,7 @@ public class PledgeHandler extends ChaincodeUriBuilder{
   public Mono<ServerResponse> updateRelease(ServerRequest request) {
     return request.bodyToMono(PresentAction.class)
         .flatMap(pledgeReleaseAction -> client.post().uri(buildUri(args(BILL_RELEASE_PLEDGE, pledgeReleaseAction)))
+            .header(AUTHORIZATION, token)
             .accept(APPLICATION_JSON_UTF8).exchange()
             .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
             .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
@@ -79,7 +83,8 @@ public class PledgeHandler extends ChaincodeUriBuilder{
 
   public Mono<ServerResponse> get(ServerRequest request) {
     final String billId = request.pathVariable("id");
-    return client.post().uri(buildUri(args(GET_PLEDGE, billId)))
+    return client.get().uri(buildUri(args(GET_PLEDGE, billId)))
+        .header(AUTHORIZATION, token)
         .accept(APPLICATION_JSON_UTF8).exchange()
         .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
         .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
@@ -88,10 +93,12 @@ public class PledgeHandler extends ChaincodeUriBuilder{
 
   public Mono<ServerResponse> getRelease(ServerRequest request) {
     final String billId = request.pathVariable("id");
-    return client.post().uri(buildUri(args(GET_PLEDGE_RELEASE, billId)))
+    return client.get().uri(buildUri(args(GET_PLEDGE_RELEASE, billId)))
+        .header(AUTHORIZATION, token)
         .accept(APPLICATION_JSON_UTF8).exchange()
         .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
         .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
         .switchIfEmpty(noContent().build());
   }
+
 }

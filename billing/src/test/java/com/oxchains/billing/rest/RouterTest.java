@@ -14,16 +14,34 @@ import static org.springframework.web.reactive.function.BodyInserters.fromObject
  */
 public class RouterTest {
 
-  private static WebTestClient client;
+  private WebTestClient client;
 
-  private final String billPath = "/bill", acceptancePath = "/acceptance", discountPath = "/discount", endorsePath = "/endorsement", paymentPath = "/payment", pledgePath = "/pledge", pledgeReleasePath = "/release", revocationPath = "/revocation", guarantyPath = "/guaranty", receptionPath = "/reception", recoursePath = "/recourse";
+  private final String userPath = "/user",
+      billPath = "/bill",
+      acceptancePath = "/acceptance",
+      discountPath = "/discount",
+      endorsePath = "/endorsement",
+      paymentPath = "/payment",
+      pledgePath = "/pledge",
+      pledgeReleasePath = "/release",
+      revocationPath = "/revocation",
+      guarantyPath = "/guaranty",
+      receptionPath = "/reception",
+      recoursePath = "/recourse";
 
   @Before
   public void setup() throws Exception {
     client = WebTestClient
         .bindToServer()
-        .baseUrl("http://localhost:8080")
+        .baseUrl("http://localhost:17173")
         .build();
+  }
+
+  @Test
+  public void testUser(){
+    RegisterAction registerAction = new RegisterAction();
+    postEnabled(userPath, registerAction);
+    getEnabled(userPath + "/a");
   }
 
   @Test

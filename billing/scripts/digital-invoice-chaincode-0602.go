@@ -2256,6 +2256,16 @@ func (t *SimpleChaincode) delete(stub shim.ChaincodeStubInterface, args []string
 
         A := args[0]
 
+	var key string
+
+	if strings.HasPrefix(A, "BillStruct") {
+		key = A
+	}else {
+		key = "Use0" + A
+	}
+
+	fmt.Printf("deleting key %s\n", key)
+
         // Delete the key from the state in ledger
         err := stub.DelState(A)
         if err != nil {
@@ -2277,7 +2287,18 @@ func (t *SimpleChaincode) query(stub shim.ChaincodeStubInterface, args []string)
         A = args[0]
 
         // Get the state from the ledger
-        Avalbytes, err := stub.GetState(A)
+
+	var key string
+
+	if strings.HasPrefix(A, "BillStruct") {
+		key = A
+	}else {
+		key = "Use0" + A
+	}
+
+	fmt.Printf("querying with key %s\n", key)
+
+        Avalbytes, err := stub.GetState(key)
         if err != nil {
                 jsonResp := "{\"Error\":\"Failed to get state for " + A + "\"}"
                 return shim.Error(jsonResp)
