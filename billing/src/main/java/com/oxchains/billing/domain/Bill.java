@@ -2,8 +2,10 @@ package com.oxchains.billing.domain;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.datetime.DateFormatter;
 
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * @author aiet
@@ -113,8 +115,8 @@ public class Bill implements Argument {
   @Override
   public String toArgs() {
     return String.format("%s,%s,%s,%s,%s,%s",
-        getDrawer(), getDue(), getPrice(),
-        getDrawee(), getPayee(), getTransferable()
+        getDrawer(), new DateFormatter("yyyy-MM-dd hh:mm:ss").print(getDue(), Locale.ENGLISH),
+        getPrice(), getDrawee(), getPayee(), getTransferable()
     );
   }
 }

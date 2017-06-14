@@ -6,6 +6,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import java.util.Date;
+
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 import static org.springframework.web.reactive.function.BodyInserters.fromObject;
 
@@ -49,6 +51,7 @@ public class RouterTest {
     getEnabled(billPath);
     getEnabled(billPath + "/123");
     Bill bill = new Bill();
+    bill.setDue(new Date());
     postEnabled(billPath, bill);
   }
 
