@@ -45,10 +45,19 @@ public class BillPayStory {
     steps.guaranteeBill(user, as);
   }
 
-
   @Then("the bill is guaranteed by $user")
   public void thenTheBillIsGuaranteed(String user){
     steps.billGuaranteed(user);
+  }
+
+  @When("I have the bill received by $user as $as")
+  public void whenIHaveTheBillReceivedByUser(String user, String as){
+    steps.receiveBill(user, as);
+  }
+
+  @Then("the bill is received by $user")
+  public void thenTheBillIsReceivedBy(String user){
+    steps.billReceived(user);
   }
 
 }

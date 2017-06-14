@@ -21,3 +21,7 @@ When I present guaranty of the bill to judge as a
 Then the bill is in the guaranty list of judge
 When I have the bill guaranteed by judge as a
 Then the bill is guaranteed by judge
+When I present reception of the bill to b as a
+Then the bill is in the reception list of a
+When I have the bill received by b as b
+Then the bill is received by b

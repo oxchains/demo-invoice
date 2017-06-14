@@ -1,5 +1,6 @@
 package com.oxchains.billing.rest.common;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.oxchains.billing.domain.Argument;
 
 /**
@@ -7,6 +8,7 @@ import com.oxchains.billing.domain.Argument;
  */
 public class PresentAction implements Argument{
 
+  @JsonIgnore
   protected Class clazz = PresentAction.class;
   protected String id;
   protected String manipulator;

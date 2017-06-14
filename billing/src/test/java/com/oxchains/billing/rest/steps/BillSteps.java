@@ -155,4 +155,14 @@ public class BillSteps {
     listEmpty();
   }
 
+  public void receiveBill(String user, String as) {
+    confirmPresent("reception", user, as);
+  }
+
+  public void billReceived(String user) {
+    success();
+    billList("reception", user);
+    listEmpty();
+  }
+
 }
