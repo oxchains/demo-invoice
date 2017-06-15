@@ -126,7 +126,11 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 		if function != "checkdue" {
 			return shim.Error(string(dueNum) + " bill(s) were due. Try again later.")
 		} else {
-			return shim.Success(dueBills)
+			dueBillBytes, err := json.Marshal(dueBills)
+			if err != nil {
+				return shim.Success(nil)
+			}
+			return shim.Success([]byte(dueBillBytes))
 		}
 	}
 	fmt.Printf("%d bill(s) due\n", dueNum)
@@ -695,7 +699,7 @@ func (t *SimpleChaincode) checkDue(stub shim.ChaincodeStubInterface) (int, []str
 		if err != nil {
 			return -1, nil, err
 		} else if billAsBytes == nil {
-			return -1, errors.New("Bill does not exist")
+			return -1, nil, errors.New("Bill does not exist")
 		}
 		bill := bill{}
 		err = json.Unmarshal(billAsBytes, &bill) //unmarshal it aka JSON.parse()

@@ -68,7 +68,7 @@ public class BillSteps {
   }
 
   public void billNotEmpty(String action, String user) {
-    byte[] respBytes = client.get().uri("/bill/" + user + "/"+action).exchange().expectStatus().is2xxSuccessful()
+    byte[] respBytes = client.get().uri("/bill/" + user + "/" + action).exchange().expectStatus().is2xxSuccessful()
         .expectBody().jsonPath("$.data.payload").isNotEmpty().returnResult().getResponseBody();
     respString = new String(respBytes);
     listNotEmpty();
@@ -138,6 +138,11 @@ public class BillSteps {
         pledgeAction.setClazz(PledgeAction.class);
         pledgeAction.setPledgee(user);
         return pledgeAction;
+      case "discount":
+        DiscountAction discountAction = new DiscountAction();
+        discountAction.setClazz(DiscountAction.class);
+        discountAction.setReceiver(user);
+        return discountAction;
       default:
         break;
     }
@@ -149,10 +154,13 @@ public class BillSteps {
     presentAction.setId(billId);
     presentAction.setManipulator(by);
 
-    if("payment".equals(action)){
-      TimeUnit.SECONDS.sleep(50);
+    if ("payment".equals(action)) {
+      TimeUnit.SECONDS.sleep(60);
+    } else if ("discount".equals(action)) {
+      ((DiscountAction) presentAction).setInterest("0.2%");
+      ((DiscountAction) presentAction).setType("0");
+      ((DiscountAction) presentAction).setMoney("15");
     }
-
     client.post().uri("/bill/" + action).contentType(APPLICATION_JSON_UTF8)
         .body(Mono.just(presentAction), presentAction.getClazz())
         .exchange().expectStatus().is2xxSuccessful()
@@ -190,7 +198,7 @@ public class BillSteps {
     rejectPresent("payment", user, user);
   }
 
-  private void rejectPresent(String action, String user, String as){
+  private void rejectPresent(String action, String user, String as) {
     PresentAction presentAction = actionClass(action, user);
     presentAction.setId(billId);
     presentAction.setManipulator(as);
@@ -205,12 +213,12 @@ public class BillSteps {
     presentAction.setId(billId);
     presentAction.setManipulator(as);
     presentAction.setAction("1");
-    switch (action){
+    switch (action) {
       case "endorsement":
-        ((EndorseAction)presentAction).setEndorsor(user);
+        ((EndorseAction) presentAction).setEndorsor(user);
         break;
       case "pledge":
-        ((PledgeAction)presentAction).setPledger(user);
+        ((PledgeAction) presentAction).setPledger(user);
         break;
       default:
         break;
@@ -229,6 +237,10 @@ public class BillSteps {
 
   public void releasePledge(String user, String as) {
     confirmPresent("pledge/release", user, as);
+  }
+
+  public void discountBill(String user, String as) {
+    confirmPresent("discount", user, as);
   }
 
 }

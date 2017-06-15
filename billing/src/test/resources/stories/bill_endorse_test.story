@@ -9,9 +9,8 @@ So that others can recourse the bill
 
 GivenStories: stories/bill_issue_test.story
 
-Scenario: a user accept the bill, have it guaranteed, received and pay the bill
+Scenario: a user can endorse the bill to others
 Given bill in endorsement list of b
-
 When I register user endorsee with balance 1000
 Then user endorsee is in the system
 When I present endorsement of the bill to endorsee as b

@@ -37,10 +37,10 @@ public class Bill implements Argument {
   private String payee;
 
   @JsonAlias("draw_date")
-  @JsonFormat(pattern = "yyy-MM-dd hh:mm:ss")
+  @JsonFormat(pattern = "yyy-MM-dd HH:mm:ss")
   private Date date;
 
-  @JsonFormat(pattern = "yyy-MM-dd hh:mm:ss")
+  @JsonFormat(pattern = "yyy-MM-dd HH:mm:ss")
   private Date due;
 
   private String transferable;
@@ -121,7 +121,7 @@ public class Bill implements Argument {
   @Override
   public String toArgs() {
     return String.format("%s,%s,%s,%s,%s,%s",
-        getDrawer(), ofPattern("yyyy-MM-dd hh:mm:ss")
+        getDrawer(), ofPattern("yyyy-MM-dd HH:mm:ss")
             .format(LocalDateTime.from(getDue().toInstant().atOffset(ZoneOffset.ofHours(0)))),
         getPrice(), getDrawee(), getPayee(), getTransferable()
     );

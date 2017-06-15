@@ -9,7 +9,7 @@ So that others can recourse the bill
 
 GivenStories: stories/bill_issue_test.story
 
-Scenario: a user accept the bill, have it guaranteed, received and pay the bill
+Scenario: a user can pledge the bill and confirm release of the pledge
 Given bill in endorsement list of b
 When I register user pledgee with balance 1000
 Then user pledgee is in the system

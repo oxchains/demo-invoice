@@ -45,4 +45,21 @@ public class DiscountAction extends PresentAction {
   public void setMoney(String money) {
     this.money = money;
   }
+
+  @Override
+  public String toArgs() {
+    if (interest != null) {
+      if (action != null) {
+        return String.format("%s,%s,%s,%s,%s,%s,%s",
+            getManipulator(), getId(), getReceiver(), getType(),
+            getInterest(), getMoney(), getAction());
+      }
+      return String.format("%s,%s,%s,%s,%s,%s",
+          getManipulator(), getId(), getReceiver(), getType(),
+          getInterest(), getMoney());
+    } else {
+      return String.format("%s,%s,%s,%s", getManipulator(), getId(), getReceiver(), getAction());
+    }
+  }
+
 }

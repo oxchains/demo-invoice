@@ -44,6 +44,11 @@ public class BillPayStory {
     steps.billInListOf(action, user);
   }
 
+  @When("I have the bill discounted for $user as $as")
+  public void whenIHaveTheBillDiscountForUser(String user, String as){
+    steps.discountBill(user, as);
+  }
+
   @Then("the new bill is accepted by $user")
   public void thenTheNewBillIsAccepted(String user) {
     steps.billAccepted(user);

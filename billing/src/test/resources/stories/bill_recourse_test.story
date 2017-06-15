@@ -9,7 +9,7 @@ So that the warrant can pay the bill
 
 GivenStories: stories/bill_issue_test.story
 
-Scenario: a user accept the bill, have it guaranteed, received and pay the bill
+Scenario: a user can recourse the bill to warrantor if payer does not pay
 Given bill in endorsement list of b
 When I present payment of the bill to a as b
 Then the bill is in the payment list of a
