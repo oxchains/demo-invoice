@@ -25,3 +25,7 @@ When I present reception of the bill to b as a
 Then the bill is in the reception list of a
 When I have the bill received by b as b
 Then the bill is received by b
+When I present payment of the bill to a as b
+Then the bill is in the payment list of a
+When I have the bill paid by a as a
+Then the bill is paid by a

@@ -14,4 +14,5 @@ public class PayAction extends PresentAction {
   public void setDebtor(String debtor) {
     this.debtor = debtor;
   }
+
 }

@@ -49,7 +49,7 @@
 
 chaincode | arguments | REST | description
 ----------|-----------|------|------------
-checkdue | | N/A | check if a bill is due 
+checkdue | | N/A | check if there is a due bill
 delete | {key} | N/A | delete an entity
 query | {key} | N/A | get shim state information
 register | {entity, account balance} | N/A | register a new user

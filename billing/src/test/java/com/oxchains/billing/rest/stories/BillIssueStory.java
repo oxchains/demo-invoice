@@ -23,7 +23,7 @@ public class BillIssueStory {
     billSteps.listEmpty();
   }
 
-  @When("I issue bill of price $price to $payee as $payer, due $due")
+  @When("I issue bill of price $price to $payee as $payer, due $due seconds")
   public void whenIIssueBill(String price, String payee, String payer, String due) {
     billSteps.issueBill(payer, payee, price, due);
   }

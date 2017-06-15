@@ -4,8 +4,14 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.datetime.DateFormatter;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
+
+import static java.time.format.DateTimeFormatter.ofPattern;
 
 /**
  * @author aiet
@@ -115,8 +121,10 @@ public class Bill implements Argument {
   @Override
   public String toArgs() {
     return String.format("%s,%s,%s,%s,%s,%s",
-        getDrawer(), new DateFormatter("yyyy-MM-dd hh:mm:ss").print(getDue(), Locale.ENGLISH),
+        getDrawer(), ofPattern("yyyy-MM-dd hh:mm:ss")
+            .format(LocalDateTime.from(getDue().toInstant().atOffset(ZoneOffset.ofHours(0)))),
         getPrice(), getDrawee(), getPayee(), getTransferable()
     );
   }
+
 }

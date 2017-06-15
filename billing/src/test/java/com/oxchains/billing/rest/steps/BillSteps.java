@@ -10,10 +10,12 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
@@ -25,7 +27,7 @@ import static org.springframework.web.reactive.function.BodyInserters.fromObject
 public class BillSteps {
 
 
-  private WebTestClient client = WebTestClient.bindToServer().baseUrl("http://localhost:17173").build();
+  private WebTestClient client = WebTestClient.bindToServer().baseUrl("http://localhost:17173").responseTimeout(Duration.ofSeconds(30)).build();
   private ResponseSpec response;
   private String respString;
   private String billId;
@@ -49,7 +51,8 @@ public class BillSteps {
     bill.setDrawer(payer);
     bill.setPayee(payee);
     bill.setPrice(price);
-    bill.setDue(Date.from(LocalDateTime.now().plusDays(4).atZone(ZoneId.systemDefault()).toInstant()));
+    bill.setDue(Date.from(LocalDateTime.now().plusSeconds(Integer.valueOf(due))
+        .toInstant(ZoneOffset.ofHours(8))));
     bill.setTransferable("");
     response = client.post().uri("/bill").contentType(APPLICATION_JSON_UTF8).body(fromObject(bill)).exchange();
   }
@@ -81,11 +84,11 @@ public class BillSteps {
     billId = billId.replaceFirst("BillStruct", "");
   }
 
-  public void acceptBill(String user) {
+  public void acceptBill(String user) throws Exception {
     confirmPresent("acceptance", user, user);
   }
 
-  private void confirmPresent(String action, String user, String as){
+  private void confirmPresent(String action, String user, String as) throws Exception {
     PresentAction presentAction = actionClass(action, user);
     presentAction.setId(billId);
     presentAction.setManipulator(as);
@@ -100,18 +103,18 @@ public class BillSteps {
     listEmpty();
   }
 
-  public void success(){
+  public void success() {
     byte[] respBytes = response.expectStatus().is2xxSuccessful()
         .expectBody().jsonPath("$.data.success").isEqualTo(1)
         .returnResult().getResponseBody();
     respString = new String(respBytes);
   }
 
-  public void guaranteeBill(String user, String as) {
+  public void guaranteeBill(String user, String as) throws Exception {
     confirmPresent("guaranty", user, as);
   }
 
-  private void billList(String action, String user){
+  private void billList(String action, String user) {
     byte[] respBytes = client.get().uri("/bill/" + user + "/" + action).exchange().expectStatus().is2xxSuccessful()
         .expectBody().jsonPath("$.status").isEqualTo(1)
         .returnResult().getResponseBody();
@@ -123,26 +126,29 @@ public class BillSteps {
     listNotEmpty();
   }
 
-  private PresentAction actionClass(String actionName, String by){
-    switch (actionName){
+  private PresentAction actionClass(String actionName, String user) throws Exception {
+    switch (actionName) {
       case "guaranty":
-        GuaranteeAction action = new GuaranteeAction();
-        action.setClazz(GuaranteeAction.class);
-        action.setGuarantor(by);
-        return action;
+        GuaranteeAction guaranteeAction = new GuaranteeAction();
+        guaranteeAction.setClazz(GuaranteeAction.class);
+        guaranteeAction.setGuarantor(user);
+        return guaranteeAction;
+      case "payment":
+        TimeUnit.SECONDS.sleep(50);
+        break;
       default:
         break;
     }
     return new PresentAction();
   }
 
-  public void present(String user, String action, String by) {
+  public void present(String user, String action, String by) throws Exception {
 
     PresentAction presentAction = actionClass(action, user);
     presentAction.setId(billId);
     presentAction.setManipulator(by);
 
-    client.post().uri("/bill/"  + action).contentType(APPLICATION_JSON_UTF8)
+    client.post().uri("/bill/" + action).contentType(APPLICATION_JSON_UTF8)
         .body(Mono.just(presentAction), presentAction.getClazz())
         .exchange().expectStatus().is2xxSuccessful()
         .expectBody().jsonPath("$.data.success").isEqualTo(1);
@@ -155,7 +161,7 @@ public class BillSteps {
     listEmpty();
   }
 
-  public void receiveBill(String user, String as) {
+  public void receiveBill(String user, String as) throws Exception {
     confirmPresent("reception", user, as);
   }
 
@@ -163,6 +169,16 @@ public class BillSteps {
     success();
     billList("reception", user);
     listEmpty();
+  }
+
+  public void payBill(String user, String as) throws Exception {
+    confirmPresent("payment", user, as);
+  }
+
+  public void billPaid(String user) {
+    success();
+    billList("payment", user);
+    //TODO check bill paid state
   }
 
 }

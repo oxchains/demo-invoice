@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import java.time.Duration;
 import java.util.Date;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
@@ -36,11 +37,12 @@ public class RouterTest {
     client = WebTestClient
         .bindToServer()
         .baseUrl("http://localhost:17173")
+        .responseTimeout(Duration.ofSeconds(10))
         .build();
   }
 
   @Test
-  public void testUser(){
+  public void testUser() {
     RegisterAction registerAction = new RegisterAction();
     postEnabled(userPath, registerAction);
     getEnabled(userPath + "/a");
@@ -98,9 +100,9 @@ public class RouterTest {
   @Test
   public void testPayment() {
     PayAction payAction = new PayAction();
-    getEnabled(billPath + "/123" + paymentPath);
+//    getEnabled(billPath + "/123" + paymentPath);
     postEnabled(billPath + paymentPath, payAction);
-    putEnabled(billPath + paymentPath, payAction);
+//    putEnabled(billPath + paymentPath, payAction);
   }
 
   @Test

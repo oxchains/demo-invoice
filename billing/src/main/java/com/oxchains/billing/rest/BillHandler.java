@@ -75,7 +75,8 @@ public class BillHandler extends ChaincodeUriBuilder {
 
   /* DELETE /bill/{id} */
   public Mono<ServerResponse> del(ServerRequest request) {
-    final String id = request.pathVariable("id");
+    String id = request.pathVariable("id");
+    if(!id.startsWith("BillStruct")) id = "BillStruct"+id;
     return client.post().uri(buildUri(args(DELETE, id)))
         .header(AUTHORIZATION, token).accept(APPLICATION_JSON_UTF8).exchange()
         .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())

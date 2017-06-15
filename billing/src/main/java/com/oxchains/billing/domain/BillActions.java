@@ -7,6 +7,7 @@ public class BillActions {
 
   public static final String GET = "query";
   public static final String DELETE = "delete";
+  public static final String CHECK_DUE = "checkdue";
 
   public static final String BILL_ISSUE = "billregister";
   public static final String REGISTER_USER = "register";

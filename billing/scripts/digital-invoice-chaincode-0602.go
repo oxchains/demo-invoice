@@ -1,26 +1,4 @@
-/*
-Copyright IBM Corp. 2016 All Rights Reserved.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-                 http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
-
 package main
-
-//WARNING - this chaincode's ID is hard-coded in chaincode_example04 to illustrate one way of
-//calling chaincode from a chaincode. If this example is modified, chaincode_example04.go has
-//to be modified as well with the new ID of chaincode_example02.
-//chaincode_example05 show's how chaincode ID can be passed in as a parameter instead of
-//hard-coding.
 
 import (
 	"bytes"
@@ -34,7 +12,6 @@ import (
 	pb "github.com/hyperledger/fabric/protos/peer"
 )
 
-// SimpleChaincode example simple Chaincode implementation
 type SimpleChaincode struct {
 }
 
@@ -135,22 +112,29 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
 }
 
 func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
+
+	function, args := stub.GetFunctionAndParameters()
+
+	dueNum, dueBills, err := t.checkDue(stub)
+
 	// Check if any bill is due. If there is, "checkdue" must be invoked, and any other invoke will fail.
-	dueNum, err := t.checkDue(stub)
 	if err != nil {
 		return shim.Error("Error in checking due: " + err.Error())
 	}
-	function, args := stub.GetFunctionAndParameters()
+
 	if dueNum > 0 {
 		if function != "checkdue" {
 			return shim.Error(string(dueNum) + " bill(s) were due. Try again later.")
 		} else {
-			return shim.Success([]byte(strconv.Itoa(dueNum)))
+			return shim.Success(dueBills)
 		}
 	}
+	fmt.Printf("%d bill(s) due\n", dueNum)
+
 	if function == "checkdue" {
-		return shim.Success([]byte("0"))
+		return shim.Success([]byte(strconv.Itoa(dueNum)))
 	}
+
         if function == "delete" {
                 // Deletes an entity from its state
                 return t.delete(stub, args)
@@ -303,7 +287,7 @@ func (t *SimpleChaincode) getbillstatewarrant(stub shim.ChaincodeStubInterface, 
 // -1 : The bill has warrantor, but this user is not included.
 // non-negative : This user is warrantor[return value] of the bill.
         var WarrantorCount int
-		var RecordedList []string
+	var RecordedList []string
 
 	WarrantorCount = bill.WarrantorCount
 		
@@ -693,51 +677,54 @@ func getKeysForQueryString(stub shim.ChaincodeStubInterface, queryString string)
 	return buffer, nil
 }
 
-func (t *SimpleChaincode) checkDue(stub shim.ChaincodeStubInterface) (int, error) {
+func (t *SimpleChaincode) checkDue(stub shim.ChaincodeStubInterface) (int, []string, error) {
         var err error
 
         dueTime := time.Now().Format("2006-01-02 15:04:05")
-		
+
 	queryString := fmt.Sprintf("{\"selector\":{\"docType\":\"bill\",\"phase\":\"1\",\"dueDate\":{\"$lt\":\"%s\"}}}", dueTime)
 
 	queryResults, err := getKeysForQueryString(stub, queryString)
 	if err != nil {
-		return -1, err
+		return -1, nil, err
 	}
 
 	l := len(queryResults)
 	for i := 0; i < l; i++ {
 		billAsBytes, err := stub.GetState(queryResults[i])
 		if err != nil {
-			return -1, err
+			return -1, nil, err
 		} else if billAsBytes == nil {
 			return -1, errors.New("Bill does not exist")
 		}
 		bill := bill{}
 		err = json.Unmarshal(billAsBytes, &bill) //unmarshal it aka JSON.parse()
 		if err != nil {
-			return -1, err
+			return -1, nil, err
 		}
 		bill.Phase = "2"
 		bill.FinishState = "0"
 		if bill.BillState == "4" || bill.BillState == "5" {
 			bill, err = t.givewarrant(stub, bill)
 			if err != nil {
-				return -1, err
+				return -1, nil, err
 			}
 			bill.OwnerName = bill.InvokeTarget
 		}
 		billJSONasBytes, err := json.Marshal(bill)
 		if err != nil {
-			return -1, err
+			return -1, nil, err
 		}
+
+		fmt.Printf("updating bill %s as :%s\n", queryResults[i], bill)
+
 		err = stub.PutState(queryResults[i], []byte(billJSONasBytes))
 		if err != nil {
-			return -1, err
+			return -1, nil, err
 		}
 
 	}
-        return l, nil
+        return l, queryResults, nil
 }
 
 func (t *SimpleChaincode) queryacceptance(stub shim.ChaincodeStubInterface, args []string) pb.Response {
