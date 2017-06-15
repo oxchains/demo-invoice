@@ -68,8 +68,8 @@ public class BillSteps {
     assertFalse("list should not be empty", empty);
   }
 
-  public void billNotEmpty(String user) {
-    byte[] respBytes = client.get().uri("/bill/" + user + "/acceptance").exchange().expectStatus().is2xxSuccessful()
+  public void billNotEmpty(String action, String user) {
+    byte[] respBytes = client.get().uri("/bill/" + user + "/"+action).exchange().expectStatus().is2xxSuccessful()
         .expectBody().jsonPath("$.data.payload").isNotEmpty().returnResult().getResponseBody();
     respString = new String(respBytes);
     listNotEmpty();
@@ -84,11 +84,11 @@ public class BillSteps {
     billId = billId.replaceFirst("BillStruct", "");
   }
 
-  public void acceptBill(String user) throws Exception {
+  public void acceptBill(String user) {
     confirmPresent("acceptance", user, user);
   }
 
-  private void confirmPresent(String action, String user, String as) throws Exception {
+  private void confirmPresent(String action, String user, String as) {
     PresentAction presentAction = actionClass(action, user);
     presentAction.setId(billId);
     presentAction.setManipulator(as);
@@ -110,7 +110,7 @@ public class BillSteps {
     respString = new String(respBytes);
   }
 
-  public void guaranteeBill(String user, String as) throws Exception {
+  public void guaranteeBill(String user, String as) {
     confirmPresent("guaranty", user, as);
   }
 
@@ -126,16 +126,13 @@ public class BillSteps {
     listNotEmpty();
   }
 
-  private PresentAction actionClass(String actionName, String user) throws Exception {
+  private PresentAction actionClass(String actionName, String user) {
     switch (actionName) {
       case "guaranty":
         GuaranteeAction guaranteeAction = new GuaranteeAction();
         guaranteeAction.setClazz(GuaranteeAction.class);
         guaranteeAction.setGuarantor(user);
         return guaranteeAction;
-      case "payment":
-        TimeUnit.SECONDS.sleep(50);
-        break;
       default:
         break;
     }
@@ -147,6 +144,10 @@ public class BillSteps {
     PresentAction presentAction = actionClass(action, user);
     presentAction.setId(billId);
     presentAction.setManipulator(by);
+
+    if("payment".equals(action)){
+      TimeUnit.SECONDS.sleep(50);
+    }
 
     client.post().uri("/bill/" + action).contentType(APPLICATION_JSON_UTF8)
         .body(Mono.just(presentAction), presentAction.getClazz())
@@ -161,7 +162,7 @@ public class BillSteps {
     listEmpty();
   }
 
-  public void receiveBill(String user, String as) throws Exception {
+  public void receiveBill(String user, String as) {
     confirmPresent("reception", user, as);
   }
 
@@ -171,7 +172,7 @@ public class BillSteps {
     listEmpty();
   }
 
-  public void payBill(String user, String as) throws Exception {
+  public void payBill(String user, String as) {
     confirmPresent("payment", user, as);
   }
 

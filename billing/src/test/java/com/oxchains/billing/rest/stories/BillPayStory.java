@@ -14,13 +14,13 @@ public class BillPayStory {
   @Steps
   BillSteps steps;
 
-  @Given("bill in acceptance list of $user")
-  public void givenBillInAcceptanceList(String user) {
-    steps.billNotEmpty(user);
+  @Given("bill in $action list of $user")
+  public void givenBillInAcceptanceList(String action, String user) {
+    steps.billNotEmpty(action, user);
   }
 
   @When("I accept it as $user")
-  public void whenIAcceptIt(String user) throws Exception {
+  public void whenIAcceptIt(String user) {
     steps.acceptBill(user);
   }
 
@@ -40,7 +40,7 @@ public class BillPayStory {
   }
 
   @When("I have the bill guaranteed by $user as $as")
-  public void whenIHaveTheBillGuaranteedByUser(String user, String as) throws Exception {
+  public void whenIHaveTheBillGuaranteedByUser(String user, String as) {
     steps.guaranteeBill(user, as);
   }
 
@@ -50,7 +50,7 @@ public class BillPayStory {
   }
 
   @When("I have the bill received by $user as $as")
-  public void whenIHaveTheBillReceivedByUser(String user, String as) throws Exception {
+  public void whenIHaveTheBillReceivedByUser(String user, String as) {
     steps.receiveBill(user, as);
   }
 
@@ -60,7 +60,7 @@ public class BillPayStory {
   }
 
   @When("I have the bill paid by $user as $user")
-  public void whenIHaveTheBillPaidByUser(String user, String as) throws Exception{
+  public void whenIHaveTheBillPaidByUser(String user, String as) {
     steps.payBill(user, as);
   }
 
