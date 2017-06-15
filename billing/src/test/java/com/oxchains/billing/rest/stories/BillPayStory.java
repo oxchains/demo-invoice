@@ -74,4 +74,8 @@ public class BillPayStory {
     steps.billPaid(user);
   }
 
+  @When("I have the bill endorsed by $user as $as")
+  public void whenIHaveTheBillEndorsedByUser(String user, String as){
+    steps.billEndorsed(user, as);
+  }
 }

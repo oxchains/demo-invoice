@@ -2,6 +2,7 @@ package com.oxchains.billing.rest.steps;
 
 import com.jayway.jsonpath.JsonPath;
 import com.oxchains.billing.domain.Bill;
+import com.oxchains.billing.rest.common.EndorseAction;
 import com.oxchains.billing.rest.common.GuaranteeAction;
 import com.oxchains.billing.rest.common.PresentAction;
 import com.oxchains.billing.rest.common.RecourseAction;
@@ -130,6 +131,11 @@ public class BillSteps {
         recourseAction.setClazz(RecourseAction.class);
         recourseAction.setDebtor(user);
         return recourseAction;
+      case "endorsement":
+        EndorseAction endorseAction = new EndorseAction();
+        endorseAction.setClazz(EndorseAction.class);
+        endorseAction.setEndorsee(user);
+        return endorseAction;
       default:
         break;
     }
@@ -197,8 +203,15 @@ public class BillSteps {
     presentAction.setId(billId);
     presentAction.setManipulator(as);
     presentAction.setAction("1");
+    if("endorsement".equals(action)){
+      ((EndorseAction)presentAction).setEndorsor(user);
+    }
     response = client.put().uri("/bill/" + action).contentType(APPLICATION_JSON_UTF8)
         .body(Mono.just(presentAction), presentAction.getClazz()).exchange();
+  }
+
+  public void billEndorsed(String user, String as) {
+    confirmPresent("endorsement", user, as);
   }
 
 }

@@ -20,7 +20,7 @@ public class BillActions {
   public static final String GET_REVOCATION = "queryrevoke";
   public static final String BILL_RECEIVE = "promptreceive";
   public static final String GET_RECEPTION = "queryreceive";
-  public static final String BILL_ENDORSE = "promptendorsemen";
+  public static final String BILL_ENDORSE = "promptendorsement";
   public static final String GET_ENDORSEMENT = "queryendorsement";
   public static final String BILL_PLEDGE = "promptpledge";
   public static final String GET_PLEDGE = "querypledge";

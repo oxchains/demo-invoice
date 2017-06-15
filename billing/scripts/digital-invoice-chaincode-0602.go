@@ -2272,7 +2272,7 @@ func (t *SimpleChaincode) query(stub shim.ChaincodeStubInterface, args []string)
 	if strings.HasPrefix(A, "BillStruct") {
 		key = A
 	}else {
-		key = "Use0" + A
+		key = "Use2" + A
 	}
 
 	fmt.Printf("querying with key %s\n", key)
