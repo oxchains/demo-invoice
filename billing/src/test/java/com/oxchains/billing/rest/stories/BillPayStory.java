@@ -29,6 +29,16 @@ public class BillPayStory {
     steps.present(user, action, by);
   }
 
+  @When("I have the bill pledged for $user as $as")
+  public void whenIHaveTheBillPledgedForUser(String user, String as){
+    steps.pledgeBill(user, as);
+  }
+
+  @When("I have the bill pledge released by $user as $as")
+  public void whenIHaveTheBillPledgeReleasedForUser(String user, String as){
+    steps.releasePledge(user, as);
+  }
+
   @Then("the bill is in the $action list of $user")
   public void thenTheBillIsInTheListOf(String action, String user) {
     steps.billInListOf(action, user);

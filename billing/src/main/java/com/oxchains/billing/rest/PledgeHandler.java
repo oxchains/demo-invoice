@@ -82,7 +82,7 @@ public class PledgeHandler extends ChaincodeUriBuilder{
   }
 
   public Mono<ServerResponse> get(ServerRequest request) {
-    final String billId = request.pathVariable("id");
+    final String billId = request.pathVariable("uid");
     return client.get().uri(buildUri(args(GET_PLEDGE, billId)))
         .header(AUTHORIZATION, token)
         .accept(APPLICATION_JSON_UTF8).exchange()

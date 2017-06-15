@@ -2,10 +2,7 @@ package com.oxchains.billing.rest.steps;
 
 import com.jayway.jsonpath.JsonPath;
 import com.oxchains.billing.domain.Bill;
-import com.oxchains.billing.rest.common.EndorseAction;
-import com.oxchains.billing.rest.common.GuaranteeAction;
-import com.oxchains.billing.rest.common.PresentAction;
-import com.oxchains.billing.rest.common.RecourseAction;
+import com.oxchains.billing.rest.common.*;
 import net.minidev.json.JSONArray;
 import org.springframework.core.ResolvableType;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -136,6 +133,11 @@ public class BillSteps {
         endorseAction.setClazz(EndorseAction.class);
         endorseAction.setEndorsee(user);
         return endorseAction;
+      case "pledge":
+        PledgeAction pledgeAction = new PledgeAction();
+        pledgeAction.setClazz(PledgeAction.class);
+        pledgeAction.setPledgee(user);
+        return pledgeAction;
       default:
         break;
     }
@@ -203,8 +205,15 @@ public class BillSteps {
     presentAction.setId(billId);
     presentAction.setManipulator(as);
     presentAction.setAction("1");
-    if("endorsement".equals(action)){
-      ((EndorseAction)presentAction).setEndorsor(user);
+    switch (action){
+      case "endorsement":
+        ((EndorseAction)presentAction).setEndorsor(user);
+        break;
+      case "pledge":
+        ((PledgeAction)presentAction).setPledger(user);
+        break;
+      default:
+        break;
     }
     response = client.put().uri("/bill/" + action).contentType(APPLICATION_JSON_UTF8)
         .body(Mono.just(presentAction), presentAction.getClazz()).exchange();
@@ -212,6 +221,14 @@ public class BillSteps {
 
   public void billEndorsed(String user, String as) {
     confirmPresent("endorsement", user, as);
+  }
+
+  public void pledgeBill(String user, String as) {
+    confirmPresent("pledge", user, as);
+  }
+
+  public void releasePledge(String user, String as) {
+    confirmPresent("pledge/release", user, as);
   }
 
 }
