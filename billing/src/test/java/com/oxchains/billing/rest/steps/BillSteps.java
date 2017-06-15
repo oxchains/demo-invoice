@@ -4,6 +4,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.oxchains.billing.domain.Bill;
 import com.oxchains.billing.rest.common.GuaranteeAction;
 import com.oxchains.billing.rest.common.PresentAction;
+import com.oxchains.billing.rest.common.RecourseAction;
 import net.minidev.json.JSONArray;
 import org.springframework.core.ResolvableType;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -88,15 +89,6 @@ public class BillSteps {
     confirmPresent("acceptance", user, user);
   }
 
-  private void confirmPresent(String action, String user, String as) {
-    PresentAction presentAction = actionClass(action, user);
-    presentAction.setId(billId);
-    presentAction.setManipulator(as);
-    presentAction.setAction("1");
-    response = client.put().uri("/bill/" + action).contentType(APPLICATION_JSON_UTF8)
-        .body(Mono.just(presentAction), presentAction.getClazz()).exchange();
-  }
-
   public void billAccepted(String user) {
     success();
     billList("acceptance", user);
@@ -133,6 +125,11 @@ public class BillSteps {
         guaranteeAction.setClazz(GuaranteeAction.class);
         guaranteeAction.setGuarantor(user);
         return guaranteeAction;
+      case "recourse":
+        RecourseAction recourseAction = new RecourseAction();
+        recourseAction.setClazz(RecourseAction.class);
+        recourseAction.setDebtor(user);
+        return recourseAction;
       default:
         break;
     }
@@ -140,7 +137,6 @@ public class BillSteps {
   }
 
   public void present(String user, String action, String by) throws Exception {
-
     PresentAction presentAction = actionClass(action, user);
     presentAction.setId(billId);
     presentAction.setManipulator(by);
@@ -180,6 +176,29 @@ public class BillSteps {
     success();
     billList("payment", user);
     //TODO check bill paid state
+  }
+
+  public void rejectBillPayment(String user) {
+    rejectPresent("payment", user, user);
+  }
+
+  private void rejectPresent(String action, String user, String as){
+    PresentAction presentAction = actionClass(action, user);
+    presentAction.setId(billId);
+    presentAction.setManipulator(as);
+    presentAction.setAction("-1");
+    response = client.put().uri("/bill/" + action).contentType(APPLICATION_JSON_UTF8)
+        .body(Mono.just(presentAction), presentAction.getClazz()).exchange();
+  }
+
+
+  private void confirmPresent(String action, String user, String as) {
+    PresentAction presentAction = actionClass(action, user);
+    presentAction.setId(billId);
+    presentAction.setManipulator(as);
+    presentAction.setAction("1");
+    response = client.put().uri("/bill/" + action).contentType(APPLICATION_JSON_UTF8)
+        .body(Mono.just(presentAction), presentAction.getClazz()).exchange();
   }
 
 }

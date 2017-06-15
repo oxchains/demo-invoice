@@ -26,9 +26,9 @@ public class UserRegisterStory {
     userSteps.hasUser(user1, user2);
   }
 
-  @When("I register user $user")
-  public void whenIRegister(String user) {
-    userSteps.register(user);
+  @When("I register user $user with balance $balance")
+  public void whenIRegister(String user, String balance) {
+    userSteps.register(user, balance);
   }
 
   @When("I register a new user")

@@ -99,10 +99,10 @@ public class RouterTest {
 
   @Test
   public void testPayment() {
-    PayAction payAction = new PayAction();
-//    getEnabled(billPath + "/123" + paymentPath);
+    PresentAction payAction = new PresentAction();
+    getEnabled(billPath + "/123" + paymentPath);
     postEnabled(billPath + paymentPath, payAction);
-//    putEnabled(billPath + paymentPath, payAction);
+    putEnabled(billPath + paymentPath, payAction);
   }
 
   @Test

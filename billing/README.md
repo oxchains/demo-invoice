@@ -73,6 +73,5 @@ promptdiscount | {entity, bill number, bank, action:0,1, type, insterest, amount
 querydiscount | {entity} | N/A | query discount information
 promptpayment | {entity, bill number, action:-1,0,1} | POST/PUT `/bill/payment` | prompt for payment
 querypayment | {entity} | N/A | query payment status
-promptrecourse | {entity, bill number, borrower, action: 0} | POST/PUT `/bill/recourse` | prompt for recourse
+promptrecourse | {entity, bill number, guarantor, action: 0} | POST/PUT `/bill/recourse` | prompt for recourse
 queryrecourse | {entity} | N/A | query for recourse information
-

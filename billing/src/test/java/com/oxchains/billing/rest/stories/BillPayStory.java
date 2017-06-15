@@ -54,6 +54,11 @@ public class BillPayStory {
     steps.receiveBill(user, as);
   }
 
+  @When("I have the bill revoked as $user")
+  public void whenIHaveTheBillRevokedByUser(String user){
+    steps.rejectBillPayment(user);
+  }
+
   @Then("the bill is received by $user")
   public void thenTheBillIsReceivedBy(String user) {
     steps.billReceived(user);

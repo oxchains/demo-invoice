@@ -24,14 +24,14 @@ public class UserSteps {
   }
 
   public void register(){
-    register(newUser);
+    register(newUser, RandomStringUtils.random(3, false, true));
   }
 
-  public void register(String user) {
+  public void register(String user, String balance) {
     newUser = user;
     RegisterAction registerAction = new RegisterAction();
     registerAction.setUser(user);
-    registerAction.setAsset(RandomStringUtils.random(3, false, true));
+    registerAction.setAsset(balance);
     responseSpec = client.post().uri("/user").contentType(APPLICATION_JSON_UTF8)
         .body(Mono.just(registerAction), RegisterAction.class).exchange();
   }

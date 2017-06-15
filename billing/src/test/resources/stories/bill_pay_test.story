@@ -1,11 +1,11 @@
-user can issue a bill and finally pay the pill
+the bill can be paid by the payer
 
 Meta:
 
 Narrative:
-As a user
-I want to issue a bill, accept it, have it guaranteed, received and paid
-So that I can make use of the bill
+As a payee
+I want to present the bill to payer
+So that the payer can pay the bill
 
 GivenStories: stories/bill_issue_test.story
 
