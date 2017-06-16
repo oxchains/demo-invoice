@@ -1,6 +1,8 @@
 package com.oxchains.billing.rest;
 
 import com.oxchains.billing.rest.common.ChaincodeUriBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -28,19 +30,9 @@ public class DueHandler extends ChaincodeUriBuilder {
     super(client, token, uriBuilder.build().toString());
   }
 
-
   /* GET /bill/due */
   public Mono<ServerResponse> get(ServerRequest request) {
     return client.get().uri(buildUri(CHECK_DUE)).header(AUTHORIZATION, token)
-        .accept(APPLICATION_JSON_UTF8).exchange()
-        .filter(dueResponse -> dueResponse.statusCode().is2xxSuccessful())
-        .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
-        .switchIfEmpty(noContent().build());
-  }
-
-  /* PUT /bill/due */
-  public Mono<ServerResponse> update(ServerRequest request) {
-    return client.post().uri(buildUri(CHECK_DUE)).header(AUTHORIZATION, token)
         .accept(APPLICATION_JSON_UTF8).exchange()
         .filter(dueResponse -> dueResponse.statusCode().is2xxSuccessful())
         .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))

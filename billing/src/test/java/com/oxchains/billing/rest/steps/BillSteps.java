@@ -243,4 +243,25 @@ public class BillSteps {
     confirmPresent("discount", user, as);
   }
 
+  public void checkDue() {
+    response = client.get().uri("/bill/due").exchange();
+  }
+
+  public void noBillsDue() {
+    response.expectStatus().is2xxSuccessful()
+        .expectBody().jsonPath("$.data.payload")
+        .isEqualTo("0");
+  }
+
+  public void waitForDue(String seconds) throws Exception{
+    TimeUnit.SECONDS.sleep(Integer.valueOf(seconds));
+  }
+
+  public void billsDue() {
+    respString = new String(response.expectStatus().is2xxSuccessful()
+        .expectBody().jsonPath("$.data.payload")
+        .isNotEmpty().returnResult().getResponseBody());
+    listNotEmpty();
+  }
+
 }

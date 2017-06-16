@@ -71,6 +71,7 @@ public class PaymentHandler extends ChaincodeUriBuilder {
   }
 
   public Mono<ServerResponse> get(ServerRequest request) {
+    checkDue().block();
     final String uid = request.pathVariable("uid");
     return client.get().uri(buildUri(args(GET_PAYMENT, uid)))
         .header(AUTHORIZATION, token)

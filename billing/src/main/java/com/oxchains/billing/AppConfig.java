@@ -71,7 +71,6 @@ public class AppConfig {
                     .andRoute(POST(pledgeReleasePath), pledge::createRelease))
         ).andNest(
             PUT(billPath), route(PUT("/"), request -> status(NOT_IMPLEMENTED).build())
-                .andRoute(PUT(duePath), due::update)
                 .andRoute(PUT(acceptancePath), acceptance::update)
                 .andRoute(PUT(discountPath), discount::update)
                 .andRoute(PUT(endorsePath), endorsement::update)

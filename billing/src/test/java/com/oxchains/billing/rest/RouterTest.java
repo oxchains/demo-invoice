@@ -61,7 +61,6 @@ public class RouterTest {
   @Test
   public void testDue(){
     getEnabled(billPath + duePath);
-    putEnabled(billPath + duePath);
   }
 
   @Test
