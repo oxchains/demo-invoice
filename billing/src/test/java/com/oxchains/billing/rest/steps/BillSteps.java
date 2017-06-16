@@ -31,8 +31,8 @@ public class BillSteps {
   private String respString;
   private String billId;
 
-  public void listAcceptance() {
-    respString = new String(client.get().uri("/bill/a/acceptance").exchange().returnResult(ResolvableType.forClass(String.class)).getResponseBodyContent());
+  public void list(String action, String user) {
+    respString = new String(client.get().uri(String.format("/bill/%s/%s", user, action)).exchange().returnResult(ResolvableType.forClass(String.class)).getResponseBodyContent());
   }
 
   public void listEmpty() {
@@ -161,10 +161,12 @@ public class BillSteps {
       ((DiscountAction) presentAction).setType("0");
       ((DiscountAction) presentAction).setMoney("15");
     }
-    client.post().uri("/bill/" + action).contentType(APPLICATION_JSON_UTF8)
+    ResponseSpec responseSpec = client.post().uri("/bill/" + action).contentType(APPLICATION_JSON_UTF8)
         .body(Mono.just(presentAction), presentAction.getClazz())
-        .exchange().expectStatus().is2xxSuccessful()
-        .expectBody().jsonPath("$.data.success").isEqualTo(1);
+        .exchange().expectStatus().is2xxSuccessful();
+    if (!"revocation".equals(action)) {
+      responseSpec.expectBody().jsonPath("$.data.success").isEqualTo(1);
+    }
   }
 
 
@@ -253,7 +255,7 @@ public class BillSteps {
         .isEqualTo("0");
   }
 
-  public void waitForDue(String seconds) throws Exception{
+  public void waitForDue(String seconds) throws Exception {
     TimeUnit.SECONDS.sleep(Integer.valueOf(seconds));
   }
 

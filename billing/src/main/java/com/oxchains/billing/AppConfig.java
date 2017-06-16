@@ -76,7 +76,6 @@ public class AppConfig {
                 .andRoute(PUT(endorsePath), endorsement::update)
                 .andRoute(PUT(paymentPath), payment::update)
                 .andRoute(PUT(receptionPath), reception::update)
-                .andRoute(PUT(revocationPath), revocation::update)
                 .andRoute(PUT(guarantyPath), warrant::update)
                 .andRoute(PUT(recoursePath), recourse::update)
                 .andNest(PUT(pledgePath), route(PUT("/"), pledge::update)

@@ -92,7 +92,6 @@ public class RouterTest {
     PresentAction presentAction = new PresentAction();
     getEnabled(billPath + "/123" + revocationPath);
     postEnabled(billPath + revocationPath, presentAction);
-    putEnabled(billPath + revocationPath, presentAction);
   }
 
   @Test

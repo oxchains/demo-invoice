@@ -9,11 +9,11 @@ So that I can make use of the bill
 
 Scenario: a user can issue a bill
 Given system initialized with user a and b
-When I list acceptance
+When I list acceptance of a
 Then no bill in the list
-When I issue bill of price 10 to b as a, due 70 seconds
+When I issue bill of price 10 to b as a, due 600 seconds
 Then bill registered
-When I list acceptance
+When I list acceptance of a
 Then the new bill is in the list
 
 Scenario: a user can receive a bill

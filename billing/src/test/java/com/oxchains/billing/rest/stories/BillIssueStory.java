@@ -13,9 +13,9 @@ public class BillIssueStory {
   @Steps
   BillSteps billSteps;
 
-  @When("I list acceptance")
-  public void whenIListAcceptance() {
-    billSteps.listAcceptance();
+  @When("I list $action of $user")
+  public void whenIListBill(String action, String user) {
+    billSteps.list(action, user);
   }
 
   @Then("no bill in the list")
