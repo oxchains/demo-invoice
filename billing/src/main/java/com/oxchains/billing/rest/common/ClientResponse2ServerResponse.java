@@ -1,5 +1,6 @@
 package com.oxchains.billing.rest.common;
 
+import com.oxchains.billing.util.ResponseUtil;
 import org.springframework.core.ResolvableType;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,8 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import static com.oxchains.billing.util.ResponseUtil.payloadToBill;
+import static org.springframework.web.reactive.function.BodyExtractors.toMono;
 import static org.springframework.web.reactive.function.BodyInserters.empty;
 import static org.springframework.web.reactive.function.BodyInserters.fromPublisher;
 
@@ -35,19 +38,24 @@ public class ClientResponse2ServerResponse implements ServerResponse {
 
   private Map<String, Object> hints = new HashMap<>(0);
 
-  private ClientResponse2ServerResponse(ClientResponse clientResponse) {
+  private ClientResponse2ServerResponse(ClientResponse clientResponse, boolean transformPayload) {
     this.statusCode = clientResponse.statusCode();
     this.httpHeaders = clientResponse.headers().asHttpHeaders();
-    this.body = clientResponse.body(BodyExtractors.toMono(ResolvableType.forClass(String.class)));
+    Mono<String> response = clientResponse.body(toMono(ResolvableType.forClass(String.class)));
+    this.body = response.map(resp -> transformPayload? payloadToBill(resp) : resp);
   }
 
   private ClientResponse2ServerResponse(ClientResponse clientResponse, Map<String, Object> hints) {
-    this(clientResponse);
+    this(clientResponse, false);
     this.hints = hints;
   }
 
   public static ServerResponse toServerResponse(ClientResponse clientResponse) {
-    return new ClientResponse2ServerResponse(clientResponse);
+    return new ClientResponse2ServerResponse(clientResponse, false);
+  }
+
+  public static ServerResponse toPayloadTransformedServerResponse(ClientResponse clientResponse) {
+    return new ClientResponse2ServerResponse(clientResponse, true);
   }
 
   @Override

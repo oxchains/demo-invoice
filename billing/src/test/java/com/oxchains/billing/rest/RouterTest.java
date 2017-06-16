@@ -51,7 +51,6 @@ public class RouterTest {
 
   @Test
   public void testBill() {
-    getEnabled(billPath);
     getEnabled(billPath + "/123");
     Bill bill = new Bill();
     bill.setDue(new Date());
@@ -59,7 +58,7 @@ public class RouterTest {
   }
 
   @Test
-  public void testDue(){
+  public void testDue() {
     getEnabled(billPath + duePath);
   }
 

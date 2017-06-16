@@ -13,8 +13,9 @@ import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 
 import static com.oxchains.billing.domain.BillActions.*;
-import static com.oxchains.billing.util.ArgsUtil.args;
+import static com.oxchains.billing.rest.common.ClientResponse2ServerResponse.toPayloadTransformedServerResponse;
 import static com.oxchains.billing.rest.common.ClientResponse2ServerResponse.toServerResponse;
+import static com.oxchains.billing.util.ArgsUtil.args;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 import static org.springframework.web.reactive.function.server.ServerResponse.badRequest;
@@ -24,7 +25,7 @@ import static org.springframework.web.reactive.function.server.ServerResponse.no
  * @author aiet
  */
 @Component
-public class PledgeHandler extends ChaincodeUriBuilder{
+public class PledgeHandler extends ChaincodeUriBuilder {
 
   public PledgeHandler(@Autowired WebClient client,
                        @Autowired @Qualifier("fabric.uri") UriBuilder uriBuilder,
@@ -87,7 +88,7 @@ public class PledgeHandler extends ChaincodeUriBuilder{
         .header(AUTHORIZATION, token)
         .accept(APPLICATION_JSON_UTF8).exchange()
         .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
-        .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
+        .flatMap(clientResponse -> Mono.just(toPayloadTransformedServerResponse(clientResponse)))
         .switchIfEmpty(noContent().build());
   }
 
@@ -97,7 +98,7 @@ public class PledgeHandler extends ChaincodeUriBuilder{
         .header(AUTHORIZATION, token)
         .accept(APPLICATION_JSON_UTF8).exchange()
         .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
-        .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
+        .flatMap(clientResponse -> Mono.just(toPayloadTransformedServerResponse(clientResponse)))
         .switchIfEmpty(noContent().build());
   }
 

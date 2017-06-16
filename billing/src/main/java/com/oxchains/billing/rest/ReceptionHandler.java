@@ -13,8 +13,9 @@ import reactor.core.publisher.Mono;
 
 import static com.oxchains.billing.domain.BillActions.BILL_RECEIVE;
 import static com.oxchains.billing.domain.BillActions.GET_RECEPTION;
-import static com.oxchains.billing.util.ArgsUtil.args;
+import static com.oxchains.billing.rest.common.ClientResponse2ServerResponse.toPayloadTransformedServerResponse;
 import static com.oxchains.billing.rest.common.ClientResponse2ServerResponse.toServerResponse;
+import static com.oxchains.billing.util.ArgsUtil.args;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 import static org.springframework.web.reactive.function.server.ServerResponse.badRequest;
@@ -62,7 +63,7 @@ public class ReceptionHandler extends ChaincodeUriBuilder {
         .header(AUTHORIZATION, token)
         .accept(APPLICATION_JSON_UTF8).exchange()
         .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
-        .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
+        .flatMap(clientResponse -> Mono.just(toPayloadTransformedServerResponse(clientResponse)))
         .switchIfEmpty(noContent().build());
   }
 }

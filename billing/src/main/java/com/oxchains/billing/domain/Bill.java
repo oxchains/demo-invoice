@@ -2,6 +2,7 @@ package com.oxchains.billing.domain;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.format.datetime.DateFormatter;
 
 import java.text.SimpleDateFormat;
@@ -11,11 +12,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static java.time.format.DateTimeFormatter.ofPattern;
 
 /**
  * @author aiet
  */
+@JsonInclude(NON_NULL)
 public class Bill implements Argument {
 
   private String id;

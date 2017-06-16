@@ -11,9 +11,8 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 
-import static com.oxchains.billing.domain.BillActions.BILL_ISSUE;
-import static com.oxchains.billing.domain.BillActions.DELETE;
-import static com.oxchains.billing.domain.BillActions.GET;
+import static com.oxchains.billing.domain.BillActions.*;
+import static com.oxchains.billing.rest.common.ClientResponse2ServerResponse.toPayloadTransformedServerResponse;
 import static com.oxchains.billing.rest.common.ClientResponse2ServerResponse.toServerResponse;
 import static com.oxchains.billing.util.ArgsUtil.args;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -35,13 +34,7 @@ public class BillHandler extends ChaincodeUriBuilder {
 
   /* GET /bill */
   public Mono<ServerResponse> bills(ServerRequest request) {
-    //TODO get bills from all states
-    return client.post().uri(buildUri(""))
-        .header(AUTHORIZATION, token)
-        .accept(APPLICATION_JSON_UTF8).exchange()
-        .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
-        .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
-        .switchIfEmpty(noContent().build());
+    return Mono.error(new UnsupportedOperationException());
   }
 
   /* POST /bill */
@@ -64,7 +57,7 @@ public class BillHandler extends ChaincodeUriBuilder {
         .header(AUTHORIZATION, token)
         .accept(APPLICATION_JSON_UTF8).exchange()
         .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
-        .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
+        .flatMap(clientResponse -> Mono.just(toPayloadTransformedServerResponse(clientResponse)))
         .switchIfEmpty(noContent().build());
   }
 
@@ -76,7 +69,7 @@ public class BillHandler extends ChaincodeUriBuilder {
   /* DELETE /bill/{id} */
   public Mono<ServerResponse> del(ServerRequest request) {
     String id = request.pathVariable("id");
-    if(!id.startsWith("BillStruct")) id = "BillStruct"+id;
+    if (!id.startsWith("BillStruct")) id = "BillStruct" + id;
     return client.post().uri(buildUri(args(DELETE, id)))
         .header(AUTHORIZATION, token).accept(APPLICATION_JSON_UTF8).exchange()
         .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())

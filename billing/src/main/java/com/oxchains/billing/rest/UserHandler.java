@@ -11,7 +11,6 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 
-import static com.oxchains.billing.domain.BillActions.DELETE;
 import static com.oxchains.billing.domain.BillActions.GET;
 import static com.oxchains.billing.domain.BillActions.REGISTER_USER;
 import static com.oxchains.billing.rest.common.ClientResponse2ServerResponse.toServerResponse;
@@ -25,7 +24,7 @@ import static org.springframework.web.reactive.function.server.ServerResponse.no
  * @author aiet
  */
 @Component
-public class UserHandler extends ChaincodeUriBuilder{
+public class UserHandler extends ChaincodeUriBuilder {
 
   public UserHandler(@Autowired WebClient client,
                      @Autowired @Qualifier("fabric.uri") UriBuilder uriBuilder,

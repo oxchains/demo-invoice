@@ -37,8 +37,7 @@ public class BillSteps {
 
   public void listEmpty() {
     assertNotNull(respString);
-    String payload = JsonPath.parse(respString).read(JsonPath.compile("$.data.payload"));
-    JSONArray jsonArray = JsonPath.parse("[" + payload + "]").read(JsonPath.compile("$"));
+    JSONArray jsonArray = JsonPath.parse(respString).read(JsonPath.compile("$.data"));
     for (Object j : jsonArray) {
       assertTrue("payload should be empty", ((JSONArray) j).isEmpty());
     }
@@ -58,29 +57,18 @@ public class BillSteps {
 
   public void listNotEmpty() {
     assertNotNull(respString);
-    String payload = JsonPath.parse(respString).read(JsonPath.compile("$.data.payload"));
-    JSONArray jsonArray = JsonPath.parse("[" + payload + "]").read(JsonPath.compile("$"));
-    boolean empty = true;
-    for (Object j : jsonArray) {
-      empty = empty && ((JSONArray) j).isEmpty();
-    }
-    assertFalse("list should not be empty", empty);
+    JSONArray jsonArray = JsonPath.parse(respString).read(JsonPath.compile("$.data"));
+    assertFalse("list should not be empty", jsonArray.isEmpty());
   }
 
   public void billNotEmpty(String action, String user) {
     byte[] respBytes = client.get().uri("/bill/" + user + "/" + action).exchange().expectStatus().is2xxSuccessful()
-        .expectBody().jsonPath("$.data.payload").isNotEmpty().returnResult().getResponseBody();
+        .expectBody().jsonPath("$.data").isNotEmpty().returnResult().getResponseBody();
     respString = new String(respBytes);
     listNotEmpty();
-    String payload = JsonPath.parse(respString).read(JsonPath.compile("$.data.payload"));
-    JSONArray jsonArray = JsonPath.parse("[" + payload + "]").read(JsonPath.compile("$"));
-    billId = jsonArray.stream().filter(o -> !((JSONArray) o).isEmpty()).map(o -> {
-      JSONArray array = (JSONArray) o;
-      Map object = (Map) array.get(0);
-      return (String) object.get("Key");
-    }).findFirst().orElse("");
-    assertFalse(billId.isEmpty());
-    billId = billId.replaceFirst("BillStruct", "");
+    JSONArray jsonArray = JsonPath.parse(respString).read(JsonPath.compile("$.data"));
+    billId = jsonArray.stream().map(o -> (String) ((Map)o).get("id")).findFirst().orElse("");
+    assertFalse(billId.isEmpty() || "null".equals(billId));
   }
 
   public void acceptBill(String user) {

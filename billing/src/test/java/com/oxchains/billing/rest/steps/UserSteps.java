@@ -59,7 +59,7 @@ public class UserSteps {
 
   private void existsUser(String user) {
     client.get().uri("/user/" + user).exchange().expectStatus().is2xxSuccessful()
-        .expectBody().jsonPath("data.payload").isNotEmpty();
+        .expectBody().jsonPath("data").isNotEmpty();
   }
 
   private void notExistsUser(String user) {
