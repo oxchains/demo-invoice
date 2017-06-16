@@ -18,8 +18,13 @@ import static org.springframework.web.reactive.function.server.ServerResponse.st
 public class AppConfig {
 
   @Bean
-  RouterFunction routerFunction(@Autowired UserHandler user, @Autowired BillHandler bill, @Autowired AcceptanceHandler acceptance, @Autowired GuarantyHandler warrant, @Autowired RevocationHandler revocation, @Autowired ReceptionHandler reception, @Autowired DiscountHandler discount,
-                                @Autowired EndorsementHandler endorsement, @Autowired PaymentHandler payment, @Autowired PledgeHandler pledge, @Autowired RecourseHandler recourse) {
+  RouterFunction routerFunction(
+      @Autowired UserHandler user, @Autowired BillHandler bill,
+      @Autowired AcceptanceHandler acceptance, @Autowired GuarantyHandler warrant,
+      @Autowired RevocationHandler revocation, @Autowired ReceptionHandler reception,
+      @Autowired DiscountHandler discount, @Autowired EndorsementHandler endorsement,
+      @Autowired PaymentHandler payment, @Autowired PledgeHandler pledge,
+      @Autowired RecourseHandler recourse, @Autowired DueHandler due) {
 
     final String userPath = "/user";
     final String billPath = "/bill",
@@ -32,12 +37,14 @@ public class AppConfig {
         revocationPath = "/revocation",
         guarantyPath = "/guaranty",
         receptionPath = "/reception",
-        recoursePath = "/recourse";
+        recoursePath = "/recourse",
+        duePath = "/due";
 
 
     return route(POST(userPath), user::register).andRoute(GET(userPath + "/{uid}"), user::get)
         .andNest(
-            GET(billPath), route(GET("/"), bill::bills).andNest(GET("/{uid}"),
+            GET(billPath),
+            route(GET("/"), bill::bills).andRoute(GET(duePath), due::get).andNest(GET("/{uid}"),
                 route(GET("/"), bill::bill)
                     .andRoute(GET(acceptancePath), acceptance::get)
                     .andRoute(GET(discountPath), discount::get)
@@ -64,6 +71,7 @@ public class AppConfig {
                     .andRoute(POST(pledgeReleasePath), pledge::createRelease))
         ).andNest(
             PUT(billPath), route(PUT("/"), request -> status(NOT_IMPLEMENTED).build())
+                .andRoute(PUT(duePath), due::update)
                 .andRoute(PUT(acceptancePath), acceptance::update)
                 .andRoute(PUT(discountPath), discount::update)
                 .andRoute(PUT(endorsePath), endorsement::update)

@@ -21,6 +21,7 @@ public class RouterTest {
 
   private final String userPath = "/user",
       billPath = "/bill",
+      duePath = "/due",
       acceptancePath = "/acceptance",
       discountPath = "/discount",
       endorsePath = "/endorsement",
@@ -55,6 +56,12 @@ public class RouterTest {
     Bill bill = new Bill();
     bill.setDue(new Date());
     postEnabled(billPath, bill);
+  }
+
+  @Test
+  public void testDue(){
+    getEnabled(billPath + duePath);
+    putEnabled(billPath + duePath);
   }
 
   @Test
