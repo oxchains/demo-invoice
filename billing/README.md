@@ -27,6 +27,7 @@
   action | var | description
   -------|-----|------------
   出票 | issue | 出票人签发汇票并交付给收款人的行为。出票后，出票人即承担汇票承兑和付款的责任，商业承兑汇票的出票人和承兑人可以相同。参考银行承兑汇票，出票人和收票人不得相同。
+  撤票 | revoke | 承兑涂销是指付款人在将已承兑的汇票交还给持票人前将其承兑予以涂销的行为。即汇票付款人虽然在汇票上签章承兑，但在将汇票交还给持票人之前，又涂消其承兑记载
   承兑 | acceptance | 远期汇票的付款人在汇票上签名确认，承诺于汇票到期时付款的行为。承兑包含两个动作。第一个动作是付款人在汇票正面写明“承兑(Accepted)”字样并签字，注明承兑日期(写明汇票的到期日)。第二个动作是指将承兑的汇票交还持票人
   提示 | presentation | 收款人或持票人将汇票提交给付款人要求承兑或付款的行为，提示包括付款提示和承兑提示
   背书 | endorsement | 汇票的收款人或持票人在票据的背面记载有关的事项并签字。背书是把票据的权力转让给他人的行为，是记名汇票转让时的必要手续。背书包含两个动作，第一是在汇票背面背书，第二是把汇票交给被背书人
@@ -79,3 +80,58 @@ promptpayment | {entity, bill number, action:-1,0,1} | POST/PUT `/bill/payment` 
 querypayment | {entity} | N/A | query payment status
 promptrecourse | {entity, bill number, guarantor, action: 0} | POST/PUT `/bill/recourse` | prompt for recourse
 queryrecourse | {entity} | N/A | query for recourse information
+
+### Chaincode Explanation
+
+#### Storage
+
+key | description
+----|-------------
+Use0* | user id
+Use2* | user account
+GlobBilc | bill count
+GlobUsec | user count
+GlobOpSc | operation prompt count
+GlobOpEc | operation confirm count
+
+#### State Transition
+
+bill related states
+
+1. `billState`: bill's state
+  - `0`: ready
+  - `1`: wrong endorsement 
+  - `2`: waiting for discount confirmation
+  - `3`: waiting for pledge confirmation
+  - `4`: pledged
+  - `5`: waiting for pledge release confirmation
+  
+2. `finishState`: payment state of the bill
+  - `0`: not ready to pay
+  - `1`: waiting for payment
+  - `2`: payment denied
+  - `3`: waiting for payment of after recourse
+  - `9`: paid
+
+3. `payerState`: whether payer has made acceptance to the bill
+  - `0`: not accepted
+  - `1`: waiting for acceptance
+  - `9`: accepted
+
+4. `payeeState`: whether payee has received the bill
+  - `0`: not received
+  - `1`: waiting for reception
+  - `2`: bill revoked by payer
+  - `3`: reject reception
+  - `9`: received
+
+5. `phase`: key state of the bill
+  - `0`: bill issued
+  - `1`: bill effective
+  - `2`: bill due
+
+6. `transferState`
+  - `0`: not accepted
+  - `1`: waiting for acceptance
+  - `9`: accepted
+

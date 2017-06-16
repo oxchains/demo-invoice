@@ -739,7 +739,7 @@ func (t *SimpleChaincode) queryacceptance(stub shim.ChaincodeStubInterface, args
         if len(args) != 1 {
                 return shim.Error("Incorrect number of arguments. Expecting name of the person to query")
         }
-		
+
         User = args[0]
 		
 	queryString := fmt.Sprintf("{\"selector\":{\"docType\":\"bill\",\"phase\":\"0\",\"payerState\":\"0\",\"payeeState\":\"0\",\"creatorName\":\"%s\"}}", User)
