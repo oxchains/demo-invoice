@@ -4,6 +4,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.oxchains.billing.domain.FabricAccount;
 import com.oxchains.billing.notification.Subscription;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 
+import java.security.Security;
 import java.time.Duration;
 import java.util.Optional;
 
@@ -110,6 +112,7 @@ public class App {
   }
 
   public static void main(String[] args) {
+    Security.addProvider(new BouncyCastleProvider());
     SpringApplication.run(App.class, args);
   }
 

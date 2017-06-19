@@ -6,10 +6,7 @@ import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
 import org.bouncycastle.jce.spec.ECPublicKeySpec;
 import org.bouncycastle.math.ec.ECPoint;
 
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PublicKey;
+import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 
@@ -70,6 +67,11 @@ public class Subscription {
     ECPoint point = ecSpec.getCurve().decodePoint(asBytes(getKey()));
     ECPublicKeySpec pubSpec = new ECPublicKeySpec(point, ecSpec);
     return kf.generatePublic(pubSpec);
+  }
+
+  @Override
+  public String toString(){
+    return String.format("auth: %s, key: %s, endpoint: %s", getAuth(), getKey(), getEndpoint());
   }
 
 
