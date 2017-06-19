@@ -1,14 +1,18 @@
 package com.oxchains.billing;
 
+import com.oxchains.billing.notification.PushHandler;
 import com.oxchains.billing.rest.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
+import org.springframework.web.reactive.function.server.ServerResponse.BodyBuilder;
 
+import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.HttpStatus.NOT_IMPLEMENTED;
 import static org.springframework.web.reactive.function.server.RequestPredicates.*;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
+import static org.springframework.web.reactive.function.server.ServerResponse.ok;
 import static org.springframework.web.reactive.function.server.ServerResponse.status;
 
 /**
@@ -19,14 +23,14 @@ public class AppConfig {
 
   @Bean
   RouterFunction routerFunction(
-      @Autowired UserHandler user, @Autowired BillHandler bill,
+      @Autowired UserHandler user, @Autowired BillHandler bill, @Autowired PushHandler subscription,
       @Autowired AcceptanceHandler acceptance, @Autowired GuarantyHandler warrant,
       @Autowired RevocationHandler revocation, @Autowired ReceptionHandler reception,
       @Autowired DiscountHandler discount, @Autowired EndorsementHandler endorsement,
       @Autowired PaymentHandler payment, @Autowired PledgeHandler pledge,
       @Autowired RecourseHandler recourse, @Autowired DueHandler due) {
 
-    final String userPath = "/user";
+    final String userPath = "/user", subscriptionPath = "/subscription";
     final String billPath = "/bill",
         acceptancePath = "/acceptance",
         discountPath = "/discount",
@@ -40,8 +44,16 @@ public class AppConfig {
         recoursePath = "/recourse",
         duePath = "/due";
 
-
-    return route(POST(userPath), user::register).andRoute(GET(userPath + "/{uid}"), user::get)
+    return route(OPTIONS("/**"), request -> {
+      BodyBuilder bodyBuilder = ok();
+      request.headers().header(ORIGIN).forEach(origin ->
+          bodyBuilder.header(ACCESS_CONTROL_ALLOW_ORIGIN, origin));
+      request.headers().header(ACCESS_CONTROL_REQUEST_HEADERS).forEach(header ->
+          bodyBuilder.header(ACCESS_CONTROL_ALLOW_HEADERS, header));
+      request.headers().header(ACCESS_CONTROL_REQUEST_METHOD).forEach(method ->
+          bodyBuilder.header(ACCESS_CONTROL_ALLOW_METHODS, method));
+      return bodyBuilder.build();
+    }).andRoute(POST(userPath), user::register).andRoute(GET(userPath + "/{uid}"), user::get)
         .andNest(
             GET(billPath),
             route(GET("/"), bill::bills).andRoute(GET(duePath), due::get).andNest(GET("/{uid}"),
@@ -59,6 +71,7 @@ public class AppConfig {
             )
         ).andNest(
             POST(billPath), route(POST("/"), bill::create)
+                .andRoute(POST("/{uid}" + subscriptionPath), subscription::create)
                 .andRoute(POST(acceptancePath), acceptance::create)
                 .andRoute(POST(discountPath), discount::create)
                 .andRoute(POST(endorsePath), endorsement::create)
@@ -80,7 +93,9 @@ public class AppConfig {
                 .andRoute(PUT(recoursePath), recourse::update)
                 .andNest(PUT(pledgePath), route(PUT("/"), pledge::update)
                     .andRoute(PUT(pledgeReleasePath), pledge::updateRelease))
-        ).andRoute(DELETE(billPath + "/{id}"), bill::del);
+        ).andRoute(DELETE(billPath + "/{id}"), bill::del)
+        .andRoute(GET("/peer"), request -> ok().build());
+
   }
 
 }

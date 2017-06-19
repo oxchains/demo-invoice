@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.util.Collections.emptyMap;
+import static java.util.Optional.empty;
 
 /**
  * @author aiet
@@ -28,6 +29,16 @@ import static java.util.Collections.emptyMap;
 public class ResponseUtil {
 
   static final Logger LOG = LoggerFactory.getLogger(ResponseUtil.class);
+
+  public static Optional<String> extract(String json, String path){
+    try{
+      JsonNode root = new ObjectMapper().readTree(json);
+      return Optional.ofNullable(root.at("/data/token").textValue());
+    }catch (Exception e){
+      LOG.error("failed to extract value under path {} out of {}: {}", path, json, e.getMessage());
+    }
+    return empty();
+  }
 
   public static String payloadToBill(String fabricManageResponse) {
     try {
@@ -100,7 +111,7 @@ public class ResponseUtil {
       } catch (Exception e) {
         LOG.error("failed to parse bill record {}: {}", raw, e.getMessage());
       }
-      return Optional.empty();
+      return empty();
     }
 
     public void setPayload(String payload) {
