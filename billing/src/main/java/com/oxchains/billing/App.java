@@ -1,7 +1,10 @@
 package com.oxchains.billing;
 
-import com.jayway.jsonpath.JsonPath;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.oxchains.billing.domain.FabricAccount;
+import com.oxchains.billing.notification.Subscription;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +20,11 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 
+import java.security.Security;
 import java.time.Duration;
+import java.util.Optional;
 
+import static com.oxchains.billing.util.ResponseUtil.extract;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 
 /**
@@ -88,12 +94,25 @@ public class App {
     if (json == null || json.isEmpty())
       throw new IllegalStateException("system failed to init: cannot get token from fabric manager!");
 
-    String token = "Bearer " + JsonPath.parse(json).read(JsonPath.compile("data.token"));
-    LOG.info("access token for fabric manager: {}", token);
-    return token;
+
+    Optional<String> tokenOptional = extract(json, "/data/token");
+    if (tokenOptional.isPresent()) {
+      String token = "Bearer " + tokenOptional.get();
+      LOG.info("access token for fabric manager: {}", token);
+      return token;
+    } else throw new IllegalStateException("system failed to init: cannot get token from fabric manager!");
+  }
+
+  @Bean
+  Cache<String, Subscription> cache() {
+    Cache<String, Subscription> cache = CacheBuilder.newBuilder()
+        .initialCapacity(8).concurrencyLevel(3).build();
+    LOG.info("cache init with capacity 8 and concurrency level 3");
+    return cache;
   }
 
   public static void main(String[] args) {
+    Security.addProvider(new BouncyCastleProvider());
     SpringApplication.run(App.class, args);
   }
 

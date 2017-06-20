@@ -15,9 +15,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 import static java.util.Collections.emptyMap;
+import static java.util.Optional.empty;
 
 /**
  * @author aiet
@@ -25,6 +29,16 @@ import static java.util.Collections.emptyMap;
 public class ResponseUtil {
 
   static final Logger LOG = LoggerFactory.getLogger(ResponseUtil.class);
+
+  public static Optional<String> extract(String json, String path){
+    try{
+      JsonNode root = new ObjectMapper().readTree(json);
+      return Optional.ofNullable(root.at("/data/token").textValue());
+    }catch (Exception e){
+      LOG.error("failed to extract value under path {} out of {}: {}", path, json, e.getMessage());
+    }
+    return empty();
+  }
 
   public static String payloadToBill(String fabricManageResponse) {
     try {
@@ -97,26 +111,32 @@ public class ResponseUtil {
       } catch (Exception e) {
         LOG.error("failed to parse bill record {}: {}", raw, e.getMessage());
       }
-      return Optional.empty();
+      return empty();
     }
 
     public void setPayload(String payload) {
-      List<Bill> bills = new ArrayList<>();
-      ObjectMapper objectMapper = new ObjectMapper();
-      try {
-        JsonNode rootNode = objectMapper.readTree("[" + payload + "]");
-        for (JsonNode node : rootNode) {
-          if (node.isArray()) {
-            node.forEach(rawRecord -> readAsBill(objectMapper, rawRecord.toString(), BillRecord.class)
-                .ifPresent(bill -> bills.add((Bill) bill)));
-          } else {
-            if (node.isObject()) this.payload = readAsBill(objectMapper, node.toString(), Record.class).orElse(emptyMap());
-            else this.payload = emptyMap();
-            return;
+      List<Object> bills = new ArrayList<>();
+      if (!"[],[],[]".equals(payload)) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+          JsonNode rootNode = objectMapper.readTree("[" + payload + "]");
+          for (JsonNode node : rootNode) {
+            if (node.isArray()) {
+              node.forEach(rawRecord -> {
+                if(rawRecord.isObject()) {
+                  readAsBill(objectMapper, rawRecord.toString(), BillRecord.class).ifPresent(bills::add);
+                }else {
+                  bills.add(rawRecord.textValue());
+                }
+              });
+            } else if (node.isObject()){
+                this.payload = readAsBill(objectMapper, node.toString(), Record.class).orElse(emptyMap());
+                return;
+            }
           }
+        } catch (Exception e) {
+          LOG.error("failed to parse payload {}: {}", payload, e.getMessage());
         }
-      } catch (Exception e) {
-        LOG.error("failed to parse payload {}: {}", payload, e.getMessage());
       }
       this.payload = bills;
     }

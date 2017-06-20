@@ -67,7 +67,7 @@ public class BillSteps {
     respString = new String(respBytes);
     listNotEmpty();
     JSONArray jsonArray = JsonPath.parse(respString).read(JsonPath.compile("$.data"));
-    billId = jsonArray.stream().map(o -> (String) ((Map)o).get("id")).findFirst().orElse("");
+    billId = jsonArray.stream().map(o -> (String) ((Map) o).get("id")).findFirst().orElse("");
     assertFalse(billId.isEmpty() || "null".equals(billId));
   }
 
