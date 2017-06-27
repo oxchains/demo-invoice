@@ -1,10 +1,13 @@
 # FrontEnd
 
-/FrontEnd/node_modules
-/FrontEnd/bundle.js
-/FrontEnd/npm-debug.log
+FrontEnd/node_modules
+FrontEnd/bundle.js
+FrontEnd/npm-debug.log
+FrontEnd/public/img/
+FrontEnd/public/plugins/
 .DS_Store
 
 # IntelliJ
 *.iml
 /.idea
+

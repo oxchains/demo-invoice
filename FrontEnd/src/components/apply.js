@@ -1,14 +1,14 @@
 /**
- * oxchain ivoice app
- *
- *
- * Author: Jun
- * Email: iyakexi@gmail.com
- * Date: 13/04/2017
- *
- */
+   * oxchain ivoice app
+   *
+   *
+   * Author: Jun
+   * Email: iyakexi@gmail.com
+   * Date: 13/04/2017
+   *
+   */
 
-import React, { Component } from 'react';
+  import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
 import { signupCompany } from '../actions/auth';
