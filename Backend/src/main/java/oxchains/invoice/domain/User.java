@@ -1,17 +1,22 @@
 package oxchains.invoice.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * @author aiet
  */
 @Entity
+@Table(name = "user", uniqueConstraints = @UniqueConstraint(columnNames = { "name" }))
 public class User implements IUser {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String mobile;
     private String password;
-    @Id private String name;
+
+    private String name;
     private String avatar;
 
     public User() {
@@ -20,6 +25,15 @@ public class User implements IUser {
     public User(String phone, String password) {
         this.mobile = phone;
         this.password = password;
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getAvatar() {
@@ -54,4 +68,10 @@ public class User implements IUser {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s(%s)", name, mobile);
+    }
+
 }

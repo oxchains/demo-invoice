@@ -2,23 +2,39 @@ package oxchains.invoice.domain;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author aiet
  */
 @Entity
+@Table(name = "invoice")
 public class Invoice {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String serial;
-    @Transient private Company organization;
-    @Transient private Company origin;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "target")
+    private Company target;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "origin")
+    private Company origin;
+    private String owner;
     private Date createTime;
     private String status;
-    @Transient private Goods goods;
-    //TODO history
+    @ElementCollection(fetch = FetchType.EAGER, targetClass = Goods.class) private List<Goods> goods;
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
 
     public Long getId() {
         return id;
@@ -36,12 +52,12 @@ public class Invoice {
         this.serial = serial;
     }
 
-    public Company getOrganization() {
-        return organization;
+    public Company getTarget() {
+        return target;
     }
 
-    public void setOrganization(Company organization) {
-        this.organization = organization;
+    public void setTarget(Company target) {
+        this.target = target;
     }
 
     public Company getOrigin() {
@@ -68,11 +84,11 @@ public class Invoice {
         this.status = status;
     }
 
-    public Goods getGoods() {
+    public List<Goods> getGoods() {
         return goods;
     }
 
-    public void setGoods(Goods goods) {
+    public void setGoods(List<Goods> goods) {
         this.goods = goods;
     }
 }

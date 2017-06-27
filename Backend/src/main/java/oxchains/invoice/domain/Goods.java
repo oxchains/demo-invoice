@@ -2,11 +2,13 @@ package oxchains.invoice.domain;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * @author aiet
  */
 @Entity
+@Table(name = "goods")
 public class Goods {
 
     @Id private String name;

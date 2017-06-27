@@ -38,7 +38,7 @@ public class UserSteps {
         companyUser = new CompanyUser();
         companyUser.setCompany(company);
         user.setName(companyName);
-        companyUser.setUser(user);
+        companyUser.withUser(user);
     }
 
     @Step("registering company")

@@ -8,7 +8,8 @@ import javax.persistence.*;
  * @author aiet
  */
 @Entity
-public class Company implements ICompany {
+@Table(name = "company")
+public class Company {
 
     public Company() {
     }
