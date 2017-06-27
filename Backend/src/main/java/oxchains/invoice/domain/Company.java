@@ -1,8 +1,6 @@
 package oxchains.invoice.domain;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.persistence.*;
 
@@ -10,10 +8,10 @@ import javax.persistence.*;
  * @author aiet
  */
 @Entity
-@Table(name = "company")
-public class Company implements ICompany{
+public class Company implements ICompany {
 
-    public Company(){}
+    public Company() {
+    }
 
     public Company(String name, String taxIdentifier, String address, String bankName, String bankAccount) {
         this.name = name;

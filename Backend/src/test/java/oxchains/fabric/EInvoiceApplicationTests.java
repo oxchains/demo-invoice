@@ -9,7 +9,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @Ignore
-public class MgtConsoleApplicationTests {
+public class EInvoiceApplicationTests {
 
     @Test
     public void contextLoads() {
