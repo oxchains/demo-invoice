@@ -4,16 +4,29 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
+import javax.persistence.*;
+
 /**
  * @author aiet
  */
-public class CompanyUser implements IUser, ICompany{
+@Entity
+public class CompanyUser implements IUser, ICompany {
 
-    private Company company = new Company();
-    private User user = new User();
+    @Transient private Company company;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String username;
+    private String password;
+    private String avatar;
+    private String mobile;
 
     public void setUser(User user) {
-        this.user = user;
+        this.username = user.getName();
+        this.password = user.getPassword();
+        this.avatar = user.getAvatar();
+        this.mobile = user.getMobile();
     }
 
     public void setCompany(Company company) {
@@ -25,50 +38,79 @@ public class CompanyUser implements IUser, ICompany{
         return company;
     }
 
-    @JsonIgnore
-    public User getUser() {
-        return user;
+    private synchronized Company nonNullCompany(){
+        if(company==null) company = new Company();
+        return company;
     }
 
-    public void setPhone(String phone) {
-        user.setPhone(phone);
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @JsonSetter("name")
+    public void setName(String name) {
+        nonNullCompany().setName(name);
+    }
+
+    public String getName() {
+        return company.getName();
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     public void setPassword(String password) {
-        user.setPassword(password);
+        this.password = password;
     }
 
-    public void setName(String name) {
-        company.setName(name);
+    public String getAvatar() {
+        return avatar;
     }
 
-    @JsonSetter("taxpayer")
-    public void setTaxIdentifier(String taxIdentifier) {
-        company.setTaxIdentifier(taxIdentifier);
-    }
-
-    public void setAddress(String address) {
-        company.setAddress(address);
-    }
-
-    @JsonSetter("bank")
-    public void setBankName(String bankName) {
-        company.setBankName(bankName);
-    }
-
-    @JsonSetter("account")
-    public void setBankAccount(String bankAccount) {
-        company.setBankAccount(bankAccount);
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     @Override
     public String getMobile() {
-        return user.getMobile();
+        return mobile;
     }
 
-    @Override
-    public String getName() {
-        return company.getName();
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    @JsonSetter("taxpayer")
+    public void setTaxIdentifier(String taxIdentifier) {
+        nonNullCompany().setTaxIdentifier(taxIdentifier);
+    }
+
+    @JsonSetter("address")
+    public void setAddress(String address) {
+        nonNullCompany().setAddress(address);
+    }
+
+    @JsonSetter("bank")
+    public void setBankName(String bankName) {
+        nonNullCompany().setBankName(bankName);
+    }
+
+    @JsonSetter("account")
+    public void setBankAccount(String bankAccount) {
+        nonNullCompany().setBankAccount(bankAccount);
     }
 
     @JsonGetter("taxpayer")

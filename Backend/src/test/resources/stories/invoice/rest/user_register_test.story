@@ -1,11 +1,11 @@
-Meta:
+User Register
 
 Narrative:
 As a user
-I want to perform an action
-So that I can achieve a business goal
+I want to register
+So that I can make use of the system
 
-Scenario: scenario description
-Given a system state
-When I do something
-Then system is in a different state
+Scenario: a user can register with sufficient information
+Given name Jack Ma, mobile 13800138000, password testpass
+When I register user
+Then user registration success
