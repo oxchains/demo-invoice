@@ -1,16 +1,11 @@
 {
-  "signin": {
+  "user": {
     "status": 1,
-    "message": "登录成功",
+    "message": "success",
     "data": {
-      "token": "token-123456",
-      "id": 1,
-      "name": "测试用户",
-      "mobile": "18500000001",
-      "avatar": "",
-      "type": "INDIVIDUAL",
-      "companyId": 0,
-      "traderId": "112"
+      "payload": "20000",
+      "peer": "peer1",
+      "txid": "f49fbcdacfced3caeaa46d4b9338f48f09f6c5e9d4e8c4eda0dcc3f1e03ef4ac"
     }
   },
   "signin-fail": {
@@ -37,7 +32,7 @@
     "message": "用户名或手机号已经存在",
     "data": null
   },
-  "bills" : {
+  "bill" : {
     "status": 1,
     "message": "success",
     "data": [{
@@ -54,5 +49,4 @@
       "due": "2017-05-16"
     }]
   }
-
 }

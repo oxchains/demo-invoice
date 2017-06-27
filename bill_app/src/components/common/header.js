@@ -8,8 +8,7 @@ class Header extends  Component {
 
   renderUserInfo() {
     if(this.props.authenticated) {
-      const user = JSON.parse(localStorage.getItem('user'));
-      const username= user.username;
+      const username= localStorage.getItem('username')
       const avatar = `https://gravatar.com/avatar/oxchain-${username}?s=100&d=retro`;
 
       return (

@@ -6,16 +6,16 @@ import {
   ADD_USER_ERROR
 } from '../actions/types';
 
-const INITIAL_STATE = { all: null };
+const INITIAL_STATE = {all: null,addSuccess: null};
 
-export default function(state = INITIAL_STATE, action) {
-  switch(action.type) {
+export default function (state = INITIAL_STATE, action) {
+  switch (action.type) {
     case FETCH_USER_LIST:
-      return { ...state, all:action.payload.data.data };
+      return {...state, all: action.payload.data.data};
     case ADD_USER_SUCCESS:
-      return { ...state, addSuccess: true};
+      return Object.assign({}, state);
     case ADD_USER_ERROR:
-      return { ...state, addSuccess: false};
+      return Object.assign({}, state);
   }
 
   return state;

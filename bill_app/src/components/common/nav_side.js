@@ -12,8 +12,7 @@ class NavSide extends  Component {
 
   renderUserInfo() {
     if(this.props.authenticated) {
-      const user = JSON.parse(localStorage.getItem('user'));
-      const username= user.username;
+      const username= localStorage.getItem('username');
       const avatar = `https://gravatar.com/avatar/oxchain-${username}?s=100&d=retro`;
       return <div className="user-panel">
         <div className="pull-left image">
@@ -55,7 +54,8 @@ class NavSide extends  Component {
     const links = [
       {path:'bill/actions', title:'票据操作', icon:'bitcoin'},
       {path:'bills', title:'我的票据', icon:'bitcoin'},
-      {path:'users', title:'用户管理', icon:'users'}
+      {path:'users', title:'用户管理', icon:'users'},
+      {path:'signup', title:'注册用户', icon:'users'}
     ];
 
     return (
