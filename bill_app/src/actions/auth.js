@@ -3,36 +3,22 @@ import {
   ROOT_URL,
   AUTH_USER,
   UNAUTH_USER,
-  AUTH_ERROR
+  AUTH_ERROR,
+  SIGN_SUCCESS,
+  ADD_USER_SUCCESS,
+  ADD_USER_ERROR
 } from './types';
 
-
 // 登录
-export function signinAction({ username, password }, callback) {
-  return function(dispatch) {
-    axios.post(`${ROOT_URL}/user/token`, { username, password })
-    //axios.get('http://localhost:3000/signin')
-      .then(response => {
+export function signinAction({username, password}, callback) {
+  return function (dispatch) {
 
-        if(response.data.status == 1) {//auth success
-          // - Save the JWT token
-          localStorage.setItem('token', response.data.data.token);
-          //localStorage.setItem('user', JSON.stringify(response.data.data));
-          localStorage.setItem('username', response.data.data.username);
+    // 暂时没有网络请求
+    localStorage.setItem('username', username);
 
-          dispatch({type: AUTH_USER});
-          // - redirect to the route '/'
-          callback();
-        } else {//auth fail
-          dispatch(authError(response.data.message));
-        }
-
-      })
-      .catch(() => {
-        // If request is bad...
-        // - Show an error to the user
-        dispatch(authError('Bad Login'));
-      });
+    dispatch({type: AUTH_USER, username});
+    // - redirect to the route '/'
+    callback();
   }
 }
 
@@ -49,5 +35,5 @@ export function signoutUser() {
   localStorage.removeItem('user');
   localStorage.removeItem('username');
 
-  return { type: UNAUTH_USER };
+  return {type: UNAUTH_USER};
 }

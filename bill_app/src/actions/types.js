@@ -1,5 +1,5 @@
 export const ROOT_URL = 'http://10.8.47.4:17173';
-
+//export const ROOT_URL = 'http://localhost:3000';
 export const AUTH_USER = 'auth_user';                               //登录
 export const UNAUTH_USER = 'unauth_user';                           //退出登录
 export const AUTH_ERROR = 'auth_error';                             //登录失败

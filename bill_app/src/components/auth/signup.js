@@ -1,36 +1,61 @@
-import React, { Component } from 'react';
-import { Field, reduxForm } from 'redux-form';
-import { connect } from 'react-redux';
-import { signupUser } from '../../actions/auth'
+import React, {Component} from 'react';
+import _ from 'lodash';
+import {Field, reduxForm} from 'redux-form';
+import {connect} from 'react-redux';
+import {Redirect} from 'react-router-dom'
+import {usersignUp} from '../../actions/user'
 
 class Signup extends Component {
+  constructor(props) {
+    super(props);
 
-  handleFormSubmit({ username, mobile, password }) {
-    if(username && password && mobile)
-      this.props.signupUser({ username, mobile, password });
+    this.state = {
+      isAddFail: null
+    }
   }
 
+  componentWillUnmount() {
+    this.setState({
+      isAddFail: null
+    });
+  }
+
+  handleFormSubmit({username, asset}) {
+    if (username && asset > 0)
+      this.props.usersignUp({username, asset}, ({isAddFail}) => {
+        if(isAddFail){
+          this.setState({
+            isAddFail
+          });
+        }else{
+          this.props.history.replace("/signin");
+        }
+      });
+  }
+
+
   renderAlert() {
-    if (this.props.errorMessage) {
+    if (this.state.isAddFail) {
       return (
         <div className="alert alert-danger alert-dismissable">
-          {this.props.errorMessage}
+          注册失败
         </div>
       );
     }
   }
 
-  renderField({ input, label, type, icon, meta: { touched, error } }) {
+  renderField({input, label, type, icon, meta: {touched, error}}) {
     return (
-    <div className={`form-group has-feedback ${touched && error ? 'has-error' : ''}`}>
-      <input {...input} placeholder={label} type={type} className="form-control"/>
-      <span className={`glyphicon glyphicon-${icon} form-control-feedback`}></span>
-      <div className="help-block with-errors">{touched && error ? error : ''}</div>
-    </div>
-  )}
+      <div className={`form-group has-feedback ${touched && error ? 'has-error' : ''}`}>
+        <input {...input} placeholder={label} type={type} className="form-control"/>
+        <span className={`glyphicon glyphicon-${icon} form-control-feedback`}></span>
+        <div className="help-block with-errors">{touched && error ? error : ''}</div>
+      </div>
+    )
+  }
 
   render() {
-    const { handleSubmit} = this.props;
+    const {handleSubmit} = this.props;
 
     return (
       <div>
@@ -38,13 +63,11 @@ class Signup extends Component {
           <div className="login-logo">
           </div>
           <div className="login-box-body">
-            <p className="login-box-msg" style={{fontSize: 24+'px'}}>用户注册</p>
+            <p className="login-box-msg" style={{fontSize: 24 + 'px'}}>用户注册</p>
             {this.renderAlert()}
             <form className="form-signin" onSubmit={handleSubmit(this.handleFormSubmit.bind(this))}>
-              <Field name="username" component={this.renderField} type="text"  label="用户名" icon="envelope" />
-              <Field name="mobile" component={this.renderField} type="text"  label="手机号" icon="phone" />
-              <Field name="password" component={this.renderField} type="password" label="密码" icon="lock" />
-              <Field name="passwordConfirm" component={this.renderField} type="password" label="确认密码" icon="lock" />
+              <Field name="username" component={this.renderField} type="text" label="用户名" icon="envelope"/>
+              <Field name="asset" component={this.renderField} type="number" label="资产" icon="credit-card"/>
               <div className="row">
                 <div className="col-xs-8">
                 </div>
@@ -52,7 +75,6 @@ class Signup extends Component {
                   <button type="submit" className="btn btn-primary btn-block btn-flat">注册</button>
                 </div>
               </div>
-
             </form>
           </div>
         </div>
@@ -65,39 +87,21 @@ class Signup extends Component {
 const validate = values => {
   const errors = {};
 
-  if(!values.username) {
+  if (!values.username) {
     errors.username = '用户名不能为空';
   }
 
-  if(!values.mobile) {
-    errors.mobile = '手机号不能为空';
-  }
+  const asset = _.toInteger(values.asset);
 
-  if(!values.password) {
-    errors.password = '密码不能为空';
+  if (asset <= 0) {
+    errors.asset = '资产不能为空';
   }
-
-  if(!values.passwordConfirm) {
-    errors.passwordConfirm = '确认密码不能为空';
-  }
-
-  if(values.passwordConfirm && values.passwordConfirm != values.password) {
-    errors.passwordConfirm = '两次输入密码不一致';
-  }
-
   return errors
 };
-
-function mapStateToProps(state) {
-  return {
-    success: state.auth.authenticated,
-    errorMessage: state.auth.error
-  };
-}
 
 const reduxSignupForm = reduxForm({
   form: 'SignForm',
   validate
 })(Signup);
 
-export default connect(mapStateToProps, { signupUser })(reduxSignupForm);
+export default connect(null, {usersignUp})(reduxSignupForm);
