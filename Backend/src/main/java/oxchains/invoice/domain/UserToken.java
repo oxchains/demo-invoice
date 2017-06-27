@@ -1,6 +1,7 @@
 package oxchains.invoice.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -12,28 +13,19 @@ import java.util.Date;
 @Table(name = "user_token")
 public class UserToken {
 
-    @Id private Long id;
+    @JsonIgnore
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(length = 512) private String token;
     @JsonFormat(pattern = "yyy-MM-dd hh:mm:ss") private Date createtime = new Date();
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user")
-    private User user;
 
     public UserToken() {
     }
 
-    public UserToken(User u, String token) {
-        this.user = u;
+    public UserToken(String token) {
         this.token = token;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public Long getId() {

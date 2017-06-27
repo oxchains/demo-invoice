@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import oxchains.invoice.domain.Invoice;
 
 import java.util.Iterator;
+import java.util.Optional;
 
 /**
  * @author aiet
@@ -12,6 +13,6 @@ import java.util.Iterator;
 @Repository
 public interface InvoiceRepo extends CrudRepository<Invoice, Long>{
 
-    Iterable<Invoice> findInvoicesByOwnerOrOriginOrTarget(String owner, Long origin, Long target);
+    Optional<Invoice> findInvoiceByOwnerAndSerial(String owner, String serial);
 
 }

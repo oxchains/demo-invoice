@@ -28,4 +28,15 @@ public class UserRegisterStory {
         steps.requestSuccess();
     }
 
+    @When("I enroll user")
+    public void enroll(){
+        steps.enroll();
+    }
+
+    @Then("user $user enrolled")
+    public void enrolled(String user){
+        steps.enrolled(user);
+    }
+
+
 }

@@ -8,8 +8,8 @@ So that I can prove the goods are sold to the customer
 Scenario: a user can reimburse invoice
 Given user JD
 And company user taobao
-And invoice 1 of JD
-When JD request reimbursement with invoice 1
+And invoice of JD
+When JD request reimbursement with the invoice
 Then reimbursement created
 When JD check reimbursement list
 Then the reimbursement is present

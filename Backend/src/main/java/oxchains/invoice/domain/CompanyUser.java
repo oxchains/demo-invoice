@@ -34,6 +34,7 @@ public class CompanyUser implements IUser {
 
     public User toUser() {
         User user = new User(this.mobile, this.password);
+        user.setId(this.id);
         user.setName(this.name);
         user.setAvatar(this.avatar);
         return user;
@@ -63,6 +64,7 @@ public class CompanyUser implements IUser {
 
     public void setName(String name) {
         nonNullCompany().setName(name);
+        this.name = name;
     }
 
     public String getName() {

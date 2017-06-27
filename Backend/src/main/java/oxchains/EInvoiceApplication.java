@@ -1,7 +1,5 @@
 package oxchains;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,10 +8,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 import oxchains.invoice.rest.domain.FabricAccount;
+import static oxchains.invoice.util.ResponseUtil.extract;
 
 import java.util.Optional;
-
-import static java.util.Optional.empty;
 
 @SpringBootApplication
 public class EInvoiceApplication {
@@ -35,18 +32,6 @@ public class EInvoiceApplication {
             LOG.info("access token for fabric manager: {}", token);
             return token;
         } else throw new IllegalStateException("system failed to init: cannot get token from fabric manager!");
-    }
-
-    private Optional<String> extract(String json, String path) {
-        try {
-            JsonNode root = new ObjectMapper().readTree(json);
-            return Optional.ofNullable(root
-              .at("/data/token")
-              .textValue());
-        } catch (Exception e) {
-            LOG.error("failed to extract value under path {} out of {}: {}", path, json, e.getMessage());
-        }
-        return empty();
     }
 
     public static void main(String[] args) {

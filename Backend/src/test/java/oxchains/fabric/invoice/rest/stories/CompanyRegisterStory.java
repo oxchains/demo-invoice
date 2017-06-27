@@ -37,4 +37,25 @@ public class CompanyRegisterStory {
     public void thenCompanyInfoGot() throws Exception {
         userSteps.companyInfoVerified();
     }
+
+    @When("I check company list")
+    public void whenCheckCompanyList() {
+        userSteps.companyList();
+    }
+
+    @Then("company $company is present")
+    public void thenCompanyPresent(String company) {
+        userSteps.includeCompany(company);
+    }
+
+    @When("I enroll company user")
+    public void whenEnrollCompanyUser() {
+        userSteps.enrollCompanyUser();
+    }
+
+    @Then("company user $user enrolled")
+    public void thenEnrolled(String user) {
+        userSteps.enrolled(user);
+    }
+
 }

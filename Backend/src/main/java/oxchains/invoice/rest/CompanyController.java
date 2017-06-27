@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import oxchains.invoice.data.CompanyRepo;
 import oxchains.invoice.data.CompanyUserRepo;
+import oxchains.invoice.domain.Company;
 import oxchains.invoice.domain.CompanyUser;
 import oxchains.invoice.rest.domain.RestResp;
 
@@ -24,7 +25,6 @@ public class CompanyController {
     private CompanyUserRepo companyUserRepo;
     private CompanyRepo companyRepo;
 
-
     public CompanyController(@Autowired CompanyUserRepo companyUserRepo, @Autowired CompanyRepo companyRepo) {
         this.companyUserRepo = companyUserRepo;
         this.companyRepo = companyRepo;
@@ -36,9 +36,11 @@ public class CompanyController {
           .findByName(companyUser.getName())
           .map(c -> fail())
           .orElseGet(() -> {
+              Company savedCompany = companyRepo.save(companyUser.getCompany());
+              companyUser.setCompany(savedCompany);
               CompanyUser saved = companyUserRepo.save(companyUser);
               LOG.info("company {} registered", saved);
-              return success(null);
+              return success(savedCompany);
           });
     }
 

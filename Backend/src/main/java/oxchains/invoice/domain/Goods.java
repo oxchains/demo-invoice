@@ -1,8 +1,6 @@
 package oxchains.invoice.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * @author aiet
@@ -11,10 +9,26 @@ import javax.persistence.Table;
 @Table(name = "goods")
 public class Goods {
 
-    @Id private String name;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String name;
     private String description;
     private int quantity;
     private int price;
+
+    @Override
+    public String toString(){
+        return String.format("%s/%s(%s)", name, price, quantity);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;

@@ -9,6 +9,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.context.WebApplicationContext;
 import oxchains.EInvoiceApplication;
 
+import javax.servlet.Filter;
+
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.mockMvc;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
@@ -22,9 +24,13 @@ public class TestBase extends SerenityStory {
 
     @Autowired private WebApplicationContext context;
 
+    @Autowired private Filter springSecurityFilterChain;
+
     @BeforeStories
     public void init() {
-        mockMvc(webAppContextSetup(context).build());
+        mockMvc(webAppContextSetup(context)
+          .addFilters(springSecurityFilterChain)
+          .build());
     }
 
 }
