@@ -10,23 +10,34 @@ import javax.persistence.*;
  * @author aiet
  */
 @Entity
-public class CompanyUser implements IUser, ICompany {
+@Table(name = "company_user")
+public class CompanyUser implements IUser {
 
-    @Transient private Company company;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "company")
+    private Company company;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String username;
+    private String name;
     private String password;
     private String avatar;
     private String mobile;
 
-    public void setUser(User user) {
-        this.username = user.getName();
+    public void withUser(User user) {
+        this.name = user.getName();
         this.password = user.getPassword();
         this.avatar = user.getAvatar();
         this.mobile = user.getMobile();
+    }
+
+    public User toUser() {
+        User user = new User(this.mobile, this.password);
+        user.setId(this.id);
+        user.setName(this.name);
+        user.setAvatar(this.avatar);
+        return user;
     }
 
     public void setCompany(Company company) {
@@ -38,8 +49,8 @@ public class CompanyUser implements IUser, ICompany {
         return company;
     }
 
-    private synchronized Company nonNullCompany(){
-        if(company==null) company = new Company();
+    private synchronized Company nonNullCompany() {
+        if (company == null) company = new Company();
         return company;
     }
 
@@ -51,21 +62,13 @@ public class CompanyUser implements IUser, ICompany {
         this.id = id;
     }
 
-    @JsonSetter("name")
     public void setName(String name) {
         nonNullCompany().setName(name);
+        this.name = name;
     }
 
     public String getName() {
         return company.getName();
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getPassword() {
@@ -114,24 +117,20 @@ public class CompanyUser implements IUser, ICompany {
     }
 
     @JsonGetter("taxpayer")
-    @Override
     public String getTaxIdentifier() {
         return company.getTaxIdentifier();
     }
 
-    @Override
     public String getAddress() {
         return company.getAddress();
     }
 
     @JsonGetter("bank")
-    @Override
     public String getBankName() {
         return company.getBankName();
     }
 
     @JsonGetter("account")
-    @Override
     public String getBankAccount() {
         return company.getBankAccount();
     }

@@ -17,12 +17,12 @@ public class InvoiceStory {
 
     @Given("company user $companyUser")
     public void givenCompanyUser(String companyUser) {
-        // PENDING
+        userSteps.userEnrolled(companyUser);
     }
 
     @Given("user $customer")
     public void givenUser(String customer) {
-        // PENDING
+        userSteps.userEnrolled(customer);
     }
 
     @Given("$quantity goods named $name with price $price sold")
@@ -30,9 +30,9 @@ public class InvoiceStory {
         invoiceSteps.givenGoods(name, price, quantity);
     }
 
-    @When("$issuer issue invoice for $customer")
-    public void whenIIssueInvoiceFor(String issuer, String customer) {
-        invoiceSteps.issueTo(issuer, customer);
+    @When("$issuer issue invoice to $target for $customer")
+    public void whenIIssueInvoiceFor(String issuer, String target, String customer) {
+        invoiceSteps.issueTo(issuer, target, customer);
     }
 
     @Then("invoice issued")
@@ -50,9 +50,9 @@ public class InvoiceStory {
         invoiceSteps.invoiceListOf(customer);
     }
 
-    @Given("invoice $serial of $customer")
-    public void givenInvoice(String serial, String customer){
-        invoiceSteps.givenInvoiceOf(serial, customer);
+    @Given("invoice of $customer")
+    public void givenInvoice(String customer){
+        invoiceSteps.givenInvoiceOf(customer);
     }
 
     @When("$customer transfer invoice to $anotherCustomer")

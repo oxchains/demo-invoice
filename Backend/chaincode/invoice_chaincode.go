@@ -31,7 +31,7 @@ import (
 type myChaincode struct {
 }
 //sp
-var sp = "\n"
+var sp = ","
 
 //logger
 var logger = shim.NewLogger("invoiceCC")
@@ -623,7 +623,7 @@ func (t *myChaincode) myHistory(stub shim.ChaincodeStubInterface, args []string)
 		keys = append(keys, key.Key)
 	}
 
-	result := strings.Join(keys, ",");
+	result := strings.Join(keys, ";");
 
 	return shim.Success([]byte(result))
 }

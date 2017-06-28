@@ -8,15 +8,21 @@ import java.util.List;
  * @author aiet
  */
 @Entity
+@Table(name = "reimbursement")
 public class Reimbursement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String serial;
-    @Transient private Company company;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "company")
+    private Company company;
+
     private String department;
     private Date createTime;
+
     @Transient private User by;
     @ElementCollection(fetch = FetchType.EAGER)
     private List<Invoice> invoices;

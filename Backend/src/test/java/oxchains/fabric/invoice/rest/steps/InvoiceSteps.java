@@ -4,14 +4,16 @@ import io.restassured.module.mockmvc.response.MockMvcResponse;
 import io.restassured.module.mockmvc.response.ValidatableMockMvcResponse;
 import oxchains.invoice.domain.Goods;
 import oxchains.invoice.domain.Invoice;
-import oxchains.invoice.rest.domain.InvoiceWithGoods;
+import oxchains.invoice.rest.domain.InvoiceReq;
 
 import static io.restassured.http.ContentType.JSON;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
+import static java.util.Collections.singletonList;
 import static org.apache.http.HttpStatus.SC_OK;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static oxchains.fabric.invoice.rest.steps.UserSteps.userTokens;
 
 /**
  * @author aiet
@@ -20,20 +22,18 @@ public class InvoiceSteps {
 
     private Goods goods;
     private MockMvcResponse mockMvcResponse;
-    private Invoice invoice;
+    private static Invoice invoice;
     private String history;
     private String reimburseId;
 
-    public void issueTo(String issuer, String customer) {
-        InvoiceWithGoods invoiceWithGoods = new InvoiceWithGoods();
-        invoiceWithGoods.setName(goods.getName());
-        invoiceWithGoods.setDescription(goods.getDescription());
-        invoiceWithGoods.setPrice(goods.getPrice());
-        invoiceWithGoods.setQuantity(goods.getQuantity());
-        invoiceWithGoods.setTitle(customer);
-        invoiceWithGoods.setIssuer(issuer);
+    public void issueTo(String issuer, String target, String customer) {
+        InvoiceReq invoice = new InvoiceReq();
+        invoice.setGoods(singletonList(goods));
+        invoice.setTitle(target);
+        invoice.setTarget(customer);
         mockMvcResponse = given()
-          .body(invoiceWithGoods)
+          .body(invoice)
+          .header(AUTHORIZATION, userTokens.get(issuer))
           .contentType(JSON)
           .when()
           .post("/invoice");
@@ -56,40 +56,39 @@ public class InvoiceSteps {
           .and()
           .extract()
           .jsonPath()
-          .getObject("$.data", Invoice.class);
+          .getObject("data", Invoice.class);
     }
 
     public void invoiceListOf(String customer) {
         mockMvcResponse = given()
+          .header(AUTHORIZATION, userTokens.get(customer))
           .when()
           .get("/invoice");
     }
 
     public void invoicePresent() {
-        success();
-        //TODO
+        success().body("data.serial", hasItem(invoice.getSerial()));
     }
 
-    public void givenInvoiceOf(String serial, String customer) {
-        invoice = given()
+    public void givenInvoiceOf(String customer) {
+        given()
+          .header(AUTHORIZATION, userTokens.get(customer))
           .when()
-          .get("/invoice/" + serial)
+          .get("/invoice/" + invoice.getSerial())
           .then()
           .statusCode(SC_OK)
           .and()
-          .body("status", is(1))
-          .and()
-          .extract()
-          .body()
-          .jsonPath()
-          .getObject("$.data", Invoice.class);
+          .body("status", is(1));
+
     }
 
     public void transferInvoice(String customer, String anotherCustomer) {
         mockMvcResponse = given()
+          .header(AUTHORIZATION, userTokens.get(customer))
+          .queryParam("invoice", invoice.getSerial())
+          .queryParam("target", anotherCustomer)
           .when()
           .put("/invoice");
-        //TODO
     }
 
     public ValidatableMockMvcResponse success() {
@@ -114,10 +113,10 @@ public class InvoiceSteps {
         assertThat(history, containsString(customer));
     }
 
-    public void reimburse(String customer, String serial) {
+    public void reimburse(String customer) {
         //TODO
         mockMvcResponse = given()
-          .queryParam("invoices", serial)
+          .queryParam("invoices", "")
           .when()
           .post("/reimbursement");
     }
@@ -152,7 +151,11 @@ public class InvoiceSteps {
     }
 
     public void reimbursementCreated() {
-        reimburseId = success().extract().body().jsonPath().getString("data");
+        reimburseId = success()
+          .extract()
+          .body()
+          .jsonPath()
+          .getString("data");
     }
 
 }

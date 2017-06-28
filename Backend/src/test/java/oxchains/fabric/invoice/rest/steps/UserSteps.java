@@ -1,6 +1,7 @@
 package oxchains.fabric.invoice.rest.steps;
 
 import io.restassured.module.mockmvc.response.MockMvcResponse;
+import io.restassured.response.ExtractableResponse;
 import net.thucydides.core.annotations.Step;
 import org.apache.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
@@ -9,11 +10,15 @@ import oxchains.EInvoiceApplication;
 import oxchains.invoice.domain.Company;
 import oxchains.invoice.domain.CompanyUser;
 import oxchains.invoice.domain.User;
+import oxchains.invoice.rest.domain.NameAndPass;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static io.restassured.http.ContentType.JSON;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author aiet
@@ -25,6 +30,7 @@ public class UserSteps {
     private MockMvcResponse mockMvcResponse;
     private static User user;
     private CompanyUser companyUser;
+    static Map<String, String> userTokens = new HashMap<>();
 
     @Step("phone{0}, pass: {1}, name: {2}")
     public void givenAccount(String phone, String password, String name) {
@@ -38,7 +44,7 @@ public class UserSteps {
         companyUser = new CompanyUser();
         companyUser.setCompany(company);
         user.setName(companyName);
-        companyUser.setUser(user);
+        companyUser.withUser(user);
     }
 
     @Step("registering company")
@@ -82,5 +88,57 @@ public class UserSteps {
           .body("data.bank", equalTo(company.getBankName()))
           .and()
           .body("data.taxpayer", equalTo(company.getTaxIdentifier()));
+    }
+
+    public void companyList() {
+        mockMvcResponse = given()
+          .when()
+          .get("/company");
+    }
+
+    public void includeCompany(String company) {
+        requestSuccess();
+        mockMvcResponse
+          .then()
+          .body("data.name", hasItem(company));
+    }
+
+    public void enroll() {
+        NameAndPass nameAndPass = new NameAndPass();
+        nameAndPass.setUsername(user.getName());
+        nameAndPass.setPassword(user.getPassword());
+        nameAndPass.setBiz(false);
+        mockMvcResponse = given()
+          .body(nameAndPass)
+          .contentType(JSON)
+          .when()
+          .post("/token");
+    }
+
+    public void enrolled(String user) {
+        requestSuccess();
+        ExtractableResponse extractableResponse = mockMvcResponse
+          .then()
+          .body("data.token", notNullValue())
+          .extract();
+        userTokens.put(user, "Bearer " + extractableResponse
+          .jsonPath()
+          .getString("data.token"));
+    }
+
+    public void enrollCompanyUser() {
+        NameAndPass nameAndPass = new NameAndPass();
+        nameAndPass.setUsername(companyUser.getName());
+        nameAndPass.setPassword(companyUser.getPassword());
+        nameAndPass.setBiz(true);
+        mockMvcResponse = given()
+          .body(nameAndPass)
+          .contentType(JSON)
+          .when()
+          .post("/token");
+    }
+
+    public void userEnrolled(String companyUser) {
+        assertNotNull("user "+ companyUser + "should have enrolled", userTokens.containsKey(companyUser));
     }
 }

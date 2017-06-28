@@ -12,9 +12,9 @@ public class ReimburseStory {
 
     @Steps private InvoiceSteps steps;
 
-    @When("$customer request reimbursement with invoice $serial")
-    public void whenIssueReimbursement(String customer, String serial){
-        steps.reimburse(customer, serial);
+    @When("$customer request reimbursement with the invoice")
+    public void whenIssueReimbursement(String customer){
+        steps.reimburse(customer);
     }
 
     @Then("reimbursement created")

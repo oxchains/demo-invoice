@@ -7,4 +7,6 @@ public interface IUser {
     String getMobile();
 
     String getName();
+
+    Long getId();
 }
