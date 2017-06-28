@@ -11,13 +11,12 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 
-import static com.oxchains.billing.App.TOKEN_HOLDER;
 import static com.oxchains.billing.domain.BillActions.GET;
 import static com.oxchains.billing.domain.BillActions.REGISTER_USER;
 import static com.oxchains.billing.rest.common.ClientResponse2ServerResponse.toServerResponse;
 import static com.oxchains.billing.util.ArgsUtil.args;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
+import static com.oxchains.billing.util.ResponseUtil.chaincodeInvoke;
+import static com.oxchains.billing.util.ResponseUtil.chaincodeQuery;
 import static org.springframework.web.reactive.function.server.ServerResponse.badRequest;
 import static org.springframework.web.reactive.function.server.ServerResponse.noContent;
 
@@ -35,10 +34,7 @@ public class UserHandler extends ChaincodeUriBuilder {
   /* POST /user */
   public Mono<ServerResponse> register(ServerRequest request) {
     return request.bodyToMono(RegisterAction.class)
-        .flatMap(registerAction -> client.post().uri(buildUri(args(REGISTER_USER, registerAction)))
-            .header(AUTHORIZATION, TOKEN_HOLDER.getToken())
-            .accept(APPLICATION_JSON_UTF8).exchange()
-            .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
+        .flatMap(registerAction -> chaincodeInvoke(client, buildUri(args(REGISTER_USER, registerAction)))
             .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
             .switchIfEmpty(noContent().build())
         ).switchIfEmpty(badRequest().build());
@@ -47,9 +43,7 @@ public class UserHandler extends ChaincodeUriBuilder {
   /* GET /user/{uid} */
   public Mono<ServerResponse> get(ServerRequest request) {
     final String uid = request.pathVariable("uid");
-    return client.get().uri(buildUri(args(GET, uid)))
-        .header(AUTHORIZATION, TOKEN_HOLDER.getToken()).accept(APPLICATION_JSON_UTF8).exchange()
-        .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
+    return chaincodeQuery(client, buildUri(args(GET, uid)))
         .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
         .switchIfEmpty(noContent().build());
   }

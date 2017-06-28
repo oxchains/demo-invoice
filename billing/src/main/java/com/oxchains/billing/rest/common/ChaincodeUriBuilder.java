@@ -18,7 +18,7 @@ public abstract class ChaincodeUriBuilder {
     this.uriTemplate = uriTemplate;
   }
 
-  protected URI buildUri(String args) {
+  public URI buildUri(String args) {
     return new DefaultUriBuilderFactory().uriString(uriTemplate).replaceQueryParam("args", args).build();
   }
 

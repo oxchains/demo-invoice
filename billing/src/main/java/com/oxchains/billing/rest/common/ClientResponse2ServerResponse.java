@@ -1,5 +1,6 @@
 package com.oxchains.billing.rest.common;
 
+import com.oxchains.billing.domain.Bill;
 import com.oxchains.billing.util.ResponseUtil;
 import org.springframework.core.ResolvableType;
 import org.springframework.http.HttpHeaders;
@@ -7,9 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.codec.HttpMessageWriter;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
-import org.springframework.web.reactive.function.BodyExtractors;
 import org.springframework.web.reactive.function.BodyInserter;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.server.HandlerStrategies;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -22,9 +21,8 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import static com.oxchains.billing.util.ResponseUtil.payloadToBill;
+import static com.oxchains.billing.util.ResponseUtil.payloadToBillResp;
 import static org.springframework.web.reactive.function.BodyExtractors.toMono;
-import static org.springframework.web.reactive.function.BodyInserters.empty;
 import static org.springframework.web.reactive.function.BodyInserters.fromPublisher;
 
 /**
@@ -36,13 +34,20 @@ public class ClientResponse2ServerResponse implements ServerResponse {
   private final HttpHeaders httpHeaders;
   private final Mono<String> body;
 
+  private final Mono<Bill> billSink;
+
   private Map<String, Object> hints = new HashMap<>(0);
 
   private ClientResponse2ServerResponse(ClientResponse clientResponse, boolean transformPayload) {
     this.statusCode = clientResponse.statusCode();
     this.httpHeaders = clientResponse.headers().asHttpHeaders();
     Mono<String> response = clientResponse.body(toMono(ResolvableType.forClass(String.class)));
-    this.body = response.map(resp -> transformPayload? payloadToBill(resp) : resp);
+    this.body = response.map(resp -> transformPayload ? payloadToBillResp(resp) : resp);
+    this.billSink = response.map(ResponseUtil::payloadToBill);
+  }
+
+  public Mono<Bill> billSink() {
+    return billSink;
   }
 
   private ClientResponse2ServerResponse(ClientResponse clientResponse, Map<String, Object> hints) {

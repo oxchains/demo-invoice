@@ -13,15 +13,22 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.oxchains.billing.domain.Bill;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.reactive.function.client.ClientResponse;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import static com.oxchains.billing.App.TOKEN_HOLDER;
 import static java.util.Collections.emptyMap;
 import static java.util.Optional.empty;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 
 /**
  * @author aiet
@@ -40,7 +47,32 @@ public class ResponseUtil {
     return empty();
   }
 
-  public static String payloadToBill(String fabricManageResponse) {
+  public static Mono<ClientResponse> chaincodeQuery(WebClient client, URI uri) {
+    return client.get().uri(uri)
+        .header(AUTHORIZATION, TOKEN_HOLDER.getToken())
+        .accept(APPLICATION_JSON_UTF8).exchange()
+        .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful());
+  }
+
+  public static Mono<ClientResponse> chaincodeInvoke(WebClient client, URI uri) {
+    return client.post().uri(uri)
+        .header(AUTHORIZATION, TOKEN_HOLDER.getToken())
+        .accept(APPLICATION_JSON_UTF8).exchange()
+        .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful());
+  }
+
+
+  public static Bill payloadToBill(String fabricManageResponse) {
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      return (Bill) (mapper.readValue(fabricManageResponse, RestResp.class).data);
+    } catch (Exception e) {
+      LOG.error("failed to convert fabric-manage response: {}", e.getMessage());
+    }
+    return null;
+  }
+
+  public static String payloadToBillResp(String fabricManageResponse) {
     try {
       ObjectMapper mapper = new ObjectMapper();
       return mapper.writeValueAsString(mapper.readValue(fabricManageResponse, RestResp.class));
