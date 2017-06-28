@@ -1,6 +1,7 @@
 package oxchains.invoice.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
@@ -9,7 +10,7 @@ import java.util.List;
 
 import static java.lang.System.currentTimeMillis;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 /**
  * @author aiet
@@ -39,7 +40,7 @@ public class Reimbursement {
     private String status;
 
     public String reimburseArgs(String invoices) {
-        setSerial(defaultIfEmpty(serial, randomNumeric(7)));
+        setSerial(defaultIfBlank(serial, randomNumeric(7)));
         return String.format("%s,%s,%s,%s,%s,%s,%s", this.serial, invoices, this.customer, this.company.getName(), currentTimeMillis() / 1000, this.description, currentTimeMillis() / 1000 + 3600);
     }
 
@@ -83,6 +84,7 @@ public class Reimbursement {
         this.description = description;
     }
 
+    @JsonGetter("createtime")
     public Date getCreateTime() {
         return createTime;
     }

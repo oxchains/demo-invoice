@@ -59,15 +59,14 @@ public class ReimbursementController {
     @GetMapping("/{rid}")
     public RestResp getRI(@PathVariable String rid) {
         return userContext()
-          .flatMap(u -> {
-              chaincodeData
-                .reimbursementOf(u.getName(), rid)
-                .filter(ChaincodeResp::succeeded);
-              //TODO
-              return u.isBiz() ? companyUserRepo
-                .findByName(u.getName())
-                .flatMap(cu -> reimbursementRepo.findBySerialAndCompany(rid, cu.getCompany())) : reimbursementRepo.findBySerialAndCustomer(rid, u.getName());
-          })
+          .flatMap(u -> chaincodeData
+            .reimbursementOf(u.getName(), rid)
+            .filter(resp -> resp.succeeded() && resp
+              .getPayload()
+              .contains(u.getName()))
+            .flatMap(resp -> u.isBiz() ? companyUserRepo
+              .findByName(u.getName())
+              .flatMap(cu -> reimbursementRepo.findBySerialAndCompany(rid, cu.getCompany())) : reimbursementRepo.findBySerialAndCustomer(rid, u.getName())))
           .map(RestResp::success)
           .orElse(fail());
     }

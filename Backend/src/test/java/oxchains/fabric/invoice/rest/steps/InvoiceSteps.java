@@ -102,20 +102,6 @@ public class InvoiceSteps {
           .body("status", is(1));
     }
 
-    public void historyOfInvoiceFrom(String serial, String customer) {
-        mockMvcResponse = given()
-          .when()
-          .get("/invoice/" + serial + "/history");
-        history = success()
-          .extract()
-          .jsonPath()
-          .getString("data");
-    }
-
-    public void historyContains(String customer) {
-        assertThat(history, containsString(customer));
-    }
-
     public void reimburse(String customer, String company) {
         mockMvcResponse = given()
           .queryParam("invoices", invoice.getSerial())

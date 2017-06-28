@@ -26,7 +26,7 @@ public class InvoiceStory {
     }
 
     @Given("$quantity goods named $name with price $price sold")
-    public void givenGoodsSold(int quantity, String name, int price){
+    public void givenGoodsSold(int quantity, String name, int price) {
         invoiceSteps.givenGoods(name, price, quantity);
     }
 
@@ -51,28 +51,18 @@ public class InvoiceStory {
     }
 
     @Given("invoice of $customer")
-    public void givenInvoice(String customer){
+    public void givenInvoice(String customer) {
         invoiceSteps.givenInvoiceOf(customer);
     }
 
     @When("$customer transfer invoice to $anotherCustomer")
-    public void whenTransferInvoice(String customer, String anotherCustomer){
+    public void whenTransferInvoice(String customer, String anotherCustomer) {
         invoiceSteps.transferInvoice(customer, anotherCustomer);
     }
 
     @Then("invoice transfered")
-    public void thenInvoiceTransfered(){
+    public void thenInvoiceTransfered() {
         invoiceSteps.success();
-    }
-
-    @When("$customer query history of invoice $serial")
-    public void whenQueryHistory(String customer, String serial){
-        invoiceSteps.historyOfInvoiceFrom(serial, customer);
-    }
-
-    @Then("$customer in the history")
-    public void thenHistoryContains(String customer){
-        invoiceSteps.historyContains(customer);
     }
 
 }

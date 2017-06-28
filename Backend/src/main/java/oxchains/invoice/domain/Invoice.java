@@ -11,7 +11,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static java.lang.System.currentTimeMillis;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
@@ -85,7 +85,7 @@ public class Invoice {
     }
 
     public String createArgs() {
-        setSerial(defaultIfEmpty(serial, randomNumeric(7)));
+        setSerial(defaultIfBlank(serial, randomNumeric(7)));
         setCreateTime(new Date());
         return String.format("%s,%s,%s,%s,%s", this.serial, origin.getName(), target.getName(), currentTimeMillis() / 1000, goods);
     }

@@ -1,5 +1,7 @@
 package oxchains.invoice.rest.domain;
 
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 /**
  * @author aiet
  */
@@ -18,8 +20,8 @@ public class ChaincodeResp {
         this.payload = payload;
     }
 
-    public boolean succeeded(){
-        return 1==success;
+    public boolean succeeded() {
+        return 1 == success || isNotBlank(payload);
     }
 
     public String getTxid() {
