@@ -21,6 +21,8 @@ import UserList from './components/user_list';
 import BillList from './components/bill_list';
 import BillActions from './components/bill_actions';
 
+import {register} from './actions/registerService';
+
 const createStoreWithMiddleware = compose(
   applyMiddleware(reduxThunk),
   window.devToolsExtension ? window.devToolsExtension() : f => f
@@ -50,9 +52,11 @@ ReactDOM.render(
   </Provider>
   , document.querySelector('.wrapper'));
 
-// 如果之前已经登录成功 则自动登录
+//如果之前已经登录成功 则自动登录
 const username = localStorage.getItem('username');
 // If token exist, singin automatic
 if (username) {
   store.dispatch({type: AUTH_USER, username});
+  register();
 }
+

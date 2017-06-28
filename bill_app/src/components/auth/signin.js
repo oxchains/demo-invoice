@@ -7,17 +7,21 @@
  *
  */
 
-import React, { Component } from 'react';
-import { Field, reduxForm } from 'redux-form';
-import { connect } from 'react-redux';
-import { Route, Redirect } from 'react-router-dom'
-import { signinAction } from '../../actions/auth'
+import React, {Component} from 'react';
+import {Field, reduxForm} from 'redux-form';
+import {connect} from 'react-redux';
+import {Route, Redirect} from 'react-router-dom'
+import {signinAction} from '../../actions/auth'
+
+import {register} from '../../actions/registerService';
 
 class Signin extends Component {
 
-  handleFormSubmit({ username, password }) {
-    if(username && password)
-      this.props.signinAction({ username, password }, ()=>{ console.log('signin callback');});
+  handleFormSubmit({username, password}) {
+    if (username && password)
+      this.props.signinAction({username, password}, () => {
+        register();
+      });
   }
 
   renderAlert() {
@@ -30,48 +34,49 @@ class Signin extends Component {
     }
   }
 
-  renderField({ input, label, type, icon, meta: { touched, error } }) {
+  renderField({input, label, type, icon, meta: {touched, error}}) {
     return (
-    <div className={`form-group has-feedback ${touched && error ? 'has-error' : ''}`}>
-      <input {...input} placeholder={label} type={type} className="form-control"/>
-      <span className={`glyphicon glyphicon-${icon} form-control-feedback`}></span>
-    </div>
-  )}
+      <div className={`form-group has-feedback ${touched && error ? 'has-error' : ''}`}>
+        <input {...input} placeholder={label} type={type} className="form-control"/>
+        <span className={`glyphicon glyphicon-${icon} form-control-feedback`}></span>
+      </div>
+    )
+  }
 
   render() {
-    const { handleSubmit} = this.props;
-    const { from } = this.props.location.state || { from: { pathname: '/' } };
+    const {handleSubmit} = this.props;
+    const {from} = this.props.location.state || {from: {pathname: '/'}};
     console.log(from);
 
-    if(this.props.loggedIn) {
+    if (this.props.loggedIn) {
       return <Redirect to={from}/>;
     }
 
     return (
       <div>
         <section className="content">
-        <div className="login-box">
-          <div className="login-logo">
-          </div>
-          <div className="login-box-body">
-            <p className="login-box-msg" style={{fontSize: 24+'px'}}>OXCHAIN</p>
+          <div className="login-box">
+            <div className="login-logo">
+            </div>
+            <div className="login-box-body">
+              <p className="login-box-msg" style={{fontSize: 24 + 'px'}}>OXCHAIN</p>
 
-            {this.renderAlert()}
+              {this.renderAlert()}
 
-            <form className="form-signin" onSubmit={handleSubmit(this.handleFormSubmit.bind(this))}>
-            <Field name="username" component={this.renderField} type="text"  label="用户名" icon="envelope" />
-            <Field name="password" component={this.renderField} type="password" label="密码" icon="lock" />
-              <div className="row">
-                <div className="col-xs-8">
+              <form className="form-signin" onSubmit={handleSubmit(this.handleFormSubmit.bind(this))}>
+                <Field name="username" component={this.renderField} type="text" label="用户名" icon="envelope"/>
+                <Field name="password" component={this.renderField} type="password" label="密码" icon="lock"/>
+                <div className="row">
+                  <div className="col-xs-8">
+                  </div>
+                  <div className="col-xs-4">
+                    <button type="submit" className="btn btn-primary btn-block btn-flat">登录</button>
+                  </div>
                 </div>
-                <div className="col-xs-4">
-                  <button type="submit" className="btn btn-primary btn-block btn-flat">登录</button>
-                </div>
-              </div>
 
-            </form>
+              </form>
+            </div>
           </div>
-        </div>
         </section>
       </div>
     );
@@ -82,11 +87,11 @@ class Signin extends Component {
 const validate = values => {
   const errors = {};
 
-  if(!values.username) {
+  if (!values.username) {
     errors.username = 'username required'
   }
 
-  if(!values.password) {
+  if (!values.password) {
     errors.password = 'password required'
   }
 
@@ -105,4 +110,4 @@ const reduxSignForm = reduxForm({
   validate
 })(Signin);
 
-export default connect(mapStateToProps, { signinAction })(reduxSignForm);
+export default connect(mapStateToProps, {signinAction})(reduxSignForm);
