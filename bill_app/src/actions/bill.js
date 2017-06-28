@@ -14,13 +14,14 @@ import {
   FETCH_PLEDGE_LIST,
   FETCH_RELEASE_LIST,
   FETCH_PAYMENT_LIST,
-  FETCH_RECOURSE_LIST
+  FETCH_RECOURSE_LIST,
+  QUERY_DUE
 } from './types';
 
 export function requestError(error) {
   return {
-    type: REQUEST_ERROR,
-    payload: error
+	type: REQUEST_ERROR,
+	payload: error
   };
 }
 
@@ -47,18 +48,18 @@ export function requestError(error) {
 export function register({price, drawee, drawer, payee, due, transferable}, callback) {
   due = due + ' 23:59:59';
   return function (dispatch) {
-    axios.post(`${ROOT_URL}/bill`, {price, drawer, drawee, payee, due, transferable})
-      .then(response => {
-        if (response.data.status == 1) {// success
-          callback();
-        } else {// fail
-          callback(response.data.message);
-        }
-      })
-      .catch(err => {
-        dispatch(requestError(err.message));
-        callback(err.message);
-      });
+	axios.post(`${ROOT_URL}/bill`, {price, drawer, drawee, payee, due, transferable})
+		.then(response => {
+		  if (response.data.status == 1) {// success
+			callback();
+		  } else {// fail
+			callback(response.data.message);
+		  }
+		})
+		.catch(err => {
+		  dispatch(requestError(err.message));
+		  callback(err.message);
+		});
   }
 }
 
@@ -72,34 +73,34 @@ export function register({price, drawee, drawer, payee, due, transferable}, call
  */
 function bill_action(url, params, callback) {
   return function (dispatch) {
-    const {action} = params;
-    if (action) {
-      axios.put(url, params)
-        .then(response => {
-          if (response.data.status == 1) {// success
-            callback();
-          } else {// fail
-            callback(response.data.message);
-          }
-        })
-        .catch(err => {
-          dispatch(requestError(err.message));
-          callback(err.message);
-        });
-    } else {
-      axios.post(url, params)
-        .then(response => {
-          if (response.data.status == 1) {// success
-            callback();
-          } else {// fail
-            callback(response.data.message);
-          }
-        })
-        .catch(err => {
-          dispatch(requestError(err.message));
-          callback(err.message);
-        });
-    }
+	const {action} = params;
+	if (action) {
+	  axios.put(url, params)
+		  .then(response => {
+			if (response.data.status == 1) {// success
+			  callback();
+			} else {// fail
+			  callback(response.data.message);
+			}
+		  })
+		  .catch(err => {
+			dispatch(requestError(err.message));
+			callback(err.message);
+		  });
+	} else {
+	  axios.post(url, params)
+		  .then(response => {
+			if (response.data.status == 1) {// success
+			  callback();
+			} else {// fail
+			  callback(response.data.message);
+			}
+		  })
+		  .catch(err => {
+			dispatch(requestError(err.message));
+			callback(err.message);
+		  });
+	}
   }
 }
 
@@ -235,9 +236,9 @@ export function prompt_dun({id, manipulator, action, debtor}, callback) {
  */
 export function fetchBillInfo(id) {
   return function (dispatch) {
-    axios.get(`${ROOT_URL}/bill/${id}`)
-      .then(response => dispatch({type: FETCH_BILL_INFO, payload: response}))
-      .catch(err => dispatch(requestError(err.message)));
+	axios.get(`${ROOT_URL}/bill/${id}`)
+		.then(response => dispatch({type: FETCH_BILL_INFO, payload: response}))
+		.catch(err => dispatch(requestError(err.message)));
   }
 }
 
@@ -247,9 +248,9 @@ export function fetchBillInfo(id) {
  */
 export function fetchAcceptanceList(username) {
   return function (dispatch) {
-    axios.get(`${ROOT_URL}/bill/${username}/acceptance`)
-      .then(response => dispatch({type: FETCH_ACCEPTANCE_LIST, payload: response}))
-      .catch(err => dispatch(requestError(err.message)));
+	axios.get(`${ROOT_URL}/bill/${username}/acceptance`)
+		.then(response => dispatch({type: FETCH_ACCEPTANCE_LIST, payload: response}))
+		.catch(err => dispatch(requestError(err.message)));
   }
 }
 
@@ -259,9 +260,9 @@ export function fetchAcceptanceList(username) {
  */
 export function fetchGuarantyList(username) {
   return function (dispatch) {
-    axios.get(`${ROOT_URL}/bill/${username}/guaranty`)
-      .then(response => dispatch({type: FETCH_GUARANTY_LIST, payload: response}))
-      .catch(err => dispatch(requestError(err.message)));
+	axios.get(`${ROOT_URL}/bill/${username}/guaranty`)
+		.then(response => dispatch({type: FETCH_GUARANTY_LIST, payload: response}))
+		.catch(err => dispatch(requestError(err.message)));
   }
 }
 
@@ -271,9 +272,9 @@ export function fetchGuarantyList(username) {
  */
 export function fetchRevocationList(username) {
   return function (dispatch) {
-    axios.get(`${ROOT_URL}/bill/${username}/revocation`)
-      .then(response => dispatch({type: FETCH_REVOCATION_LIST, payload: response}))
-      .catch(err => dispatch(requestError(err.message)));
+	axios.get(`${ROOT_URL}/bill/${username}/revocation`)
+		.then(response => dispatch({type: FETCH_REVOCATION_LIST, payload: response}))
+		.catch(err => dispatch(requestError(err.message)));
   }
 }
 
@@ -283,9 +284,9 @@ export function fetchRevocationList(username) {
  */
 export function fetchReceptionList(username) {
   return function (dispatch) {
-    axios.get(`${ROOT_URL}/bill/${username}/reception`)
-      .then(response => dispatch({type: FETCH_RECEPTION_LIST, payload: response}))
-      .catch(err => dispatch(requestError(err.message)));
+	axios.get(`${ROOT_URL}/bill/${username}/reception`)
+		.then(response => dispatch({type: FETCH_RECEPTION_LIST, payload: response}))
+		.catch(err => dispatch(requestError(err.message)));
   }
 }
 
@@ -295,9 +296,9 @@ export function fetchReceptionList(username) {
  */
 export function fetchEndorsementList(username) {
   return function (dispatch) {
-    axios.get(`${ROOT_URL}/bill/${username}/endorsement`)
-      .then(response => dispatch({type: FETCH_ENDORSEMENT_LIST, payload: response}))
-      .catch(err => dispatch(requestError(err.message)));
+	axios.get(`${ROOT_URL}/bill/${username}/endorsement`)
+		.then(response => dispatch({type: FETCH_ENDORSEMENT_LIST, payload: response}))
+		.catch(err => dispatch(requestError(err.message)));
   }
 }
 
@@ -307,9 +308,9 @@ export function fetchEndorsementList(username) {
  */
 export function fetchDiscountList(username) {
   return function (dispatch) {
-    axios.get(`${ROOT_URL}/bill/${username}/discount`)
-      .then(response => dispatch({type: FETCH_DISCOUNT_LIST, payload: response}))
-      .catch(err => dispatch(requestError(err.message)));
+	axios.get(`${ROOT_URL}/bill/${username}/discount`)
+		.then(response => dispatch({type: FETCH_DISCOUNT_LIST, payload: response}))
+		.catch(err => dispatch(requestError(err.message)));
   }
 }
 
@@ -319,9 +320,9 @@ export function fetchDiscountList(username) {
  */
 export function fetchPledgeList(username) {
   return function (dispatch) {
-    axios.get(`${ROOT_URL}/bill/${username}/pledge`)
-      .then(response => dispatch({type: FETCH_PLEDGE_LIST, payload: response}))
-      .catch(err => dispatch(requestError(err.message)));
+	axios.get(`${ROOT_URL}/bill/${username}/pledge`)
+		.then(response => dispatch({type: FETCH_PLEDGE_LIST, payload: response}))
+		.catch(err => dispatch(requestError(err.message)));
   }
 }
 
@@ -331,9 +332,9 @@ export function fetchPledgeList(username) {
  */
 export function fetchReleaseList(username) {
   return function (dispatch) {
-    axios.get(`${ROOT_URL}/bill/${username}/pledge/release`)
-      .then(response => dispatch({type: FETCH_RELEASE_LIST, payload: response}))
-      .catch(err => dispatch(requestError(err.message)));
+	axios.get(`${ROOT_URL}/bill/${username}/pledge/release`)
+		.then(response => dispatch({type: FETCH_RELEASE_LIST, payload: response}))
+		.catch(err => dispatch(requestError(err.message)));
   }
 }
 
@@ -343,9 +344,9 @@ export function fetchReleaseList(username) {
  */
 export function fetchPaymentList(username) {
   return function (dispatch) {
-    axios.get(`${ROOT_URL}/bill/${username}/payment`)
-      .then(response => dispatch({type: FETCH_PAYMENT_LIST, payload: response}))
-      .catch(err => dispatch(requestError(err.message)));
+	axios.get(`${ROOT_URL}/bill/${username}/payment`)
+		.then(response => dispatch({type: FETCH_PAYMENT_LIST, payload: response}))
+		.catch(err => dispatch(requestError(err.message)));
   }
 }
 
@@ -355,9 +356,26 @@ export function fetchPaymentList(username) {
  */
 export function fetchRecourseList(username) {
   return function (dispatch) {
-    axios.get(`${ROOT_URL}/bill/${username}/recourse`)
-      .then(response => dispatch({type: FETCH_RECOURSE_LIST, payload: response}))
-      .catch(err => dispatch(requestError(err.message)));
+	axios.get(`${ROOT_URL}/bill/${username}/recourse`)
+		.then(response => dispatch({type: FETCH_RECOURSE_LIST, payload: response}))
+		.catch(err => dispatch(requestError(err.message)));
+  }
+}
+
+/**
+ * 票据查询
+ * @param callback
+ * @returns {Function}
+ */
+export function queryDue(callback) {
+  return function (dispatch) {
+	axios.get(`${ROOT_URL}/bill/due`).then(response => {
+	  if (response.data.payload) {
+		callback({payload: "有票据到期"})
+	  } else {
+		callback();
+	  }
+	})
   }
 }
 
