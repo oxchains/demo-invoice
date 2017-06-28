@@ -11,6 +11,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 
+import static com.oxchains.billing.App.TOKEN_HOLDER;
 import static com.oxchains.billing.domain.BillActions.GET;
 import static com.oxchains.billing.domain.BillActions.REGISTER_USER;
 import static com.oxchains.billing.rest.common.ClientResponse2ServerResponse.toServerResponse;
@@ -27,16 +28,15 @@ import static org.springframework.web.reactive.function.server.ServerResponse.no
 public class UserHandler extends ChaincodeUriBuilder {
 
   public UserHandler(@Autowired WebClient client,
-                     @Autowired @Qualifier("fabric.uri") UriBuilder uriBuilder,
-                     @Autowired @Qualifier("token") String token) {
-    super(client, token, uriBuilder.build().toString());
+                     @Autowired @Qualifier("fabric.uri") UriBuilder uriBuilder) {
+    super(client, uriBuilder.build().toString());
   }
 
   /* POST /user */
   public Mono<ServerResponse> register(ServerRequest request) {
     return request.bodyToMono(RegisterAction.class)
         .flatMap(registerAction -> client.post().uri(buildUri(args(REGISTER_USER, registerAction)))
-            .header(AUTHORIZATION, token)
+            .header(AUTHORIZATION, TOKEN_HOLDER.getToken())
             .accept(APPLICATION_JSON_UTF8).exchange()
             .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
             .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
@@ -48,7 +48,7 @@ public class UserHandler extends ChaincodeUriBuilder {
   public Mono<ServerResponse> get(ServerRequest request) {
     final String uid = request.pathVariable("uid");
     return client.get().uri(buildUri(args(GET, uid)))
-        .header(AUTHORIZATION, token).accept(APPLICATION_JSON_UTF8).exchange()
+        .header(AUTHORIZATION, TOKEN_HOLDER.getToken()).accept(APPLICATION_JSON_UTF8).exchange()
         .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
         .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
         .switchIfEmpty(noContent().build());

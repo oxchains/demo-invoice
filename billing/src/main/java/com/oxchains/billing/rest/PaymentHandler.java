@@ -13,6 +13,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 
+import static com.oxchains.billing.App.TOKEN_HOLDER;
 import static com.oxchains.billing.domain.BillActions.*;
 import static com.oxchains.billing.rest.common.ClientResponse2ServerResponse.toPayloadTransformedServerResponse;
 import static com.oxchains.billing.rest.common.ClientResponse2ServerResponse.toServerResponse;
@@ -31,9 +32,8 @@ import static org.springframework.web.reactive.function.server.ServerResponse.no
 public class PaymentHandler extends ChaincodeUriBuilder {
 
   public PaymentHandler(@Autowired WebClient client,
-                        @Autowired @Qualifier("fabric.uri") UriBuilder uriBuilder,
-                        @Autowired @Qualifier("token") String token) {
-    super(client, token, uriBuilder.build().toString());
+                        @Autowired @Qualifier("fabric.uri") UriBuilder uriBuilder) {
+    super(client, uriBuilder.build().toString());
   }
 
   private final Logger LOG = LoggerFactory.getLogger(getClass());
@@ -43,7 +43,7 @@ public class PaymentHandler extends ChaincodeUriBuilder {
     checkDue().block();
     return request.bodyToMono(PresentAction.class)
         .flatMap(payAction -> client.post().uri(buildUri(args(BILL_PAY, payAction)))
-            .header(AUTHORIZATION, token)
+            .header(AUTHORIZATION, TOKEN_HOLDER.getToken())
             .accept(APPLICATION_JSON_UTF8).exchange()
             .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
             .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
@@ -51,7 +51,7 @@ public class PaymentHandler extends ChaincodeUriBuilder {
   }
 
   private Mono<Object> checkDue() {
-    return client.post().uri(buildUri(CHECK_DUE)).header(AUTHORIZATION, token)
+    return client.post().uri(buildUri(CHECK_DUE)).header(AUTHORIZATION, TOKEN_HOLDER.getToken())
         .accept(APPLICATION_JSON_UTF8).exchange()
         .filter(dueResponse -> dueResponse.statusCode().is2xxSuccessful())
         .flatMap(clientResponse -> clientResponse.body(toMono(forClass(String.class))))
@@ -63,7 +63,7 @@ public class PaymentHandler extends ChaincodeUriBuilder {
     checkDue().block();
     return request.bodyToMono(PresentAction.class)
         .flatMap(payAction -> client.post().uri(buildUri(args(BILL_PAY, payAction)))
-            .header(AUTHORIZATION, token)
+            .header(AUTHORIZATION, TOKEN_HOLDER.getToken())
             .accept(APPLICATION_JSON_UTF8).exchange()
             .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
             .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
@@ -75,7 +75,7 @@ public class PaymentHandler extends ChaincodeUriBuilder {
     checkDue().block();
     final String uid = request.pathVariable("uid");
     return client.get().uri(buildUri(args(GET_PAYMENT, uid)))
-        .header(AUTHORIZATION, token)
+        .header(AUTHORIZATION, TOKEN_HOLDER.getToken())
         .accept(APPLICATION_JSON_UTF8).exchange()
         .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
         .flatMap(clientResponse -> Mono.just(toPayloadTransformedServerResponse(clientResponse)))

@@ -1,6 +1,7 @@
 package com.oxchains.billing.notification;
 
 import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.io.BaseEncoding;
 import nl.martijndwars.webpush.ClosableCallback;
 import nl.martijndwars.webpush.Encrypted;
@@ -21,12 +22,8 @@ import org.jose4j.jwt.JwtClaims;
 import org.jose4j.lang.JoseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.server.ServerRequest;
-import org.springframework.web.reactive.function.server.ServerResponse;
-import reactor.core.publisher.Mono;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -34,43 +31,25 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static nl.martijndwars.webpush.PushService.encrypt;
-import static org.springframework.web.reactive.function.server.ServerResponse.ok;
 
 /**
  * @author aiet
  */
-@Component
-public class PushHandler {
-
-  private Logger LOG = LoggerFactory.getLogger(getClass());
+@Service
+public class PushService {
 
   private Cache<String, Subscription> cache;
+  private Logger LOG = LoggerFactory.getLogger(getClass());
 
-  @Autowired
-  public PushHandler(Cache<String, Subscription> cache) {
-    this.cache = cache;
+  public PushService() {
+    cache = CacheBuilder.newBuilder()
+        .initialCapacity(8).concurrencyLevel(3).build();
+    LOG.info("cache init with capacity 8 and concurrency level 3");
   }
 
-  public Mono<ServerResponse> create(ServerRequest request) {
-    final String uid = request.pathVariable("uid");
-    return request.bodyToMono(Subscription.class).doOnNext(subscription -> {
-      cache.put(uid, subscription);
-    }).flatMap(subscription -> {
-      LOG.info("cached subscription of {}: {}", uid, subscription);
-      try {
-      /* send a test push notification */
-        Notification notification = new Notification(
-            subscription.getEndpoint(),
-            subscription.getPublicKey(),
-            subscription.getAuthAsBytes(),
-            "test".getBytes()
-        );
-        sendAsync(notification);
-      } catch (Exception e) {
-        LOG.error("failed to send test notification to {}", uid, e);
-      }
-      return ok().build();
-    }).switchIfEmpty(ok().build());
+
+  public void cache(String uid, Subscription subscription) {
+    cache.put(uid, subscription);
   }
 
   @Value("${webapp.push.key.public}")
@@ -167,5 +146,21 @@ public class PushHandler {
     });
   }
 
-
+  public void sendMsg(String uid, String msg) {
+    try {
+    /* send a test push notification */
+      Subscription subscription = cache.getIfPresent(uid);
+      if (subscription != null) {
+        Notification notification = new Notification(
+            subscription.getEndpoint(),
+            subscription.getPublicKey(),
+            subscription.getAuthAsBytes(),
+            msg.getBytes()
+        );
+        sendAsync(notification);
+      }
+    } catch (Exception e) {
+      LOG.error("failed to send test notification to {}", uid, e);
+    }
+  }
 }
