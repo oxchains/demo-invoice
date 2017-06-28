@@ -1,5 +1,7 @@
 package oxchains.invoice.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 /**
@@ -9,8 +11,9 @@ import javax.persistence.*;
 @Table(name = "goods")
 public class Goods {
 
+    @JsonIgnore
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
     private String description;

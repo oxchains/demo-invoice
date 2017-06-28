@@ -12,9 +12,9 @@ public class ReimburseStory {
 
     @Steps private InvoiceSteps steps;
 
-    @When("$customer request reimbursement with the invoice")
-    public void whenIssueReimbursement(String customer){
-        steps.reimburse(customer);
+    @When("$customer request reimbursement to $company with the invoice")
+    public void whenIssueReimbursement(String customer, String company){
+        steps.reimburse(customer, company);
     }
 
     @Then("reimbursement created")
@@ -53,5 +53,20 @@ public class ReimburseStory {
         steps.confirmReimbursementBy(company);
     }
 
+    @When("$company check the reimbursement")
+    public void whenCheckReimbursement(String company){
+        steps.reimbursementOf(company);
+    }
+
+    @Then("the reimbursing invoice is not present")
+    public void thenInvoiceNotPresent(){
+        steps.invoicePresentInReimbursement(false);
+    }
+
+
+    @Then("the reimbursing invoice is present")
+    public void thenInvoicePresent(){
+        steps.invoicePresentInReimbursement(true);
+    }
 
 }

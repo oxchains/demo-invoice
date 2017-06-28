@@ -1,5 +1,6 @@
 package oxchains.invoice.data;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,12 +9,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import oxchains.invoice.domain.Invoice;
+import oxchains.invoice.domain.Reimbursement;
 import oxchains.invoice.rest.domain.ChaincodeResp;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static java.lang.System.currentTimeMillis;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.http.HttpMethod.GET;
@@ -67,5 +70,24 @@ public class ChaincodeData {
 
     public Optional<ChaincodeResp> transfer(Invoice invoice, String target) {
         return extract(restTemplate.postForObject(txUri + "transfer," + invoice.transferArgs(target), entity, String.class), "/data").map(data -> resolve(data, ChaincodeResp.class));
+    }
+
+    public Optional<ChaincodeResp> reimbursementOf(String name, String rid) {
+        return extract(restTemplate
+          .exchange(String.format("%s%s,%s,%s", txUri, "getbx", rid, name), GET, entity, String.class)
+          .getBody(), "/data").map(data -> resolve(data, ChaincodeResp.class));
+    }
+
+    public Optional<ChaincodeResp> reimburse(String name, String[] invoices, Reimbursement reimbursement) {
+        return extract(restTemplate.postForObject(txUri + "createbx," + reimbursement.reimburseArgs(StringUtils.join(invoices, "-")), entity, String.class), "/data" ).map(data -> resolve(data, ChaincodeResp.class));
+    }
+
+    public Optional<ChaincodeResp> handleReimbursement(String serial, String name, boolean reject, String remark) {
+        if(reject){
+            return extract(restTemplate.postForObject(String.format("%s%s,%s,%s,%s,%s", txUri, "rejectbx", serial, name, remark, currentTimeMillis()/1000), entity, String.class), "/data").map(data -> resolve(data, ChaincodeResp.class));
+        }else{
+            return extract(restTemplate.postForObject(String.format("%s%s,%s,%s,%s", txUri, "confirmbx", serial, name, currentTimeMillis()/1000), entity, String.class), "/data").map(data -> resolve(data, ChaincodeResp.class));
+
+        }
     }
 }

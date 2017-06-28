@@ -42,7 +42,7 @@ public class InvoiceStory {
 
     @Then("the invoice is present")
     public void thenInvoicePresent() {
-        invoiceSteps.invoicePresent();
+        invoiceSteps.invoicePresent(true);
     }
 
     @When("$customer check invoice list")

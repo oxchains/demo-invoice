@@ -1,5 +1,7 @@
 package oxchains.invoice.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 /**
@@ -10,7 +12,7 @@ import javax.persistence.*;
 public class User implements IUser {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private String mobile;
@@ -19,12 +21,24 @@ public class User implements IUser {
     private String name;
     private String avatar;
 
+    @JsonIgnore
+    @Transient
+    private boolean isBiz;
+
     public User() {
     }
 
     public User(String phone, String password) {
         this.mobile = phone;
         this.password = password;
+    }
+
+    public boolean isBiz() {
+        return isBiz;
+    }
+
+    public void setBiz(boolean biz) {
+        isBiz = biz;
     }
 
     @Override
