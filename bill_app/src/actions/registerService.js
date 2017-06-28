@@ -1,9 +1,12 @@
 /**
  * Created by finch on 6/27/17.
  */
-export function register() {
+
+let name = '';
+export function register(username) {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').then(initialiseState);
+    name = username;
   } else {
     console.warn('Service workers are not supported in this browser.');
   }
@@ -140,7 +143,7 @@ function sendSubscriptionToServer(subscription) {
   // This example uses the new fetch API. This is not supported in all
   // browsers yet.
   // 测试写死的API 后续调试需要将 a 参数化 每一个用户登录都不一样
-  return fetch('http://10.8.47.4:17173/bill/a/subscription', {
+  return fetch(`http://10.8.47.4:17173/bill/${name}/subscription`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

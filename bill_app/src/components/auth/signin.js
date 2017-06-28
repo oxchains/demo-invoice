@@ -20,7 +20,7 @@ class Signin extends Component {
   handleFormSubmit({username, password}) {
     if (username && password)
       this.props.signinAction({username, password}, () => {
-        register();
+        register(username);
       });
   }
 

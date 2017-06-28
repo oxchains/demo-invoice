@@ -7,23 +7,23 @@
  *
  */
 
-import React, { Component } from 'react';
-import { Field, reduxForm, formValueSelector } from 'redux-form';
-import { connect } from 'react-redux';
-import { prompt_discount } from '../../actions/bill'
+import React, {Component} from 'react';
+import {Field, reduxForm, formValueSelector} from 'redux-form';
+import {connect} from 'react-redux';
+import {prompt_discount} from '../../actions/bill'
 
 class PromptDiscount extends Component {
   constructor(props) {
     super(props);
-    this.state = { error:null, spin:false };
+    this.state = {error: null, spin: false};
   }
 
-  handleFormSubmit({ id, manipulator, action, discount_type, receiver, discount_interest, money}) {
-    if(id && manipulator) {
-      this.setState({ spin:true });
-      this.props.prompt_discount({ id, manipulator, action, discount_type, receiver, discount_interest, money}, err => {
-        this.setState({ error: err ? err : null, spin:false });
-        if(typeof this.props.addCallback == 'function') this.props.addCallback(err);
+  handleFormSubmit({id, manipulator, action, discount_type, receiver, discount_interest, money}) {
+    if (id && manipulator) {
+      this.setState({spin: true});
+      this.props.prompt_discount({id, manipulator, action, discount_type, receiver, discount_interest, money}, err => {
+        this.setState({error: err ? err : null, spin: false});
+        if (typeof this.props.addCallback == 'function') this.props.addCallback(err);
       });
     }
   }
@@ -38,7 +38,7 @@ class PromptDiscount extends Component {
     }
   }
 
-  renderField({ input, label, type, meta: { touched, error } }) {
+  renderField({input, label, type, meta: {touched, error}}) {
     return (
       <div className={`form-group has-feedback ${touched && error ? 'has-error' : ''}`}>
         <label className="col-sm-2 control-label">{label}</label>
@@ -51,24 +51,25 @@ class PromptDiscount extends Component {
   }
 
   render() {
-    const { error, handleSubmit, pristine, reset, submitting, action } = this.props;
+    const {error, handleSubmit, pristine, reset, submitting, action} = this.props;
 
     return (
       <div className="">
         {this.renderAlert()}
         <form className="form-horizontal" onSubmit={handleSubmit(this.handleFormSubmit.bind(this))}>
-          <Field name="id" component={this.renderField} type="text" label="票据编号" />
-          <Field name="manipulator" component={this.renderField} type="text"  label="操作者" />
+          <Field name="id" component={this.renderField} type="text" label="票据编号"/>
+          <Field name="manipulator" component={this.renderField} type="text" label="操作者"/>
           <div className="form-group">
             <label className="col-sm-2 control-label"></label>
             <div className="col-sm-10">
               <label className="margin-r-5"><Field name="action" component="input" type="radio" value=""/> 不限制转让</label>
-              <label className="margin-r-5"><Field name="action" component="input" type="radio" value="-1"/> 不得继续转让</label>
+              <label className="margin-r-5"><Field name="action" component="input" type="radio" value="-1"/>
+                不得继续转让</label>
               <label className="margin-r-5"><Field name="action" component="input" type="radio" value="0"/> 撤销</label>
               <label className="margin-r-5"><Field name="action" component="input" type="radio" value="1"/> 确认</label>
             </div>
           </div>
-          {action!=1 && <div>
+          { (action == 1 || action == 0) ? <div></div> : <div>
             <Field name="receiver" component={this.renderField} type="text" label='贴入人'/>
             <Field name="discount_type" component={this.renderField} type="text" label='贴现类型'/>
             <Field name="discount_interest" component={this.renderField} type="text" label='贴现利率'/>
@@ -77,7 +78,9 @@ class PromptDiscount extends Component {
           <div className="row">
             <div className="col-xs-8"></div>
             <div className="col-xs-4">
-              <button type="submit" className="btn btn-primary btn-block btn-flat" disabled={submitting}><i className={`fa fa-spinner fa-spin ${this.state.spin?'':'hidden'}`}></i> 提交 </button>
+              <button type="submit" className="btn btn-primary btn-block btn-flat" disabled={submitting}><i
+                className={`fa fa-spinner fa-spin ${this.state.spin ? '' : 'hidden'}`}></i> 提交
+              </button>
             </div>
           </div>
 
@@ -91,32 +94,32 @@ class PromptDiscount extends Component {
 const validate = values => {
   const errors = {};
 
-  if(!values.id) {
+  if (!values.id) {
     errors.id = '票据编号不能为空';
   }
 
-  if(!values.manipulator) {
+  if (!values.manipulator) {
     errors.manipulator = '操作者不能为空';
   }
 
-  if(!values.endorsor) {
+  if (!values.endorsor) {
     errors.endorsor = '不能为空';
   }
 
-  if(values.action!=1) {
-    if(!values.receiver) {
+  if (values.action != 1) {
+    if (!values.receiver) {
       errors.receiver = '贴入人不能为空';
     }
 
-    if(!values.discount_type) {
+    if (!values.discount_type) {
       errors.discount_type = '贴现类型不能为空';
     }
 
-    if(!values.discount_interest) {
+    if (!values.discount_interest) {
       errors.discount_interest = '贴现利率不能为空';
     }
 
-    if(!values.money) {
+    if (!values.money) {
       errors.money = '实付金额不能为空';
     }
   }
@@ -131,4 +134,6 @@ const reduxPromptDiscountForm = reduxForm({
   validate
 })(PromptDiscount);
 
-export default connect(state => { return {action:selector(state, 'action')} }, { prompt_discount })(reduxPromptDiscountForm);
+export default connect(state => {
+  return {action: selector(state, 'action')}
+}, {prompt_discount})(reduxPromptDiscountForm);

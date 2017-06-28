@@ -57,6 +57,6 @@ const username = localStorage.getItem('username');
 // If token exist, singin automatic
 if (username) {
   store.dispatch({type: AUTH_USER, username});
-  register();
+  register(username);
 }
 
