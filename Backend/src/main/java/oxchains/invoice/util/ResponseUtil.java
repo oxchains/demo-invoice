@@ -55,4 +55,9 @@ public class ResponseUtil {
         }
         return invoices;
     }
+
+    public static String txidTail(String content, String txid) {
+        return String.format("%s (%s)", content, txid);
+    }
+
 }

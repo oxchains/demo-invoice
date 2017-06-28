@@ -1,6 +1,6 @@
 package com.oxchains.billing;
 
-import com.oxchains.billing.notification.PushHandler;
+import com.oxchains.billing.rest.PushHandler;
 import com.oxchains.billing.rest.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

@@ -287,7 +287,7 @@ public class ResponseUtil {
 
     switch (billRecord.getFinishState()) {
       case "0":
-        stringBuilder.append("(尚未到期)");
+        stringBuilder.append("(待提示支付)");
         break;
       case "1":
         stringBuilder.append("(待支付)");

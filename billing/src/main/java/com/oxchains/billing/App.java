@@ -1,19 +1,16 @@
 package com.oxchains.billing;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.oxchains.billing.domain.FabricAccount;
-import com.oxchains.billing.notification.Subscription;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.ResolvableType;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.reactive.function.BodyExtractors;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.DefaultUriBuilderFactory;
@@ -31,9 +28,12 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
  * @author aiet
  */
 @SpringBootApplication
+@EnableScheduling
 public class App {
 
   private Logger LOG = LoggerFactory.getLogger(getClass());
+
+  public static final TokenHolder TOKEN_HOLDER = new TokenHolder();
 
   @Value("${fabric.manager.host}")
   private String managerHost;
@@ -71,19 +71,34 @@ public class App {
         .scheme("http")
         .host(managerHost)
         .port(managerPort);
-
-    return uriBuilder
+    uriBuilder
         .path(managerTransactionPath)
         .queryParam("chain", chain)
         .queryParam("chaincode", chaincode)
         .queryParam("version", chaincodeVer)
         .queryParam("args", "");
+    TOKEN_HOLDER.uri = uriBuilder.build().toString();
+    refreshToken();
+    return uriBuilder;
   }
 
-  @Bean({"token"})
-  String token(@Autowired @Qualifier("fabric.uri") UriBuilder uriBuilder) {
+  public static class TokenHolder {
+    private String token;
+    private String uri;
+
+    public String getToken() {
+      return token;
+    }
+
+    private void setToken(String token) {
+      this.token = token;
+    }
+  }
+
+  @Scheduled(fixedRate = 1000 * 3600 * 72)
+  void refreshToken() {
     String json = (String) WebClient.create().post().uri(new DefaultUriBuilderFactory()
-        .uriString(uriBuilder.build().toString())
+        .uriString(TOKEN_HOLDER.uri)
         .replacePath(managerEnrollPath).build().toString()
     ).contentType(APPLICATION_JSON_UTF8).body(Mono.just(
         new FabricAccount(username, password, affiliation)), FabricAccount.class
@@ -94,21 +109,12 @@ public class App {
     if (json == null || json.isEmpty())
       throw new IllegalStateException("system failed to init: cannot get token from fabric manager!");
 
-
     Optional<String> tokenOptional = extract(json, "/data/token");
     if (tokenOptional.isPresent()) {
       String token = "Bearer " + tokenOptional.get();
       LOG.info("access token for fabric manager: {}", token);
-      return token;
+      TOKEN_HOLDER.setToken(token);
     } else throw new IllegalStateException("system failed to init: cannot get token from fabric manager!");
-  }
-
-  @Bean
-  Cache<String, Subscription> cache() {
-    Cache<String, Subscription> cache = CacheBuilder.newBuilder()
-        .initialCapacity(8).concurrencyLevel(3).build();
-    LOG.info("cache init with capacity 8 and concurrency level 3");
-    return cache;
   }
 
   public static void main(String[] args) {

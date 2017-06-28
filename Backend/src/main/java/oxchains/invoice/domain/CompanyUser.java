@@ -18,7 +18,7 @@ public class CompanyUser implements IUser {
     private Company company;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
     private String password;
@@ -37,6 +37,7 @@ public class CompanyUser implements IUser {
         user.setId(this.id);
         user.setName(this.name);
         user.setAvatar(this.avatar);
+        user.setBiz(true);
         return user;
     }
 

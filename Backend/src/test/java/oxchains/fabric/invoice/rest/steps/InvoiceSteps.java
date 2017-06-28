@@ -66,19 +66,22 @@ public class InvoiceSteps {
           .get("/invoice");
     }
 
-    public void invoicePresent() {
-        success().body("data.serial", hasItem(invoice.getSerial()));
+    public void invoicePresent(boolean yes) {
+        success().body("data.serial", yes ? hasItem(invoice.getSerial()) : not(hasItem(invoice.getSerial())));
     }
 
     public void givenInvoiceOf(String customer) {
-        given()
+        invoice = given()
           .header(AUTHORIZATION, userTokens.get(customer))
           .when()
           .get("/invoice/" + invoice.getSerial())
           .then()
           .statusCode(SC_OK)
           .and()
-          .body("status", is(1));
+          .body("status", is(1))
+          .extract()
+          .jsonPath()
+          .getObject("data", Invoice.class);
 
     }
 
@@ -99,55 +102,42 @@ public class InvoiceSteps {
           .body("status", is(1));
     }
 
-    public void historyOfInvoiceFrom(String serial, String customer) {
+    public void reimburse(String customer, String company) {
         mockMvcResponse = given()
-          .when()
-          .get("/invoice/" + serial + "/history");
-        history = success()
-          .extract()
-          .jsonPath()
-          .getString("data");
-    }
-
-    public void historyContains(String customer) {
-        assertThat(history, containsString(customer));
-    }
-
-    public void reimburse(String customer) {
-        //TODO
-        mockMvcResponse = given()
-          .queryParam("invoices", "")
+          .queryParam("invoices", invoice.getSerial())
+          .queryParam("company", company)
+          .header(AUTHORIZATION, userTokens.get(customer))
           .when()
           .post("/reimbursement");
     }
 
     public void reimbursementListOf(String customer) {
-        //TODo
         mockMvcResponse = given()
+          .header(AUTHORIZATION, userTokens.get(customer))
           .when()
           .get("/reimbursement");
     }
 
     public void reimbursementPresent(boolean yes) {
-        success();//TODO
+        success().body("data.serial", yes ? hasItem(reimburseId) : not(hasItem(reimburseId)));
     }
 
     public void rejectReimbursement(String company) {
         mockMvcResponse = given()
           .queryParam("action", 0)
-          .queryParam("ids", reimburseId)
+          .queryParam("id", reimburseId)
+          .header(AUTHORIZATION, userTokens.get(company))
           .when()
           .put("/reimbursement");
-        //TODO
     }
 
     public void confirmReimbursementBy(String company) {
         mockMvcResponse = given()
           .queryParam("action", 1)
-          .queryParam("ids", reimburseId)
+          .queryParam("id", reimburseId)
+          .header(AUTHORIZATION, userTokens.get(company))
           .when()
           .put("/reimbursement");
-        //TODO
     }
 
     public void reimbursementCreated() {
@@ -155,7 +145,17 @@ public class InvoiceSteps {
           .extract()
           .body()
           .jsonPath()
-          .getString("data");
+          .getString("data.serial");
     }
 
+    public void reimbursementOf(String company) {
+        mockMvcResponse = given()
+          .header(AUTHORIZATION, userTokens.get(company))
+          .when()
+          .get("/reimbursement/" + reimburseId);
+    }
+
+    public void invoicePresentInReimbursement(boolean yes) {
+        success().body("data.invoices.serial", yes ? hasItem(hasItem(invoice.getSerial())) : not(hasItem(hasItem(invoice.getSerial()))));
+    }
 }

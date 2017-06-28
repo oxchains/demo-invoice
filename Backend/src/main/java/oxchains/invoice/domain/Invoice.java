@@ -1,18 +1,17 @@
 package oxchains.invoice.domain;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.*;
 
 import javax.persistence.*;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static java.lang.System.currentTimeMillis;
+import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
@@ -20,13 +19,16 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  */
 @JsonInclude(NON_NULL)
 @Entity
-@Table(name = "invoice")
+@Table(name = "invoice", indexes = {
+  @Index(unique = true, name = "inv_serial_idx", columnList = "serial")
+})
 public class Invoice {
 
     @JsonIgnore
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
     private String serial;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -42,19 +44,48 @@ public class Invoice {
     private String status;
     @ElementCollection(fetch = FetchType.EAGER, targetClass = Goods.class) private List<Goods> goods;
 
-    public Invoice(){}
+    @JsonIgnore private String history;
 
-    public static Invoice fromPayload(String serial, String timestamp){
+    public Invoice() {
+    }
+
+    public static Invoice fromPayload(String serial, String timestamp) {
         Invoice invoice = new Invoice();
         invoice.serial = serial;
-        if(isNotBlank(timestamp)) {
+        if (isNotBlank(timestamp)) {
             invoice.createTime = new Date(Long.valueOf(timestamp) * 1000);
         }
         return invoice;
     }
 
+    @JsonGetter("history")
+    public List<String> histories() {
+        return history != null ? Arrays.asList(history.split(",")) : null;
+    }
+
+    @JsonSetter("history")
+    public void setHistory(List<String> history) {
+        if (history != null) {
+            this.history = history
+              .stream()
+              .collect(joining(","));
+        }
+    }
+
+    public String getHistory() {
+        return history;
+    }
+
+    public void setHistory(String history) {
+        if (this.history == null) {
+            this.history = history;
+        } else {
+            this.history = this.history + "," + history;
+        }
+    }
+
     public String createArgs() {
-        setSerial(defaultIfEmpty(serial, randomNumeric(5)));
+        setSerial(defaultIfBlank(serial, randomNumeric(7)));
         setCreateTime(new Date());
         return String.format("%s,%s,%s,%s,%s", this.serial, origin.getName(), target.getName(), currentTimeMillis() / 1000, goods);
     }

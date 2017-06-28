@@ -7,6 +7,5 @@ import oxchains.invoice.domain.UserToken;
 /**
  * @author aiet
  */
-@Repository
 public interface UserTokenRepo extends CrudRepository<UserToken, String> {
 }

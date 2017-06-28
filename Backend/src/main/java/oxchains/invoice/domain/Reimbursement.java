@@ -1,8 +1,16 @@
 package oxchains.invoice.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+
+import static java.lang.System.currentTimeMillis;
+import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 /**
  * @author aiet
@@ -11,8 +19,9 @@ import java.util.List;
 @Table(name = "reimbursement")
 public class Reimbursement {
 
+    @JsonIgnore
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String serial;
 
@@ -20,12 +29,28 @@ public class Reimbursement {
     @JoinColumn(name = "company")
     private Company company;
 
-    private String department;
-    private Date createTime;
+    private String description;
 
-    @Transient private User by;
-    @ElementCollection(fetch = FetchType.EAGER)
-    private List<Invoice> invoices;
+    @JsonFormat(pattern = "yyy-MM-dd hh:mm:ss") private Date createTime = new Date();
+
+    private String customer;
+
+    @ManyToMany(fetch = FetchType.EAGER) private List<Invoice> invoices;
+
+    private String status;
+
+    public String reimburseArgs(String invoices) {
+        setSerial(defaultIfBlank(serial, randomNumeric(7)));
+        return String.format("%s,%s,%s,%s,%s,%s,%s", this.serial, invoices, this.customer, this.company.getName(), currentTimeMillis() / 1000, this.description, currentTimeMillis() / 1000 + 3600);
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public Long getId() {
         return id;
@@ -51,14 +76,15 @@ public class Reimbursement {
         this.company = company;
     }
 
-    public String getDepartment() {
-        return department;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDepartment(String department) {
-        this.department = department;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
+    @JsonGetter("createtime")
     public Date getCreateTime() {
         return createTime;
     }
@@ -67,12 +93,12 @@ public class Reimbursement {
         this.createTime = createTime;
     }
 
-    public User getBy() {
-        return by;
+    public String getCustomer() {
+        return customer;
     }
 
-    public void setBy(User by) {
-        this.by = by;
+    public void setCustomer(String customer) {
+        this.customer = customer;
     }
 
     public List<Invoice> getInvoices() {

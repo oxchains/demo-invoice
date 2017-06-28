@@ -21,6 +21,7 @@ import static java.util.stream.Collectors.toList;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 import static oxchains.invoice.rest.domain.RestResp.fail;
 import static oxchains.invoice.rest.domain.RestResp.success;
+import static oxchains.invoice.util.ResponseUtil.txidTail;
 
 /**
  * @author aiet
@@ -84,7 +85,6 @@ public class InvoiceController {
                   invoice.setOrigin(cu.getCompany());
                   invoice.setOwner(cu.getName());
                   invoice.setGoods(invoiceReq.getGoods());
-                  invoice.setStatus("未报销");
                   return invoice;
               })
               .flatMap(invoice -> chaincodeData
@@ -93,6 +93,7 @@ public class InvoiceController {
                 .map(resp -> {
                     Iterable<Goods> savedGoods = goodsRepo.save(invoice.getGoods());
                     invoice.setGoods(newArrayList(savedGoods));
+                    invoice.setStatus(txidTail("未报销", resp.getTxid()));
                     return success(transferedInvoice(invoiceRepo.save(invoice), invoiceReq.getTarget()));
                 }))))
           .orElse(fail());
@@ -103,6 +104,7 @@ public class InvoiceController {
           .transfer(invoice, target)
           .filter(ChaincodeResp::succeeded)
           .map(resp -> {
+              invoice.setHistory(String.format("%s->%s", invoice.getOwner(), target));
               invoice.setOwner(target);
               return invoiceRepo.save(invoice);
           })

@@ -12,11 +12,9 @@ public abstract class ChaincodeUriBuilder {
 
   private final String uriTemplate;
   protected WebClient client;
-  protected String token;
 
-  protected ChaincodeUriBuilder(WebClient client, String token , String uriTemplate) {
+  protected ChaincodeUriBuilder(WebClient client, String uriTemplate) {
     this.client = client;
-    this.token = token;
     this.uriTemplate = uriTemplate;
   }
 
