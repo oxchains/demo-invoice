@@ -3,6 +3,16 @@
 - 已知问题
 
   当有任一汇票到期且状态未变更时, 除支付相关操作以及到期汇票检查操作外, 其余操作会被提示有到期汇票未处理, 需优先进行到期汇票检查或支付处理.
+  
+  质押解除和解除确认时暂无推送.
+  
+- 使用注意事项
+
+  推送使用 [Web Push](https://tools.ietf.org/html/draft-ietf-webpush-protocol-12) 实现, 前端需在 Chrome 中打开, 初次登陆时需能够访问 Google 相关服务;
+  
+  服务端需要配置代理访问 [Google GCM](https://developers.google.com/web/fundamentals/getting-started/codelabs/push-notifications/) 服务: `webapp.push.proxy.host`, `webapp.push.proxy.port`.
+  
+  请通过 [fabric-manage](https://github.com/zkjs/fabric-manage) 安装工程文件中最新的 [chaincode](./chaincode).
 
 ## Glossary
 
