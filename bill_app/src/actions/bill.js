@@ -14,7 +14,8 @@ import {
   FETCH_PLEDGE_LIST,
   FETCH_RELEASE_LIST,
   FETCH_PAYMENT_LIST,
-  FETCH_RECOURSE_LIST
+  FETCH_RECOURSE_LIST,
+  QUERY_DUE
 } from './types';
 
 export function requestError(error) {
@@ -73,7 +74,7 @@ export function register({price, drawee, drawer, payee, due, transferable}, call
 function bill_action(url, params, callback) {
   return function (dispatch) {
     const {action} = params;
-    if (action) {
+    if (action === 1) {
       axios.put(url, params)
         .then(response => {
           if (response.data.status == 1) {// success
@@ -358,6 +359,23 @@ export function fetchRecourseList(username) {
     axios.get(`${ROOT_URL}/bill/${username}/recourse`)
       .then(response => dispatch({type: FETCH_RECOURSE_LIST, payload: response}))
       .catch(err => dispatch(requestError(err.message)));
+  }
+}
+
+/**
+ * 票据查询
+ * @param callback
+ * @returns {Function}
+ */
+export function queryDue(callback) {
+  return function (dispatch) {
+    axios.get(`${ROOT_URL}/bill/due`).then(response => {
+      if (response.data.payload) {
+        callback({status: true, payload: "有票据到期"})
+      } else {
+        callback({status: false, payload: ""});
+      }
+    })
   }
 }
 

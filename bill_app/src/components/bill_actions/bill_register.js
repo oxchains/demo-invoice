@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Field, reduxForm} from 'redux-form';
 import {connect} from 'react-redux';
-import {register} from '../../actions/bill'
+import {register, queryDue} from '../../actions/bill'
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
 
@@ -25,7 +25,15 @@ class BillRegister extends Component {
       this.setState({spin: true});
       this.props.register({price, drawer, drawee, payee, transferable, due}, err => {
         this.setState({error: err ? err : null, spin: false});
-        if (typeof this.props.addCallback == 'function') this.props.addCallback(err);
+
+        this.props.queryDue(({status, payload}) => {
+          if (status) {
+            if (typeof this.props.addCallback == 'function') this.props.addCallback(payload);
+          } else {
+            if (typeof this.props.addCallback == 'function') this.props.addCallback(err);
+          }
+        });
+
       });
     }
   }
@@ -135,4 +143,4 @@ const reduxBillRegisterForm = reduxForm({
   validate
 })(BillRegister);
 
-export default connect(null, {register})(reduxBillRegisterForm);
+export default connect(null, {register, queryDue})(reduxBillRegisterForm);
