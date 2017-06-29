@@ -71,7 +71,16 @@ public class InvoiceController {
     @GetMapping("/{serial}")
     public RestResp get(@PathVariable String serial) {
         return userContext()
-          .flatMap(u -> invoiceRepo.findInvoiceByOwnerAndSerial(u.getName(), serial))
+          .flatMap(u -> u.isBiz() ? companyUserRepo
+            .findByName(u.getName())
+            .flatMap(cu -> {
+                Optional<Invoice> originInvoice = invoiceRepo.findInvoiceByOriginAndSerial(cu.getCompany(), serial);
+                if (originInvoice.isPresent()) {
+                    return originInvoice;
+                } else {
+                    return invoiceRepo.findInvoiceByTargetAndSerial(cu.getCompany(), serial);
+                }
+            }) : invoiceRepo.findInvoiceByOwnerAndSerial(u.getName(), serial))
           .map(RestResp::success)
           .orElse(fail());
     }

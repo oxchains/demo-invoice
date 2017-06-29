@@ -286,7 +286,7 @@ func (t *myChaincode) createbx(stub shim.ChaincodeStubInterface, args []string) 
 	if err != nil {
 		return shim.Error("bad format of the endtm")
 	}
-	listuuid := strings.Split(uuids, ",")
+	listuuid := strings.Split(uuids, "-")
 	logger.Infof("invoices to reimburse: %s", uuids)
 
 	//update each uuid
