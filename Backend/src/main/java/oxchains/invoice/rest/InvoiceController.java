@@ -15,7 +15,6 @@ import oxchains.invoice.rest.domain.InvoiceReq;
 import oxchains.invoice.rest.domain.RestResp;
 import oxchains.invoice.util.ResponseUtil;
 
-import java.util.Collection;
 import java.util.Optional;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -62,7 +61,8 @@ public class InvoiceController {
             .stream()
             .map(ChaincodeResp::getPayload)
             .map(ResponseUtil::parseInvoicePayload)
-            .flatMap(Collection::stream)
+            .map(serials -> invoiceRepo.findDistinctBySerialIn(serials))
+            .flatMap(invoices -> newArrayList(invoices).stream())
             .collect(toList()))
           .map(RestResp::success)
           .orElse(fail());

@@ -7,13 +7,11 @@ import org.slf4j.LoggerFactory;
 import oxchains.invoice.domain.Invoice;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.empty;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static oxchains.invoice.domain.Invoice.fromPayload;
 
@@ -45,15 +43,10 @@ public class ResponseUtil {
         return null;
     }
 
-    public static List<Invoice> parseInvoicePayload(String payload){
+    public static List<String> parseInvoicePayload(String payload){
         if(isBlank(payload)) return emptyList();
         String[] invoiceStrs = payload.split(";");
-        List<Invoice> invoices = new ArrayList<>(invoiceStrs.length);
-        for(String invoiceStr : invoiceStrs){
-            String[] invoiceAttrs = invoiceStr.split(",");
-            invoices.add(fromPayload(invoiceAttrs[2], invoiceAttrs[1]));
-        }
-        return invoices;
+        return Arrays.stream(invoiceStrs).map(attrs -> attrs.split(",")[2]).collect(toList());
     }
 
     public static String txidTail(String content, String txid) {
