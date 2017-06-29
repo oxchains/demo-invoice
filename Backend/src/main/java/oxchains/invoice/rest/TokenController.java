@@ -1,5 +1,7 @@
 package oxchains.invoice.rest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +26,8 @@ import static oxchains.invoice.rest.domain.RestResp.success;
 @RequestMapping("/token")
 public class TokenController {
 
+    private Logger LOG = LoggerFactory.getLogger(getClass());
+
     private UserRepo userRepo;
     private CompanyUserRepo companyUserRepo;
     private UserTokenRepo userTokenRepo;
@@ -43,6 +47,7 @@ public class TokenController {
           .map(CompanyUser::toUser) : userRepo.findByNameAndPassword(user.getUsername(), user.getPassword()))
           .map(u -> {
               UserToken userToken = new UserToken(jwtService.generate(u, user.isBiz()));
+              LOG.info("{} enrolled", user.getUsername());
               return success(userTokenRepo.save(userToken));
           })
           .orElse(fail());

@@ -72,6 +72,11 @@ public class Invoice {
         }
     }
 
+    @Override
+    public String toString(){
+        return String.format("%s-[%s]-%s(%s)", origin, owner, target, serial);
+    }
+
     public String getHistory() {
         return history;
     }

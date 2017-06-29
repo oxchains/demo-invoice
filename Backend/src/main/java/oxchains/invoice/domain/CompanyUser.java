@@ -25,6 +25,12 @@ public class CompanyUser implements IUser {
     private String avatar;
     private String mobile;
 
+    @Override
+    public String toString(){
+        return String.format("%s(%s)", name, mobile);
+    }
+
+
     public void withUser(User user) {
         this.name = user.getName();
         this.password = user.getPassword();

@@ -1,5 +1,7 @@
 package oxchains.invoice.rest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import oxchains.invoice.auth.JwtAuthentication;
@@ -29,6 +31,8 @@ import static oxchains.invoice.util.ResponseUtil.txidTail;
 @RestController
 @RequestMapping("/invoice")
 public class InvoiceController {
+
+    private Logger LOG = LoggerFactory.getLogger(getClass());
 
     private ChaincodeData chaincodeData;
     private InvoiceRepo invoiceRepo;
@@ -92,8 +96,10 @@ public class InvoiceController {
                 .filter(ChaincodeResp::succeeded)
                 .map(resp -> {
                     Iterable<Goods> savedGoods = goodsRepo.save(invoice.getGoods());
+
                     invoice.setGoods(newArrayList(savedGoods));
                     invoice.setStatus(txidTail("未报销", resp.getTxid()));
+                    LOG.info("new invoice issued {}", invoice);
                     return success(transferedInvoice(invoiceRepo.save(invoice), invoiceReq.getTarget()));
                 }))))
           .orElse(fail());
@@ -104,6 +110,7 @@ public class InvoiceController {
           .transfer(invoice, target)
           .filter(ChaincodeResp::succeeded)
           .map(resp -> {
+              LOG.info("invoice {} transfered to {}", invoice, target);
               invoice.setHistory(String.format("%s->%s", invoice.getOwner(), target));
               invoice.setOwner(target);
               return invoiceRepo.save(invoice);

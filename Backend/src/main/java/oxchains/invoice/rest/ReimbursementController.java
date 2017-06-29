@@ -1,5 +1,7 @@
 package oxchains.invoice.rest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import oxchains.invoice.auth.JwtAuthentication;
@@ -26,6 +28,8 @@ import static oxchains.invoice.util.ResponseUtil.txidTail;
 @RestController
 @RequestMapping("/reimbursement")
 public class ReimbursementController {
+
+    private Logger LOG = LoggerFactory.getLogger(getClass());
 
     private ChaincodeData chaincodeData;
     private ReimbursementRepo reimbursementRepo;
@@ -89,6 +93,7 @@ public class ReimbursementController {
                       .map(resp -> {
                           reimbursement.setStatus(txidTail("审核中", resp.getTxid()));
                           reimbursement.setInvoices(invoiceList);
+                          LOG.info("requesting {} to reimburse invoices {}", company, invoiceList);
                           return reimbursementRepo.save(reimbursement);
                       });
                 }
@@ -122,8 +127,10 @@ public class ReimbursementController {
                               invoiceRepo.save(invoice);
                           });
                         reimbursement.setStatus(txidTail("已确认", resp.getTxid()));
+                        LOG.info("{} confirmed reimbursement {}", cu, id);
                     } else {
                         reimbursement.setStatus(txidTail("已拒绝:" + remark, resp.getTxid()));
+                        LOG.info("{} denied reimbursement {}", cu, id);
                     }
                     return success(reimbursementRepo.save(reimbursement));
                 }))))
