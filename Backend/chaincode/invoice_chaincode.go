@@ -391,11 +391,11 @@ func (t *myChaincode) confirmbx(stub shim.ChaincodeStubInterface, args []string)
 	//return nil, fmt.Errorf("out of the bx time")
 	//}
 	if _toid != toid {
-		return shim.Error(" don't hvae the right to confirmbx!")
+		return shim.Error(" don't have the right to confirmbx!")
 	}
 
 	//update each uuid
-	listuuid := strings.Split(uuids, ",")
+	listuuid := strings.Split(uuids, "-")
 	for _, uuid := range listuuid {
 		_, err := t.confirm(stub, uuid, toid, timestamp)
 		if err != nil {
@@ -499,7 +499,7 @@ func (t *myChaincode) rejectbx(stub shim.ChaincodeStubInterface, args []string) 
 		return shim.Error(" don't hvae the right to confirmbx!")
 	}
 	//update each uuid
-	listuuid := strings.Split(uuids, ",")
+	listuuid := strings.Split(uuids, "-")
 
 	logger.Infof("ready to reject one by one: %s", uuids)
 
