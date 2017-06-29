@@ -91,6 +91,14 @@ public class ReimbursementController {
                       .reimburse(owner.getName(), invoices, reimbursement)
                       .filter(ChaincodeResp::succeeded)
                       .map(resp -> {
+
+                          invoiceList.forEach(invoice -> {
+                              invoice.setCode(1);
+                              invoice.setStatus(txidTail("报销中", resp.getTxid()));
+                          });
+                          invoiceRepo.save(invoiceList);
+                          LOG.info("updated status of invoices {}", company, invoiceList);
+
                           reimbursement.setStatus(txidTail("审核中", resp.getTxid()));
                           reimbursement.setInvoices(invoiceList);
                           LOG.info("requesting {} to reimburse invoices {}", company, invoiceList);
@@ -117,21 +125,27 @@ public class ReimbursementController {
                   .getName(), action <= 0, remark)
                 .filter(ChaincodeResp::succeeded)
                 .map(resp -> {
+                    List<Invoice> invoices = reimbursement.getInvoices();
                     if (action > 0) {
-                        reimbursement
-                          .getInvoices()
-                          .forEach(invoice -> {
-                              invoice.setStatus(txidTail("已报销", resp.getTxid()));
-                              invoice.setHistory(String.format("%s->%s", invoice.getOwner(), u.getName()));
-                              invoice.setOwner(u.getName());
-                              invoiceRepo.save(invoice);
-                          });
+                        invoices.forEach(invoice -> {
+                            invoice.setStatus(txidTail("已报销", resp.getTxid()));
+                            invoice.setCode(2);
+                            invoice.setHistory(String.format("%s->%s", invoice.getOwner(), u.getName()));
+                            invoice.setOwner(u.getName());
+                        });
                         reimbursement.setStatus(txidTail("已确认", resp.getTxid()));
+                        reimbursement.setCode(1);
                         LOG.info("{} confirmed reimbursement {}", cu, id);
                     } else {
+                        invoices.forEach(invoice -> {
+                            invoice.setStatus(txidTail("未报销", resp.getTxid()));
+                            invoice.setCode(0);
+                        });
+                        reimbursement.setCode(-1);
                         reimbursement.setStatus(txidTail("已拒绝:" + remark, resp.getTxid()));
                         LOG.info("{} denied reimbursement {}", cu, id);
                     }
+                    invoiceRepo.save(invoices);
                     return success(reimbursementRepo.save(reimbursement));
                 }))))
           .orElse(fail());

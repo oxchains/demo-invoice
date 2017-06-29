@@ -42,11 +42,20 @@ public class Invoice {
 
     @JsonFormat(pattern = "yyy-MM-dd hh:mm:ss") private Date createTime;
     private String status;
+    private int code;
     @ElementCollection(fetch = FetchType.EAGER, targetClass = Goods.class) private List<Goods> goods;
 
     @JsonIgnore private String history;
 
     public Invoice() {
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public void setCode(int code) {
+        this.code = code;
     }
 
     public static Invoice fromPayload(String serial, String timestamp) {

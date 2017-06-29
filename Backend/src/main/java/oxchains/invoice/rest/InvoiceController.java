@@ -109,12 +109,12 @@ public class InvoiceController {
                     invoice.setGoods(newArrayList(savedGoods));
                     invoice.setStatus(txidTail("未报销", resp.getTxid()));
                     LOG.info("new invoice issued {}", invoice);
-                    return success(transferedInvoice(invoiceRepo.save(invoice), invoiceReq.getTarget()));
+                    return success(transferredInvoice(invoiceRepo.save(invoice), invoiceReq.getTarget()));
                 }))))
           .orElse(fail());
     }
 
-    private Invoice transferedInvoice(Invoice invoice, String target) {
+    private Invoice transferredInvoice(Invoice invoice, String target) {
         return chaincodeData
           .transfer(invoice, target)
           .filter(ChaincodeResp::succeeded)
@@ -134,7 +134,7 @@ public class InvoiceController {
             .findByName(target)
             .map(CompanyUser::toUser) : userRepo.findByName(target)).flatMap(targetUser -> invoiceRepo
             .findInvoiceByOwnerAndSerial(owner.getName(), serial)
-            .map(invoice -> transferedInvoice(invoice, targetUser.getName()))
+            .map(invoice -> transferredInvoice(invoice, targetUser.getName()))
             .map(transferredInvoice -> success(null))))
           .orElse(fail());
     }

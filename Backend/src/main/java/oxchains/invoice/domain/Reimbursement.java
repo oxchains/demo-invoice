@@ -38,6 +38,15 @@ public class Reimbursement {
     @ManyToMany(fetch = FetchType.EAGER) private List<Invoice> invoices;
 
     private String status;
+    private int code;
+
+    public int getCode() {
+        return code;
+    }
+
+    public void setCode(int code) {
+        this.code = code;
+    }
 
     public String reimburseArgs(String invoices) {
         setSerial(defaultIfBlank(serial, randomNumeric(7)));
