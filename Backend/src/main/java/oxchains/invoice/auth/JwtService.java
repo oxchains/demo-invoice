@@ -96,7 +96,7 @@ public class JwtService {
               .findByName(claims.getSubject())
               .map(CompanyUser::toUser)
               .orElse(null)));
-            user.setBiz("1".equals(claims.get("biz")));
+            user.setBiz("1".equals(claims.get("biz").toString()));
             return Optional
               .ofNullable(user)
               .map(u -> new JwtAuthentication(u, token, claims));
