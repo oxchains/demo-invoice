@@ -11,12 +11,38 @@ import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
 import { signupUser } from '../../actions/auth'
+import {
+  Modal,
+  ModalHeader,
+  ModalTitle,
+  ModalClose,
+  ModalBody,
+  ModalFooter
+} from 'react-modal-bootstrap';
 
 class Signup extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isModalOpen: false,
+      spin : false,
+      error: null,
+      actionResult: ''
+    };
+  }
 
-  handleFormSubmit({ username, mobile, password }) {
-    if(username && password && mobile)
-      this.props.signupUser({ username, mobile, password });
+  hideModal = () => {
+    this.setState({
+      isModalOpen: false
+    });
+  };
+
+  handleFormSubmit({ name, mobile, password }) {
+    this.setState({ spin:true });
+    if(name && password && mobile)
+      this.props.signupUser({ name, mobile, password }, err => {
+        this.setState({ isModalOpen: true , error: err , actionResult: err||'注册成功!' , spin:false });
+      });
   }
 
   renderAlert() {
@@ -50,7 +76,7 @@ class Signup extends Component {
             <p className="login-box-msg" style={{fontSize: 24+'px'}}>用户注册</p>
             {this.renderAlert()}
             <form className="form-signin" onSubmit={handleSubmit(this.handleFormSubmit.bind(this))}>
-              <Field name="username" component={this.renderField} type="text"  label="用户名" icon="envelope" />
+              <Field name="name" component={this.renderField} type="text"  label="用户名" icon="envelope" />
               <Field name="mobile" component={this.renderField} type="text"  label="手机号" icon="phone" />
               <Field name="password" component={this.renderField} type="password" label="密码" icon="lock" />
               <Field name="passwordConfirm" component={this.renderField} type="password" label="确认密码" icon="lock" />
@@ -58,13 +84,30 @@ class Signup extends Component {
                 <div className="col-xs-8">
                 </div>
                 <div className="col-xs-4">
-                  <button type="submit" className="btn btn-primary btn-block btn-flat">注册</button>
+                  <button type="submit" className="btn btn-primary btn-block btn-flat"><i className={`fa fa-spinner fa-spin ${this.state.spin?'':'hidden'}`}></i> 注册</button>
                 </div>
               </div>
 
             </form>
           </div>
         </div>
+
+        <Modal isOpen={this.state.isModalOpen} onRequestHide={this.hideModal}>
+          <ModalHeader>
+            <ModalClose onClick={this.hideModal}/>
+            <ModalTitle>提示:</ModalTitle>
+          </ModalHeader>
+          <ModalBody>
+            <p className={this.state.error?'text-red':'text-green'}>
+              {this.state.actionResult}
+            </p>
+          </ModalBody>
+          <ModalFooter>
+            <button className='btn btn-default' onClick={this.hideModal}>
+              关闭
+            </button>
+          </ModalFooter>
+        </Modal>
       </div>
     );
   }
@@ -74,8 +117,8 @@ class Signup extends Component {
 const validate = values => {
   const errors = {};
 
-  if(!values.username) {
-    errors.username = '用户名不能为空';
+  if(!values.name) {
+    errors.name = '用户名不能为空';
   }
 
   if(!values.mobile) {

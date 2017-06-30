@@ -27,12 +27,14 @@ class ReimburseList extends Component {
     return this.props.all.map((row, idx) => {
       return (<tr key={idx}>
         <td>{idx+1}</td>
-        <td>{row.id}</td>
-        <td>{row.department}</td>
-        <td>{row.name}</td>
-        <td><Moment locale="zh-cn" format="lll">{row.date}</Moment></td>
-        <td>{row.state}</td>
-        <td><Link className="btn btn-sm btn-default" to={`/reimburse/${idx+1}`}>处理</Link></td>
+        <td>{row.serial}</td>
+        <td><Moment locale="zh-cn" format="lll">{row.createtime}</Moment></td>
+        <td>{row.status}</td>
+        <td>{row.customer}</td>
+        <td>{row.description}</td>
+        <td>
+          <Link to={`/reimburse/${row.serial}`} >详情</Link>
+        </td>
       </tr>);
     });
   }
@@ -47,24 +49,24 @@ class ReimburseList extends Component {
       <div className="row">
         <div className="col-xs-12">
           <div className="box box-info">
-            <div className="box-header"><h3 className="box-title">企业发票审核</h3></div>
+            <div className="box-header"><h3 className="box-title">报销列表</h3></div>
             <div className="box-body table-responsive no-padding">
               <table className="table table-bordered table-hover">
                 <tbody>
                 <tr>
                   <th>序号</th>
                   <th>报销编号</th>
-                  <th>部门</th>
-                  <th>姓名</th>
-                  <th>日期</th>
+                  <th>报销时间</th>
                   <th>状态</th>
+                  <th>报销人</th>
+                  <th>描述</th>
                   <th>操作</th>
                 </tr>
                 { this.renderRows() }
                 </tbody>
               </table>
             </div>
-            <div className="box-footer clearfix">
+            <div className="box-footer clearfix hidden">
               <ReactPaginate previousLabel={"«"}
                              nextLabel={"»"}
                              breakLabel={<a href="">...</a>}

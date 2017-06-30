@@ -9,24 +9,24 @@ import {
 } from './types';
 
 
-// 登录
-export function signinAction(props) {
+/**
+ * 登录
+ * @param username
+ * @param password
+ * @param biz           true:企业登录, false:个人登录
+ * @returns {Function}
+ */
+export function signinAction({username, password, biz}) {
   return function(dispatch) {
-    //TODO: using GET for test only
-    //axios.post(`${ROOT_URL}/signin`, { username, password })
-    axios.get(`${ROOT_URL}/signin`)
+    axios.post(`${ROOT_URL}/token`, { username, password, biz })
       .then(response => {
-
         if(response.data.status == 1) {//auth success
           // - Save the JWT token
-          /*
-           localStorage.setItem('token', response.data.token);
-           localStorage.setItem('user', JSON.stringify(response.data.user));
-           localStorage.setItem('username', response.data.user.username);
-           */
-          localStorage.setItem('token', response.data.data.id);
-          localStorage.setItem('user', JSON.stringify(response.data.data));
-          localStorage.setItem('username', response.data.data.name);
+
+          localStorage.setItem('token', response.data.data.token);
+          //localStorage.setItem('user', JSON.stringify(response.data.data));
+          localStorage.setItem('username', username);
+          localStorage.setItem('biz', JSON.stringify(biz));
 
           dispatch({type: AUTH_USER});
           // - redirect to the route '/'
@@ -36,11 +36,7 @@ export function signinAction(props) {
         }
 
       })
-      .catch(() => {
-        // If request is bad...
-        // - Show an error to the user
-        dispatch(authError('Bad Login'));
-      });
+      .catch( (err) => dispatch(authError(err.message)) );
   }
 }
 
@@ -56,59 +52,51 @@ export function signoutUser() {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
   localStorage.removeItem('username');
+  localStorage.removeItem('biz');
 
   return { type: UNAUTH_USER };
 }
 
-//注册
-export function signupUser({ username, mobile, password }) {
+/**
+ * 注册
+ * @param name
+ * @param mobile
+ * @param password
+ * @param callback
+ * @returns {Function}
+ */
+export function signupUser({ name, mobile, password }, callback) {
   //console.log(`signupUser: ${username}, ${mobile}, ${password}`);
   return function(dispatch) {
-    //TODO: using GET for test only
-    //axios.post(`${ROOT_URL}/signup`, { username, mobile, password })
-    axios.get(`${ROOT_URL}/signup`)
+    axios.post(`${ROOT_URL}/user`, { name, mobile, password })
       .then(response => {
 
         if(response.data.status == 1) {//singup success
-          // - Save the JWT token
-
-          localStorage.setItem('token', response.data.data.id);
-          localStorage.setItem('user', JSON.stringify(response.data.data));
-          localStorage.setItem('username', response.data.data.name);
-
-          dispatch({type: AUTH_USER});
-          // - redirect to the route '/'
-          browserHistory.push('/');
+          callback();
         } else {//signup fail
-          dispatch(authError(response.data.message));
+          callback(response.data.message);
         }
-
       })
-      .catch(response => dispatch(authError(response.data.error)));
+      .catch(err => callback(err.message));
   }
 }
 
-//企业申请注册
-export function signupCompany(values) {
+
+/**
+ * 企业申请注册
+ * @param values
+ * @returns {Function}
+ */
+export function signupCompany(values, callback) {
   return function(dispatch) {
-    //TODO: using GET for test only
-    //axios.post(`${ROOT_URL}/apply-fail`, { ...values })
-    axios.get(`${ROOT_URL}/apply`, { ...values })
+    axios.post(`${ROOT_URL}/company`, { ...values })
       .then(response => {
         if(response.data.status == 1) {//singup success
-          // - Save the JWT token
-
-          localStorage.setItem('token', response.data.data.id);
-          localStorage.setItem('user', JSON.stringify(response.data.data));
-          localStorage.setItem('username', response.data.data.name);
-
-          dispatch({type: AUTH_USER});
-          // - redirect to the route '/'
-          browserHistory.push('/');
+          callback();
         } else {//signup fail
-          dispatch(authError(response.data.message));
+          callback(response.data.message);
         }
       })
-      .catch( response => dispatch(authError(response.data.error)) );
+      .catch(err => callback(err.message));
   }
 }

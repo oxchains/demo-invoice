@@ -17,9 +17,9 @@ class Header extends  Component {
 
   renderUserInfo() {
     if(this.props.authenticated) {
-      const user = JSON.parse(localStorage.getItem('user'));
-      const username= user.name;
-      const avatar = user.avatar || `https://gravatar.com/avatar/${username}?s=100&d=retro`;
+      //const user = JSON.parse(localStorage.getItem('user'));
+      const username= localStorage.getItem('username');
+      const avatar = `https://gravatar.com/avatar/oxchain.org/user/${username}?s=100&d=retro`;
 
       return (
         <div className="navbar-custom-menu">

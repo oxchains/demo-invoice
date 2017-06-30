@@ -16,7 +16,7 @@ import {
   REQUEST_ERROR,
   FETCH_REIMBURSE_LIST,
   FETCH_REIMBURSE,
-  FETCH_MY_REIMBURSE_LIST
+  getAuthorizedHeader
 } from './types';
 
 export function requestError(error) {
@@ -26,29 +26,50 @@ export function requestError(error) {
   };
 }
 
-//企业报销列表
+/**
+ * 报销列表
+ * @param page
+ * @returns {Function}
+ */
 export function fetchReimburseList(page) {
   return function(dispatch) {
-    axios.get(`${ROOT_URL}/reimburse-list/${page}`)
+    axios.get(`${ROOT_URL}/reimbursement`, { headers: getAuthorizedHeader() })
       .then(response => dispatch({ type: FETCH_REIMBURSE_LIST, payload:response }))
       .catch( response => dispatch(requestError(response.data.error)) );
   }
 }
 
-//我的报销列表
-export function fetchMyReimburseList(page) {
+/**
+ * 报销详情
+ * @param serial
+ * @returns {Function}
+ */
+export function fetchReimburse(serial) {
   return function(dispatch) {
-    axios.get(`${ROOT_URL}/reimburse-mine-list/${page}`)
-      .then(response => dispatch({ type: FETCH_MY_REIMBURSE_LIST, payload:response }))
+    axios.get(`${ROOT_URL}/reimbursement/${serial}`, { headers: getAuthorizedHeader() })
+      .then(response => dispatch({ type: FETCH_REIMBURSE, payload:response }))
       .catch( response => dispatch(requestError(response.data.error)) );
   }
 }
 
-//报销详情
-export function fetchReimburse(id) {
+/**
+ * 确认/拒绝报销
+ * @param id
+ * @param action        0:拒绝, 1:确认
+ * @param remark
+ * @param callback
+ * @returns {Function}
+ */
+export function reimburseAction(id, action, remark, callback) {
   return function(dispatch) {
-    axios.get(`${ROOT_URL}/reimburse-${id}`)
-      .then(response => dispatch({ type: FETCH_REIMBURSE, payload:response }))
-      .catch( response => dispatch(requestError(response.data.error)) );
+    axios.put(`${ROOT_URL}/reimbursement?id=${id}&action=${action}`, null, { headers: getAuthorizedHeader() })
+      .then(response => {
+        if(response.data.status == 1) {// success
+          callback();
+        } else {//fail
+          callback(response.data.message);
+        }
+      })
+      .catch(err => callback(err.message));
   }
 }

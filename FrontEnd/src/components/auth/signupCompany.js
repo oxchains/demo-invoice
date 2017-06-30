@@ -11,12 +11,38 @@
   import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
-import { signupCompany } from '../actions/auth';
+import { signupCompany } from '../../actions/auth';
+import {
+  Modal,
+  ModalHeader,
+  ModalTitle,
+  ModalClose,
+  ModalBody,
+  ModalFooter
+} from 'react-modal-bootstrap';
 
-class Apply extends Component {
+class SignupCompany extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isModalOpen: false,
+      spin : false,
+      error: null,
+      actionResult: ''
+    };
+  }
+
+  hideModal = () => {
+    this.setState({
+      isModalOpen: false
+    });
+  };
 
   handleFormSubmit(values) {
-    this.props.signupCompany(values);
+    this.setState({ spin:true });
+    this.props.signupCompany(values, err=>{
+      this.setState({ isModalOpen: true , error: err , actionResult: err||'注册成功!' , spin:false });
+    });
   }
 
   renderAlert() {
@@ -69,6 +95,23 @@ class Apply extends Component {
         </form>
       </div>
     </div>
+
+      <Modal isOpen={this.state.isModalOpen} onRequestHide={this.hideModal}>
+        <ModalHeader>
+          <ModalClose onClick={this.hideModal}/>
+          <ModalTitle>提示:</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+          <p className={this.state.error?'text-red':'text-green'}>
+            {this.state.actionResult}
+          </p>
+        </ModalBody>
+        <ModalFooter>
+          <button className='btn btn-default' onClick={this.hideModal}>
+            关闭
+          </button>
+        </ModalFooter>
+      </Modal>
   </div>);
   }
 };
@@ -114,9 +157,9 @@ function mapStateToProps(state) {
   };
 }
 
-const reduxApplyForm = reduxForm({
-  form: 'ApplyForm',
+const reduxSignupCompanyForm = reduxForm({
+  form: 'SignupCompanyForm',
   validate
-})(Apply);
+})(SignupCompany);
 
-export default connect(mapStateToProps, { signupCompany })(reduxApplyForm);
+export default connect(mapStateToProps, { signupCompany })(reduxSignupCompanyForm);
