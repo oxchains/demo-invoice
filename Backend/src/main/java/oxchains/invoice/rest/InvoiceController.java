@@ -61,7 +61,7 @@ public class InvoiceController {
             .stream()
             .map(ChaincodeResp::getPayload)
             .map(ResponseUtil::parseInvoicePayload)
-            .map(serials -> invoiceRepo.findDistinctBySerialIn(serials))
+            .map(serials -> invoiceRepo.findDistinctBySerialInAndOwner(serials, u.getName()))
             .flatMap(invoices -> newArrayList(invoices).stream())
             .collect(toList()))
           .map(RestResp::success)

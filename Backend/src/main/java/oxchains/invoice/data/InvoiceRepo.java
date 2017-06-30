@@ -14,7 +14,7 @@ public interface InvoiceRepo extends CrudRepository<Invoice, Long> {
 
     Optional<Invoice> findInvoiceByOwnerAndSerial(String owner, String serial);
 
-    Iterable<Invoice> findDistinctBySerialIn(Collection<String> serials);
+    Iterable<Invoice> findDistinctBySerialInAndOwner(Collection<String> serials, String owner);
 
     Optional<Invoice> findInvoiceByOriginAndSerial(Company origin, String serial);
 

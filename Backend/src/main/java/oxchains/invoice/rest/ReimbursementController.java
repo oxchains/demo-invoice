@@ -81,7 +81,7 @@ public class ReimbursementController {
           .flatMap(owner -> companyRepo
             .findByName(company)
             .flatMap(c -> {
-                List<Invoice> invoiceList = newArrayList(invoiceRepo.findDistinctBySerialIn(Arrays.asList(invoices)));
+                List<Invoice> invoiceList = newArrayList(invoiceRepo.findDistinctBySerialInAndOwner(Arrays.asList(invoices), owner.getName()));
                 if (invoiceList.size() == invoices.length) {
                     Reimbursement reimbursement = new Reimbursement();
                     reimbursement.setCustomer(owner.getName());

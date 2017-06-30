@@ -23,6 +23,11 @@ public class Company {
         this.bankAccount = bankAccount;
     }
 
+    @Override
+    public String toString(){
+        return String.format("%s[%s]", name, taxIdentifier);
+    }
+
     @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

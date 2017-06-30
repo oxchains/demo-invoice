@@ -13,8 +13,6 @@ And user JD
 And 5 goods named computer with price 4999 sold
 When taobao issue invoice to xfja for JD
 Then invoice issued
-When taobao check invoice list
-Then the invoice is present
 When JD check invoice list
 Then the invoice is present
 
