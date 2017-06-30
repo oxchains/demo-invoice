@@ -14,7 +14,8 @@ import {
   FETCH_PLEDGE_LIST,
   FETCH_RELEASE_LIST,
   FETCH_PAYMENT_LIST,
-  FETCH_RECOURSE_LIST
+  FETCH_RECOURSE_LIST,
+  QUERY_DUE
 } from './types';
 
 export function requestError(error) {
@@ -44,12 +45,12 @@ export function requestError(error) {
  * @param callback
  * @returns {Function}
  */
-export function register({ price, drawee, drawer, payee, due, transferable}, callback) {
-  due = due+' 23:59:59';
-  return function(dispatch) {
-    axios.post(`${ROOT_URL}/bill`, { price, drawer, drawee, payee, due, transferable})
+export function register({price, drawee, drawer, payee, due, transferable}, callback) {
+  due = due + ' 23:59:59';
+  return function (dispatch) {
+    axios.post(`${ROOT_URL}/bill`, {price, drawer, drawee, payee, due, transferable})
       .then(response => {
-        if(response.data.status == 1) {// success
+        if (response.data.status == 1) {// success
           callback();
         } else {// fail
           callback(response.data.message);
@@ -71,19 +72,35 @@ export function register({ price, drawee, drawer, payee, due, transferable}, cal
  * @returns {Function}
  */
 function bill_action(url, params, callback) {
-  return function(dispatch) {
-    axios.post(url, params)
-      .then(response => {
-        if(response.data.status == 1) {// success
-          callback();
-        } else {// fail
-          callback(response.data.message);
-        }
-      })
-      .catch(err => {
-        dispatch(requestError(err.message));
-        callback(err.message);
-      });
+  return function (dispatch) {
+    const {action} = params;
+    if (action === 1) {
+      axios.put(url, params)
+        .then(response => {
+          if (response.data.status == 1) {// success
+            callback();
+          } else {// fail
+            callback(response.data.message);
+          }
+        })
+        .catch(err => {
+          dispatch(requestError(err.message));
+          callback(err.message);
+        });
+    } else {
+      axios.post(url, params)
+        .then(response => {
+          if (response.data.status == 1) {// success
+            callback();
+          } else {// fail
+            callback(response.data.message);
+          }
+        })
+        .catch(err => {
+          dispatch(requestError(err.message));
+          callback(err.message);
+        });
+    }
   }
 }
 
@@ -95,7 +112,7 @@ function bill_action(url, params, callback) {
  * @param callback
  */
 export function prompt_acceptance({id, manipulator, action}, callback) {
-  return bill_action(`${ROOT_URL}/prompt_acceptance`, {id, manipulator, action}, callback);
+  return bill_action(`${ROOT_URL}/bill/acceptance`, {id, manipulator, action}, callback);
 }
 
 /**
@@ -106,7 +123,7 @@ export function prompt_acceptance({id, manipulator, action}, callback) {
  * @param callback
  */
 export function prompt_warrant({id, manipulator, action}, callback) {
-  return bill_action(`${ROOT_URL}/prompt_warrant`, {id, manipulator, action}, callback);
+  return bill_action(`${ROOT_URL}/bill/guaranty`, {id, manipulator, action}, callback);
 }
 
 /**
@@ -116,7 +133,7 @@ export function prompt_warrant({id, manipulator, action}, callback) {
  * @param callback
  */
 export function prompt_revoke({id, manipulator}, callback) {
-  return bill_action(`${ROOT_URL}/prompt_revoke`, {id, manipulator}, callback);
+  return bill_action(`${ROOT_URL}/bill/revocation`, {id, manipulator}, callback);
 }
 
 
@@ -128,7 +145,7 @@ export function prompt_revoke({id, manipulator}, callback) {
  * @param callback
  */
 export function prompt_receive({id, manipulator, action}, callback) {
-  return bill_action(`${ROOT_URL}/prompt_receive`, {id, manipulator, action}, callback);
+  return bill_action(`${ROOT_URL}/bill/reception`, {id, manipulator, action}, callback);
 }
 
 /**
@@ -143,9 +160,9 @@ export function prompt_receive({id, manipulator, action}, callback) {
  */
 export function prompt_endorsement({id, manipulator, endorsor, endorsee, action}, callback) {
   let params = null;
-  if(action==1) params = {id, manipulator, endorsee, action};
-  else params = {id, manipulator, endorsor, action};
-  return bill_action(`${ROOT_URL}/prompt_endorsement`, params, callback);
+  if (action == 1) params = {id, manipulator, endorsor, action};
+  else params = {id, manipulator, endorsee, action};
+  return bill_action(`${ROOT_URL}/bill/endorsement`, params, callback);
 }
 
 /**
@@ -162,9 +179,9 @@ export function prompt_endorsement({id, manipulator, endorsor, endorsee, action}
  */
 export function prompt_discount({id, manipulator, action, discount_type, receiver, discount_interest, money}, callback) {
   let params = null;
-  if(action==1) params = {id, manipulator, action};
+  if (action == 1) params = {id, manipulator, action};
   else params = {id, manipulator, action, discount_type, receiver, discount_interest, money};
-  return bill_action(`${ROOT_URL}/prompt_discount`, params, callback);
+  return bill_action(`${ROOT_URL}/bill/discount`, params, callback);
 }
 
 /**
@@ -176,7 +193,7 @@ export function prompt_discount({id, manipulator, action, discount_type, receive
  * @param callback
  */
 export function prompt_pledge({id, manipulator, action, pledgee}, callback) {
-  return bill_action(`${ROOT_URL}/prompt_pledge`, {id, manipulator, action, pledgee}, callback);
+  return bill_action(`${ROOT_URL}/bill/pledge`, {id, manipulator, action, pledgee}, callback);
 }
 
 /**
@@ -187,7 +204,7 @@ export function prompt_pledge({id, manipulator, action, pledgee}, callback) {
  * @param callback
  */
 export function prompt_pledge_release({id, manipulator, action}, callback) {
-  return bill_action(`${ROOT_URL}/prompt_pledge_release`, {id, manipulator, action}, callback);
+  return bill_action(`${ROOT_URL}/bill/pledge/release`, {id, manipulator, action}, callback);
 }
 
 /**
@@ -198,7 +215,7 @@ export function prompt_pledge_release({id, manipulator, action}, callback) {
  * @param callback
  */
 export function prompt_pay({id, manipulator, action}, callback) {
-  return bill_action(`${ROOT_URL}/prompt_pay`, {id, manipulator, action}, callback);
+  return bill_action(`${ROOT_URL}/bill/payment`, {id, manipulator, action}, callback);
 }
 
 /**
@@ -210,7 +227,7 @@ export function prompt_pay({id, manipulator, action}, callback) {
  * @param callback
  */
 export function prompt_dun({id, manipulator, action, debtor}, callback) {
-  return bill_action(`${ROOT_URL}/prompt_dun`, {id, manipulator, action, debtor}, callback);
+  return bill_action(`${ROOT_URL}/bill/recourse`, {id, manipulator, action, debtor}, callback);
 }
 
 /**
@@ -218,10 +235,10 @@ export function prompt_dun({id, manipulator, action, debtor}, callback) {
  * @param id
  */
 export function fetchBillInfo(id) {
-  return function(dispatch) {
+  return function (dispatch) {
     axios.get(`${ROOT_URL}/bill/${id}`)
-      .then(response => dispatch({ type: FETCH_BILL_INFO, payload:response }))
-      .catch( err => dispatch(requestError(err.message)) );
+      .then(response => dispatch({type: FETCH_BILL_INFO, payload: response}))
+      .catch(err => dispatch(requestError(err.message)));
   }
 }
 
@@ -230,10 +247,10 @@ export function fetchBillInfo(id) {
  * @param username
  */
 export function fetchAcceptanceList(username) {
-  return function(dispatch) {
+  return function (dispatch) {
     axios.get(`${ROOT_URL}/bill/${username}/acceptance`)
-      .then(response => dispatch({ type: FETCH_ACCEPTANCE_LIST, payload:response }))
-      .catch( err => dispatch(requestError(err.message)) );
+      .then(response => dispatch({type: FETCH_ACCEPTANCE_LIST, payload: response}))
+      .catch(err => dispatch(requestError(err.message)));
   }
 }
 
@@ -242,10 +259,10 @@ export function fetchAcceptanceList(username) {
  * @param username
  */
 export function fetchGuarantyList(username) {
-  return function(dispatch) {
+  return function (dispatch) {
     axios.get(`${ROOT_URL}/bill/${username}/guaranty`)
-      .then(response => dispatch({ type: FETCH_GUARANTY_LIST, payload:response }))
-      .catch( err => dispatch(requestError(err.message)) );
+      .then(response => dispatch({type: FETCH_GUARANTY_LIST, payload: response}))
+      .catch(err => dispatch(requestError(err.message)));
   }
 }
 
@@ -254,10 +271,10 @@ export function fetchGuarantyList(username) {
  * @param username
  */
 export function fetchRevocationList(username) {
-  return function(dispatch) {
+  return function (dispatch) {
     axios.get(`${ROOT_URL}/bill/${username}/revocation`)
-      .then(response => dispatch({ type: FETCH_REVOCATION_LIST, payload:response }))
-      .catch( err => dispatch(requestError(err.message)) );
+      .then(response => dispatch({type: FETCH_REVOCATION_LIST, payload: response}))
+      .catch(err => dispatch(requestError(err.message)));
   }
 }
 
@@ -266,10 +283,10 @@ export function fetchRevocationList(username) {
  * @param username
  */
 export function fetchReceptionList(username) {
-  return function(dispatch) {
+  return function (dispatch) {
     axios.get(`${ROOT_URL}/bill/${username}/reception`)
-      .then(response => dispatch({ type: FETCH_RECEPTION_LIST, payload:response }))
-      .catch( err => dispatch(requestError(err.message)) );
+      .then(response => dispatch({type: FETCH_RECEPTION_LIST, payload: response}))
+      .catch(err => dispatch(requestError(err.message)));
   }
 }
 
@@ -278,10 +295,10 @@ export function fetchReceptionList(username) {
  * @param username
  */
 export function fetchEndorsementList(username) {
-  return function(dispatch) {
+  return function (dispatch) {
     axios.get(`${ROOT_URL}/bill/${username}/endorsement`)
-      .then(response => dispatch({ type: FETCH_ENDORSEMENT_LIST, payload:response }))
-      .catch( err => dispatch(requestError(err.message)) );
+      .then(response => dispatch({type: FETCH_ENDORSEMENT_LIST, payload: response}))
+      .catch(err => dispatch(requestError(err.message)));
   }
 }
 
@@ -290,10 +307,10 @@ export function fetchEndorsementList(username) {
  * @param username
  */
 export function fetchDiscountList(username) {
-  return function(dispatch) {
+  return function (dispatch) {
     axios.get(`${ROOT_URL}/bill/${username}/discount`)
-      .then(response => dispatch({ type: FETCH_DISCOUNT_LIST, payload:response }))
-      .catch( err => dispatch(requestError(err.message)) );
+      .then(response => dispatch({type: FETCH_DISCOUNT_LIST, payload: response}))
+      .catch(err => dispatch(requestError(err.message)));
   }
 }
 
@@ -302,10 +319,10 @@ export function fetchDiscountList(username) {
  * @param username
  */
 export function fetchPledgeList(username) {
-  return function(dispatch) {
+  return function (dispatch) {
     axios.get(`${ROOT_URL}/bill/${username}/pledge`)
-      .then(response => dispatch({ type: FETCH_PLEDGE_LIST, payload:response }))
-      .catch( err => dispatch(requestError(err.message)) );
+      .then(response => dispatch({type: FETCH_PLEDGE_LIST, payload: response}))
+      .catch(err => dispatch(requestError(err.message)));
   }
 }
 
@@ -314,10 +331,10 @@ export function fetchPledgeList(username) {
  * @param username
  */
 export function fetchReleaseList(username) {
-  return function(dispatch) {
-    axios.get(`${ROOT_URL}/bill/${username}/release`)
-      .then(response => dispatch({ type: FETCH_RELEASE_LIST, payload:response }))
-      .catch( err => dispatch(requestError(err.message)) );
+  return function (dispatch) {
+    axios.get(`${ROOT_URL}/bill/${username}/pledge/release`)
+      .then(response => dispatch({type: FETCH_RELEASE_LIST, payload: response}))
+      .catch(err => dispatch(requestError(err.message)));
   }
 }
 
@@ -326,10 +343,10 @@ export function fetchReleaseList(username) {
  * @param username
  */
 export function fetchPaymentList(username) {
-  return function(dispatch) {
+  return function (dispatch) {
     axios.get(`${ROOT_URL}/bill/${username}/payment`)
-      .then(response => dispatch({ type: FETCH_PAYMENT_LIST, payload:response }))
-      .catch( err => dispatch(requestError(err.message)) );
+      .then(response => dispatch({type: FETCH_PAYMENT_LIST, payload: response}))
+      .catch(err => dispatch(requestError(err.message)));
   }
 }
 
@@ -338,10 +355,27 @@ export function fetchPaymentList(username) {
  * @param username
  */
 export function fetchRecourseList(username) {
-  return function(dispatch) {
+  return function (dispatch) {
     axios.get(`${ROOT_URL}/bill/${username}/recourse`)
-      .then(response => dispatch({ type: FETCH_RECOURSE_LIST, payload:response }))
-      .catch( err => dispatch(requestError(err.message)) );
+      .then(response => dispatch({type: FETCH_RECOURSE_LIST, payload: response}))
+      .catch(err => dispatch(requestError(err.message)));
+  }
+}
+
+/**
+ * 票据查询
+ * @param callback
+ * @returns {Function}
+ */
+export function queryDue(callback) {
+  return function (dispatch) {
+    axios.get(`${ROOT_URL}/bill/due`).then(response => {
+      if (response.data.payload) {
+        callback({status: true, payload: "有票据到期"})
+      } else {
+        callback({status: false, payload: ""});
+      }
+    })
   }
 }
 

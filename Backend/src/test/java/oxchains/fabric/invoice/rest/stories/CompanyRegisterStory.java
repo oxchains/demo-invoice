@@ -1,48 +1,61 @@
 package oxchains.fabric.invoice.rest.stories;
 
-import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import net.thucydides.core.annotations.Steps;
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
-import org.junit.Before;
-import oxchains.fabric.invoice.rest.steps.RegisterSteps;
-import oxchains.invoice.rest.CompanyController;
+import oxchains.fabric.invoice.rest.steps.UserSteps;
 
 /**
  * @author aiet
  */
 public class CompanyRegisterStory {
 
-    @Before
-    public void init() {
-        RestAssuredMockMvc.standaloneSetup(new CompanyController());
-    }
-
-    @Steps RegisterSteps registerSteps;
+    @Steps private UserSteps userSteps;
 
     @Given("mobile $phone, password $password")
     public void givenMobileAndPass(String phone, String password) {
-        registerSteps.givenAccount(phone, password);
+        userSteps.givenAccount(phone, password, null);
     }
 
     @Given("company name $companyName, bank account $bankAccount from bank $bankName, taxpayer $taxIdentifier, address $address")
     public void givenCompanyInformation(String companyName, String bankAccount, String bankName, String taxId, String address) {
-        registerSteps.fillCompanyInfo(companyName, bankAccount, bankName, taxId, address);
+        userSteps.fillCompanyInfo(companyName, bankAccount, bankName, taxId, address);
     }
 
-    @When("I register")
+    @When("I register company")
     public void whenIRegister() {
-        registerSteps.register();
+        userSteps.registerCompany();
     }
 
-    @Then("register success")
+    @Then("company registration success")
     public void thenRegisterSuccess() {
-        registerSteps.requestSuccess();
+        userSteps.requestSuccess();
     }
 
     @Then("company information returned")
     public void thenCompanyInfoGot() throws Exception {
-        registerSteps.companyInfoVerified();
+        userSteps.companyInfoVerified();
     }
+
+    @When("I check company list")
+    public void whenCheckCompanyList() {
+        userSteps.companyList();
+    }
+
+    @Then("company $company is present")
+    public void thenCompanyPresent(String company) {
+        userSteps.includeCompany(company);
+    }
+
+    @When("I enroll company user")
+    public void whenEnrollCompanyUser() {
+        userSteps.enrollCompanyUser();
+    }
+
+    @Then("company user $user enrolled")
+    public void thenEnrolled(String user) {
+        userSteps.enrolled(user);
+    }
+
 }

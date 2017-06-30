@@ -13,15 +13,22 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.oxchains.billing.domain.Bill;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.reactive.function.client.ClientResponse;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import static com.oxchains.billing.App.TOKEN_HOLDER;
 import static java.util.Collections.emptyMap;
 import static java.util.Optional.empty;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 
 /**
  * @author aiet
@@ -30,17 +37,42 @@ public class ResponseUtil {
 
   static final Logger LOG = LoggerFactory.getLogger(ResponseUtil.class);
 
-  public static Optional<String> extract(String json, String path){
-    try{
+  public static Optional<String> extract(String json, String path) {
+    try {
       JsonNode root = new ObjectMapper().readTree(json);
       return Optional.ofNullable(root.at("/data/token").textValue());
-    }catch (Exception e){
+    } catch (Exception e) {
       LOG.error("failed to extract value under path {} out of {}: {}", path, json, e.getMessage());
     }
     return empty();
   }
 
-  public static String payloadToBill(String fabricManageResponse) {
+  public static Mono<ClientResponse> chaincodeQuery(WebClient client, URI uri) {
+    return client.get().uri(uri)
+        .header(AUTHORIZATION, TOKEN_HOLDER.getToken())
+        .accept(APPLICATION_JSON_UTF8).exchange()
+        .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful());
+  }
+
+  public static Mono<ClientResponse> chaincodeInvoke(WebClient client, URI uri) {
+    return client.post().uri(uri)
+        .header(AUTHORIZATION, TOKEN_HOLDER.getToken())
+        .accept(APPLICATION_JSON_UTF8).exchange()
+        .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful());
+  }
+
+
+  public static Bill payloadToBill(String fabricManageResponse) {
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      return (Bill) (mapper.readValue(fabricManageResponse, RestResp.class).data);
+    } catch (Exception e) {
+      LOG.error("failed to convert fabric-manage response: {}", e.getMessage());
+    }
+    return null;
+  }
+
+  public static String payloadToBillResp(String fabricManageResponse) {
     try {
       ObjectMapper mapper = new ObjectMapper();
       return mapper.writeValueAsString(mapper.readValue(fabricManageResponse, RestResp.class));
@@ -123,15 +155,15 @@ public class ResponseUtil {
           for (JsonNode node : rootNode) {
             if (node.isArray()) {
               node.forEach(rawRecord -> {
-                if(rawRecord.isObject()) {
+                if (rawRecord.isObject()) {
                   readAsBill(objectMapper, rawRecord.toString(), BillRecord.class).ifPresent(bills::add);
-                }else {
+                } else {
                   bills.add(rawRecord.textValue());
                 }
               });
-            } else if (node.isObject()){
-                this.payload = readAsBill(objectMapper, node.toString(), Record.class).orElse(emptyMap());
-                return;
+            } else if (node.isObject()) {
+              this.payload = readAsBill(objectMapper, node.toString(), Record.class).orElse(emptyMap());
+              return;
             }
           }
         } catch (Exception e) {
@@ -196,13 +228,129 @@ public class ResponseUtil {
     bill.setPayee(record.getPayeeName());
     bill.setDrawee(record.getPayerName());
     bill.setDrawer(record.getCreatorName());
-    bill.setTransferable(record.getForbidTransfer());
+    if ("1".equals(record.getForbidTransfer())) {
+      bill.setTransferable("0");
+    } else {
+      bill.setTransferable("1");
+    }
     if (id != null && id.length > 0) {
       bill.setId(id[0].replace("BillStruct", ""));
     }
-    //TODO map states to bill status
-    bill.setStatus("");
+    bill.setStatus(parseBillStatus(record));
     return bill;
+  }
+
+  private static String parseBillStatus(Record billRecord) {
+    StringBuilder stringBuilder = new StringBuilder();
+    switch (billRecord.getPhase()) {
+      case "0":
+        stringBuilder.append("[已出票] ");
+        break;
+      case "1":
+        if (!"1".equals(billRecord.getForbidTransfer())) {
+          stringBuilder.append("[正常流通] ");
+        }
+        break;
+      case "2":
+        stringBuilder.append("[已到期] ");
+        break;
+      default:
+        break;
+    }
+
+    switch (billRecord.getBillState()) {
+      case "1":
+        stringBuilder.append("背书错误");
+        break;
+      case "2":
+        stringBuilder.append("待确认贴现");
+        break;
+      case "3":
+        stringBuilder.append("待确认质押");
+        break;
+      case "4":
+        stringBuilder.append("已质押");
+        break;
+      case "5":
+        stringBuilder.append("待确认释放质押");
+        break;
+      default:
+        break;
+    }
+    if (!"0".equals(billRecord.getBillState())) {
+      stringBuilder.append("-");
+    }
+
+    switch (billRecord.getPayerState()) {
+      case "0":
+        stringBuilder.append("待承兑");
+        break;
+      case "1":
+        stringBuilder.append("待确认承兑");
+        break;
+      case "9":
+        stringBuilder.append("已承兑");
+        break;
+      default:
+        break;
+    }
+    stringBuilder.append("-");
+
+    switch (billRecord.getPayeeState()) {
+      case "0":
+        stringBuilder.append("未收票");
+        break;
+      case "1":
+        stringBuilder.append("待收票");
+        break;
+      case "2":
+        stringBuilder.append("已撤票");
+        break;
+      case "3":
+        stringBuilder.append("拒绝收票");
+        break;
+      case "4":
+        stringBuilder.append("已收票");
+        break;
+      default:
+        break;
+    }
+    stringBuilder.append("-");
+
+    switch (billRecord.getFinishState()) {
+      case "0":
+        stringBuilder.append("(待提示支付)");
+        break;
+      case "1":
+        stringBuilder.append("(待支付)");
+        break;
+      case "2":
+        stringBuilder.append("(拒绝支付)");
+        break;
+      case "3":
+        stringBuilder.append("(待被追索方支付)");
+        break;
+      case "9":
+        stringBuilder.append("(已支付)");
+        break;
+      default:
+        break;
+    }
+    if (!"".equals(billRecord.getTransferState())) {
+      stringBuilder.append("-");
+      switch (billRecord.getTransferState()) {
+        case "0":
+          stringBuilder.append("待转让");
+          break;
+        case "1":
+          stringBuilder.append("转让待收票");
+          break;
+        case "9":
+          stringBuilder.append("已转让");
+          break;
+      }
+    }
+    return stringBuilder.toString();
   }
 
   @JsonIgnoreProperties(ignoreUnknown = true)

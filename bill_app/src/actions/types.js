@@ -1,5 +1,5 @@
 export const ROOT_URL = 'http://10.8.47.4:17173';
-
+//export const ROOT_URL = 'http://localhost:3000';
 export const AUTH_USER = 'auth_user';                               //登录
 export const UNAUTH_USER = 'unauth_user';                           //退出登录
 export const AUTH_ERROR = 'auth_error';                             //登录失败
@@ -23,3 +23,5 @@ export const FETCH_PLEDGE_LIST = 'fetch_pledge_list';               //获取(待
 export const FETCH_RELEASE_LIST = 'fetch_release_list';             //获取(待)质押解除列表
 export const FETCH_PAYMENT_LIST = 'fetch_payment_list';             //获取(待)支付列表
 export const FETCH_RECOURSE_LIST = 'fetch_recourse_list';           //获取(待)追索列表
+
+export const QUERY_DUE = 'query_due';

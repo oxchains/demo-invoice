@@ -5,4 +5,8 @@ package oxchains.invoice.domain;
  */
 public interface IUser {
     String getMobile();
+
+    String getName();
+
+    Long getId();
 }

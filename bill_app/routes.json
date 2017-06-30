@@ -1,0 +1,12 @@
+{
+    "/bill/a/acceptance": "/bill",
+    "/bill/a/guaranty": "/bill",
+    "/bill/a/revocation": "/bill",
+    "/bill/a/reception": "/bill",
+    "/bill/a/endorsement": "/bill",
+    "/bill/a/discount": "/bill",
+    "/bill/a/pledge": "/bill",
+    "/bill/a/release": "/bill",
+    "/bill/a/payment": "/bill",
+    "/bill/a/recourse": "/bill"
+}

@@ -1,5 +1,6 @@
 package com.oxchains.billing.rest;
 
+import com.oxchains.billing.notification.PushService;
 import com.oxchains.billing.rest.common.ChaincodeUriBuilder;
 import com.oxchains.billing.rest.common.RecourseAction;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,8 @@ import static com.oxchains.billing.domain.BillActions.GET_RECOURSE;
 import static com.oxchains.billing.rest.common.ClientResponse2ServerResponse.toPayloadTransformedServerResponse;
 import static com.oxchains.billing.rest.common.ClientResponse2ServerResponse.toServerResponse;
 import static com.oxchains.billing.util.ArgsUtil.args;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
+import static com.oxchains.billing.util.ResponseUtil.chaincodeInvoke;
+import static com.oxchains.billing.util.ResponseUtil.chaincodeQuery;
 import static org.springframework.web.reactive.function.server.ServerResponse.badRequest;
 import static org.springframework.web.reactive.function.server.ServerResponse.noContent;
 
@@ -27,21 +28,26 @@ import static org.springframework.web.reactive.function.server.ServerResponse.no
 @Component
 public class RecourseHandler extends ChaincodeUriBuilder {
 
+  private PushService pushService;
+
   public RecourseHandler(@Autowired WebClient client,
                          @Autowired @Qualifier("fabric.uri") UriBuilder uriBuilder,
-                         @Autowired @Qualifier("token") String token) {
-    super(client, token, uriBuilder.build().toString());
+                         @Autowired PushService pushService) {
+    super(client, uriBuilder.build().toString());
+    this.pushService = pushService;
   }
 
 
   /* POST /bill/recourse */
   public Mono<ServerResponse> create(ServerRequest request) {
     return request.bodyToMono(RecourseAction.class)
-        .flatMap(recourseAction -> client.post().uri(buildUri(args(BILL_RECOURSE, recourseAction)))
-            .header(AUTHORIZATION, token)
-            .accept(APPLICATION_JSON_UTF8).exchange()
-            .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
-            .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
+        .flatMap(recourseAction -> chaincodeInvoke(client, buildUri(args(BILL_RECOURSE, recourseAction)))
+            .flatMap(clientResponse -> {
+              if (recourseAction.getAction() == null) {
+                pushService.sendMsg(recourseAction.getDebtor(), "票据到期, 请支付汇票" + recourseAction.getId());
+              }
+              return Mono.just(toServerResponse(clientResponse));
+            })
             .switchIfEmpty(noContent().build())
         ).switchIfEmpty(badRequest().build());
   }
@@ -49,10 +55,7 @@ public class RecourseHandler extends ChaincodeUriBuilder {
   /* PUT /bill/recourse */
   public Mono<ServerResponse> update(ServerRequest request) {
     return request.bodyToMono(RecourseAction.class)
-        .flatMap(recourseAction -> client.post().uri(buildUri(args(BILL_RECOURSE, recourseAction)))
-            .header(AUTHORIZATION, token)
-            .accept(APPLICATION_JSON_UTF8).exchange()
-            .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
+        .flatMap(recourseAction -> chaincodeInvoke(client, buildUri(args(BILL_RECOURSE, recourseAction)))
             .flatMap(clientResponse -> Mono.just(toServerResponse(clientResponse)))
             .switchIfEmpty(noContent().build())
         ).switchIfEmpty(badRequest().build());
@@ -60,10 +63,7 @@ public class RecourseHandler extends ChaincodeUriBuilder {
 
   public Mono<ServerResponse> get(ServerRequest request) {
     final String uid = request.pathVariable("uid");
-    return client.get().uri(buildUri(args(GET_RECOURSE, uid)))
-        .header(AUTHORIZATION, token)
-        .accept(APPLICATION_JSON_UTF8).exchange()
-        .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
+    return chaincodeQuery(client, buildUri(args(GET_RECOURSE, uid)))
         .flatMap(clientResponse -> Mono.just(toPayloadTransformedServerResponse(clientResponse)))
         .switchIfEmpty(noContent().build());
   }

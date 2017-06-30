@@ -1,8 +1,7 @@
 package oxchains.invoice.domain;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 
@@ -11,9 +10,10 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "company")
-public class Company implements ICompany{
+public class Company {
 
-    public Company(){}
+    public Company() {
+    }
 
     public Company(String name, String taxIdentifier, String address, String bankName, String bankAccount) {
         this.name = name;
@@ -23,8 +23,14 @@ public class Company implements ICompany{
         this.bankAccount = bankAccount;
     }
 
+    @Override
+    public String toString(){
+        return String.format("%s[%s]", name, taxIdentifier);
+    }
+
+    @JsonIgnore
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     private String name;

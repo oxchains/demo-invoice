@@ -31,7 +31,7 @@ import (
 type myChaincode struct {
 }
 //sp
-var sp = "\n"
+var sp = ","
 
 //logger
 var logger = shim.NewLogger("invoiceCC")
@@ -286,7 +286,7 @@ func (t *myChaincode) createbx(stub shim.ChaincodeStubInterface, args []string) 
 	if err != nil {
 		return shim.Error("bad format of the endtm")
 	}
-	listuuid := strings.Split(uuids, ",")
+	listuuid := strings.Split(uuids, "-")
 	logger.Infof("invoices to reimburse: %s", uuids)
 
 	//update each uuid
@@ -391,11 +391,11 @@ func (t *myChaincode) confirmbx(stub shim.ChaincodeStubInterface, args []string)
 	//return nil, fmt.Errorf("out of the bx time")
 	//}
 	if _toid != toid {
-		return shim.Error(" don't hvae the right to confirmbx!")
+		return shim.Error(" don't have the right to confirmbx!")
 	}
 
 	//update each uuid
-	listuuid := strings.Split(uuids, ",")
+	listuuid := strings.Split(uuids, "-")
 	for _, uuid := range listuuid {
 		_, err := t.confirm(stub, uuid, toid, timestamp)
 		if err != nil {
@@ -499,7 +499,7 @@ func (t *myChaincode) rejectbx(stub shim.ChaincodeStubInterface, args []string) 
 		return shim.Error(" don't hvae the right to confirmbx!")
 	}
 	//update each uuid
-	listuuid := strings.Split(uuids, ",")
+	listuuid := strings.Split(uuids, "-")
 
 	logger.Infof("ready to reject one by one: %s", uuids)
 
@@ -623,7 +623,7 @@ func (t *myChaincode) myHistory(stub shim.ChaincodeStubInterface, args []string)
 		keys = append(keys, key.Key)
 	}
 
-	result := strings.Join(keys, ",");
+	result := strings.Join(keys, ";");
 
 	return shim.Success([]byte(result))
 }
