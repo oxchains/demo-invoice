@@ -17,7 +17,7 @@ const selectedInvoicesSelector = state => state.invoice.selectedIds;
 const getInvoices = (invoices, selectedIds) => {
   const selectedInvoices = _.filter(
     invoices,
-    invoice => _.contains(selectedIds, invoice.id)
+    invoice => _.contains(selectedIds, invoice.serial)
   );
 ;
   return selectedInvoices;

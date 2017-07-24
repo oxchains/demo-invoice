@@ -14,9 +14,11 @@ import { signinAction } from '../../actions/auth'
 
 class Signin extends Component {
 
-  handleFormSubmit({ username, password }) {
+  handleFormSubmit({ username, password, biz }) {
+    biz = !!biz;
+    this.setState({ spin:true });
     if(username && password)
-      this.props.signinAction({ username, password });
+      this.props.signinAction({ username, password, biz });
   }
 
   renderAlert() {
@@ -51,8 +53,12 @@ class Signin extends Component {
             {this.renderAlert()}
 
             <form className="form-signin" onSubmit={handleSubmit(this.handleFormSubmit.bind(this))}>
-            <Field name="username" component={this.renderField} type="text"  label="用户名" icon="envelope" />
-            <Field name="password" component={this.renderField} type="password" label="密码" icon="lock" />
+              <Field name="username" component={this.renderField} type="text"  label="用户名" icon="envelope" />
+              <Field name="password" component={this.renderField} type="password" label="密码" icon="lock" />
+              <div className="form-group">
+                  <label className="margin-r-5"><Field name="biz" component="input" type="radio" value=""/> 个人用户</label>
+                  <label className="margin-r-5"><Field name="biz" component="input" type="radio" value="1"/> 企业用户</label>
+              </div>
               <div className="row">
                 <div className="col-xs-8">
                 </div>

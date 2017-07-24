@@ -15,68 +15,143 @@ import {
   REQUEST_SUCCESS,
   REQUEST_ERROR,
   FETCH_INVOICE_LIST,
-  INVOICE_AUTO,
+  FETCH_INVOICE_DETAIL,
   SELECT_INVOICE,
-  DESELECT_INVOICE
+  DESELECT_INVOICE,
+  REIMBURSE_SUCCESS,
+  getAuthorizedHeader,
+  requestError
 } from './types';
 
-//http请求错误
-export function requestError(error) {
-  return {
-    type: REQUEST_ERROR,
-    payload: error
-  };
-}
 
-//自动开票
-export function autoAction(values) {
+/**
+ * 开票
+ * @param values : {
+ *   "target": "JD",
+ *   "title": "xfja",
+ *   "goods": [{
+ *       "name": "computer",
+ *       "description": "computer",
+ *       "quantity": 5,
+ *       "price": 4999
+ *   }]
+ * }
+ * @returns {Function}
+ */
+export function addAction(values, callback) {
   return function(dispatch) {
-    //TODO: using GET for test only
-    //axios.post(`${ROOT_URL}/auto`, { ...values })
-    axios.get(`${ROOT_URL}/auto`, { ...values })
+    axios.post(`${ROOT_URL}/invoice`, { ...values }, { headers: getAuthorizedHeader() })
       .then(response => {
         if(response.data.status == 1) {// success
-          dispatch({ type: REQUEST_SUCCESS, payload: response.data.message });
+          callback();
         } else {//fail
-          dispatch(requestError(response.data.message));
+          callback(response.data.message);
         }
       })
-      .catch( response => dispatch(requestError(response.data.error)) );
+      .catch(err => callback(err.message));
   }
 }
 
-//发票列表
+/**
+ * 发票列表
+ * @param page
+ * @returns {Function}
+ */
 export function fetchInvoiceList(page) {
   return function(dispatch) {
-    axios.get(`${ROOT_URL}/invoice-list/${page}`)
+    axios.get(`${ROOT_URL}/invoice`, { headers: getAuthorizedHeader() })
       .then(response => dispatch({ type: FETCH_INVOICE_LIST, payload:response }))
-      .catch( response => dispatch(requestError(response.data.error)) );
+      .catch( err => dispatch(requestError(err.message)) );
   }
 }
 
-//选择发票
-export function selectInvoice(id) {
+
+/**
+ * 从列表中选择发票
+ * @param serial
+ * @returns {{type, payload: *}}
+ */
+export function selectInvoice(serial) {
   return {
     type: SELECT_INVOICE,
-    payload: id
+    payload: serial
   };
 }
 
-//取消选择发票
-export function deselectInvoice(id) {
+/**
+ * 从列表中取消选择发票
+ * @param serial
+ * @returns {{type, payload: *}}
+ */
+export function deselectInvoice(serial) {
   return {
     type: DESELECT_INVOICE,
-    payload: id
+    payload: serial
   };
 }
 
-//报销
-export function reimburseAction(ids) {
+/**
+ * 发票详情
+ * @param serial
+ * @returns {Function}
+ */
+export function fetchInvoiceDetail(serial) {
   return function(dispatch) {
-    axios.post(`${ROOT_URL}/reimburse`)
-      .then(response => dispatch({ type: REQUEST_SUCCESS }))
+    axios.get(`${ROOT_URL}/invoice/${serial}`, { headers: getAuthorizedHeader() })
+      .then(response => dispatch({ type: FETCH_INVOICE_DETAIL, payload:response }))
       .catch( response => dispatch(requestError(response.data.error)) );
   }
 }
 
+/**
+ * 报销发票
+ * @param ids
+ * @returns {Function}
+ */
+export function reimburseAction(ids, company, remark, callback) {
+  return function(dispatch) {
+    axios.post(`${ROOT_URL}/reimbursement?invoices=${ids.join()}&company=${company}&remark=${remark||''}`, null, { headers: getAuthorizedHeader() })
+      .then(response => {
+        if(response.data.status == 1) {// success
+          dispatch({ type: REIMBURSE_SUCCESS, payload:response })
+          callback();
+        } else {//fail
+          callback(response.data.message);
+        }
+      })
+      .catch(err => callback(err.message));
+  }
+}
 
+
+/**
+ *
+ * @returns {Function}
+ */
+export function clearReimburseResult() {
+  return function(dispatch) {
+    dispatch({ type: REIMBURSE_SUCCESS, payload:{ data:{data:null} } });
+  }
+}
+
+/**
+ * 发票流转
+ * @param serial
+ * @param target
+ * @param biz           0:个人, 1:企业
+ * @param callback
+ * @returns {Function}
+ */
+export function transferAction({serial, target, biz}, callback) {
+  return function(dispatch) {
+    axios.put(`${ROOT_URL}/invoice?invoice=${serial}&target=${target}&biz=${biz?1:0}`, null, { headers: getAuthorizedHeader() })
+      .then(response => {
+        if(response.data.status == 1) {// success
+          callback();
+        } else {//fail
+          callback(response.data.message);
+        }
+      })
+      .catch(err => callback(err.message));
+  }
+}

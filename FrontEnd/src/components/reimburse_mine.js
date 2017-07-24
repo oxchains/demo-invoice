@@ -10,7 +10,7 @@
 import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
-import { fetchMyReimburseList } from '../actions/reimburse';
+import { fetchReimburseList } from '../actions/reimburse';
 import { Link } from 'react-router';
 import Moment from 'react-moment';
 import ReactPaginate from 'react-paginate';
@@ -18,7 +18,7 @@ import ReactPaginate from 'react-paginate';
 class ReimburseList extends Component {
 
   componentWillMount() {
-    this.props.fetchMyReimburseList(this.props.params.page);
+    this.props.fetchReimburseList(this.props.params.page);
   }
 
   renderRows() {
@@ -37,7 +37,7 @@ class ReimburseList extends Component {
 
   handlePageClick(data) {
     let selected = data.selected;
-    this.props.fetchMyReimburseList(selected + 1);
+    this.props.fetchReimburseList(selected + 1);
   };
 
   render() {
@@ -90,4 +90,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps, { fetchMyReimburseList })(ReimburseList);
+export default connect(mapStateToProps, { fetchReimburseList })(ReimburseList);
