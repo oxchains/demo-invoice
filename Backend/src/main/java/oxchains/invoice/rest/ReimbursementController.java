@@ -88,7 +88,7 @@ public class ReimbursementController {
                     reimbursement.setCompany(c);
                     reimbursement.setDescription(remark);
                     return chaincodeData
-                      .reimburse(owner.getName(), invoices, reimbursement)
+                      .reimburse(invoices, reimbursement)
                       .filter(ChaincodeResp::succeeded)
                       .map(resp -> {
 
